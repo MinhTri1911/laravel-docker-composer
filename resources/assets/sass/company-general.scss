@@ -1,0 +1,296 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/*
+    Created on : Jun 13, 2018, 3:16:18 PM
+    Author     : rikkei
+*/
+// Import Mixin
+@import "option/mixins";
+// Import Header
+@import "elements/header";
+// Import Sidebar
+@import "elements/sidebar";
+// import Date Picker Jquery
+@import "option/datepicker";
+// import Time Picker Jquery
+@import "option/timepicker";
+// import variable
+@import "option/variable";
+
+/**
+* css list company
+*/
+.list-common-company {
+  .block-search {
+    display: flex;
+    padding-left: 0px;
+
+    .block-left {
+      display: flex;
+      margin-right: 50px;
+
+      .lbl-text {
+        margin-right: 20px;
+      }
+
+      .form-input {
+        width: 250px;
+      }
+
+    }
+
+    .block-right {
+      display: flex;
+
+      .lbl-text {
+        margin-right: 20px;
+      }
+
+      .form-input {
+        width: 120px;
+        margin-right: 20px;
+      }
+    }
+  }
+
+  .block-table {
+    max-width: 100%;
+    overflow-x: scroll;
+    position: relative;
+    border: 1px solid #d8e3f3;
+    border-bottom: none;
+
+    .table-result {
+      .col-company-name, .col-company-nation, .col-office-address, .col-ope-company,
+      .col-ope-person, .col-ope-email, .col-ope-phone, .col-service-name, .col-license,
+      .col-toltal-license, .col-action {
+        width: 110px;
+      }
+
+      .th-checkbox, .col-checkbox {
+        width: 10px !important;
+      }
+
+      .checkbox-table {
+        text-align: center !important;
+      }
+
+      thead {
+        tr {
+          th {
+            text-align: center;
+
+            .th-line-one {
+              width: 100%;
+              position: relative;
+            }
+
+            .th-line-two {
+              width: 100%;
+            }
+          }
+
+          .thead-text {
+            vertical-align: top;
+          }
+        }
+      }
+
+      tbody {
+        tr {
+          .table-action {
+            text-align: center;
+          }
+
+          td {
+            word-break: break-all;
+          }
+        }
+      }
+    }
+
+    .table-content {
+      height: 300px;
+      position: relative;
+      border-bottom: 1px solid #d8e3f3;
+
+      table.table-result {
+        margin-bottom: 0px;
+      }
+    }
+  }
+}
+/*
+* start css detail company
+*/
+
+.detail-company {
+  .label-title-button {
+    width: 250px;
+  }
+
+  .block-detail {
+    margin-top: $margin-default;
+    margin-bottom: $margin-bottom;
+
+    .row {
+      display: flex;
+
+      .label-title {
+        width: 35%;
+      }
+
+      .label-content {
+        width: auto;
+      }
+    }
+  }
+
+  .block-center {
+    text-align: center;
+
+    .btn {
+      margin: 10px;
+    }
+  }
+
+  .block {
+    margin-bottom: $margin-default;
+    width: auto;
+  }
+}
+
+/*
+* start css popup setting billing method
+*/
+.modal-setting-billing-content {
+  text-align: center;
+
+  .setting-content {
+    display: flex;
+  }
+}
+
+/*
+* start css popup add service for all ship
+*/
+.group-datepicker {
+  width: 100%;
+}
+
+/*
+* css popup delete service for all ship
+*/
+
+.btn-right {
+  margin-top: $margin-default;
+  float: right;
+}
+
+.table-fixed {
+  thead {
+    display: block;
+  }
+
+  tbody {
+    height: 225px;
+    overflow-y: auto;
+    width: 100%;
+    display: block;
+  }
+
+  tr {
+    display: block;
+
+    td, th {
+      display: block;
+      text-align: center;
+    }
+  }
+}
+
+.table-fixed tr:after {
+  content: "";
+  display: block;
+  visibility: hidden;
+  clear: both;
+}
+
+.table-fixed tbody td, .table-fixed thead > tr > th {
+  float: left;
+}
+
+.tbody-scroll {
+  position: relative;
+}
+
+.confirm-popup {
+  margin: auto;
+
+  .modal-content {
+    margin-top: 200px;
+    width: 50%;
+    margin-left: 100px;
+  }
+}
+
+/*
+* css for create company
+*/
+
+.create-company, .update-company {
+  .block-input {
+    display: flex;
+
+    .lbl-title {
+      width: 25%;
+    }
+
+    .form-input {
+      width: 75%;
+    }
+  }
+}
+
+@media only screen and (max-width: 1860px) {
+  /*
+    * start css list company
+    */
+  .block-table {
+    max-width: 100%;
+    overflow-x: scroll;
+    position: relative;
+  }
+
+  .table-result {
+    width: 1700px;
+  }
+
+  .table-content {
+    width: 1700px;
+  }
+}
+
+@media only screen and (max-width: 1426px) {
+  /*
+    * css for create company
+    */
+  .create-company {
+    .block-input {
+      .lbl-title {
+        width: 45%;
+      }
+
+      .form-input {
+        width: 55%;
+      }
+    }
+  }
+}
+
+table.table-result > tbody > tr > td:first-child {
+  border-left: none;
+}

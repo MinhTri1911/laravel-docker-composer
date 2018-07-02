@@ -1,0 +1,589 @@
+// Import Mixin
+@import "option/mixins";
+// Import Header
+@import "elements/header";
+// Import Sidebar
+@import "elements/sidebar";
+// import Date Picker Jquery
+@import "option/datepicker";
+
+#user-management{
+    //User List
+    .user-list{
+        .list-form{
+            .form-group{
+                @include clearfix;
+                .left-side{
+                    float: left;
+                    width: 100px;
+                    label{
+                        margin: 0;
+                        line-height: 46px;
+                        &.label-table{
+                            line-height: initial;
+                        }
+                    }
+                }
+                .right-side{
+                    float: left;
+                    width: calc( 100% - 100px );
+                    .form-control{
+                        width: 274px;
+                    }
+                    .table-blue{
+                        > thead tr th{
+                            padding-left: 20px;
+                            &:first-child{
+                                width: 140px;
+                            }
+                        }
+                        td{
+                            &:first-child{
+                                padding-left: 20px;
+                            }
+                            .item .table-select{
+                                width: 325px;
+                                margin-right: 5px;
+                            }
+                            .table-select-group{
+                                width: 100%;
+                            }
+                        }
+                    }
+                }
+            }
+            .group-profile{
+                padding-bottom: 15px;
+                margin-bottom: 30px;
+                border-bottom: 1px solid $color-blue-ligher;
+                h4{
+                    margin-top: 0;
+                    margin-bottom: 10px;
+                }
+                .left-side{
+                    padding-left: 20px;
+                }
+                .form-group{
+                    input{
+                        width: 188px !important;
+                    }
+                    .label-control{
+                        white-space: nowrap;
+                    }
+                }
+                
+                .form-group{
+                    .birthday-block  {
+                         display: table;
+                         .custom-select{
+                             width: 100px;
+                         }
+                         select.form-control{
+                             float: left;
+                             width: 88px;
+                             &.year-select{
+                                 width: 113px;
+                             }
+                         }
+
+                         select.form-control.year{
+                             width: 120px;
+                         }
+                         
+                         span.pull-left{
+                            margin-top: 10px;
+                        }
+                     }
+                }
+            }
+        }
+        .search-result{
+            padding-bottom: 30px;
+            h2{
+                border-bottom: 2px solid $color-blue-darker;
+                padding-bottom: 10px;
+                margin-bottom: 20px;
+            }
+            .btn-csv{
+                height: 30px;
+                line-height: 14px;
+                font-size: 14px;
+            }
+            .form-group{
+                margin-bottom: 20px;
+                @include clearfix;
+                .left-side{
+                    float: left;
+                    width: 85px;
+                    label{
+                        margin: 0;
+                        line-height: 46px;
+                    }
+                }
+                .right-side{
+                    float: left;
+                    width: calc( 100% - 85px );
+                    .form-control{
+                        width: 274px;
+                    }
+                }
+            }
+            
+            .top-pagination{
+                line-height: 0;
+                
+                .pagination{
+                    margin-top: 30px;
+                    margin-bottom: 0;
+                }
+            }
+            
+            .bottom-pagination{
+                line-height: 0;
+                .pagination{
+                    margin-bottom: 0;
+                }
+            }
+            
+            .table-blue{
+                margin-top: 30px;
+                thead > tr > th{
+                    text-align: center;
+                    max-width: 73px;
+                    padding: 5px;
+                    vertical-align: middle;
+                    line-height: (14/12);
+                    font-size: 12px;
+                    height: 50px;
+                }
+                tbody > tr > td{
+                    vertical-align: middle;
+                    max-width: 73px;
+                    font-size: 12px;
+                    text-align: center;
+                    padding: 5px;
+                    height: 55px;
+                    line-height: (16/12);
+                    overflow: hidden;
+                    word-wrap: break-word;
+                    word-break: break-all;
+                    &:last-child{
+                        width: 73px;
+                    }
+                }
+            }
+        }
+        .w-100.pull-left {
+            width: 120px!important;
+            &.monthday {
+                margin-left: 25px;
+            }
+        }
+    }
+
+    //User Detail / User Create Serial Confirm / User Edit Confirm / User Delete
+    .user-show{
+        .alert{
+            margin-bottom: 20px;
+        }
+        .item{
+            @include clearfix;
+            border-bottom: 1px solid $color-blue-ligher;
+            border-top: 1px solid $color-blue-ligher;
+            ~ .item{
+                border-top: 0;
+            }
+            .item-field{
+                width: 120px;
+                float: left;
+                margin: 0;
+                line-height: 45px;
+            }
+            .item-value{
+                width: auto;
+                float: left;
+                font-weight: 500;
+                margin: 0;
+                line-height: 45px;
+                .avatar{
+                    margin-top: 15px;
+                    width: 105px;
+                    height: 105px;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                    border-radius: 2px;
+                    margin-bottom: 15px;
+                }
+            }
+            .item-multi-value{
+                float: left;
+                width: auto;
+                font-weight: 500;
+                margin: 0;
+                ul{
+                    height: 73px;
+                    padding: 6.5px 0;
+                    li{
+                        line-height: 30px;
+                    }
+                }
+            }
+            .item-table{
+                margin: 0;
+                height: 40px;
+                line-height: 40px;
+            }
+            table{
+                margin-bottom: 20px;
+                > thead > tr > th{
+                    text-align: center;
+                    &:first-child{
+                        width: 100px;
+                    }
+                }
+                > tbody > tr > td{
+                    text-align: center;
+                }
+            }
+        }
+        .btn-management{
+            padding-top: 30px;
+            margin-bottom: 20px;
+            .btn{
+                margin: 0 7px;
+            }
+        }
+        .center-block.btn-blue-light{
+            width: 155px;
+            height: 30px;
+            font-size: 14px;
+            line-height: 16px;
+            margin-bottom: 30px;
+        }
+    }
+
+    //User Create Serial
+    .user-create-serial{
+        min-height: 655px;
+        form{
+            margin-bottom: 30px;
+        }
+        .alert{
+            margin-bottom: 20px;
+        }
+        .form-group{
+            @include clearfix;
+            .left-side{
+                float: left;
+                width: 108px;
+                label{
+                    margin: 0;
+                    line-height: 46px;
+                }
+            }
+            .right-side{
+                float: left;
+                width: calc( 100% - 108px );
+                .form-control{
+                    width: 308px;
+                }
+                .input-reference{
+                    display: inline-block;
+                    margin-right: 5px;
+                }
+                .btn-reference{
+                    display: inline-block;
+                    width: 96px;
+                    font-size: 14px;
+                    height: 30px;
+                    line-height: 16px;
+                }
+            }
+        }
+        .btn-upload{
+            padding-top: 5px;
+            padding-bottom: 30px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #e5eaf5;
+        }
+        table.table{
+            td,th{
+                vertical-align: middle;
+                &:first-child{
+                    width: 65px;
+                    text-align: center;
+                }
+                &:last-child{
+                    padding-left: 20px;
+                }
+            }
+        }
+    }
+
+    // User Create Serial Confirm
+    .user-create-serial-confirm{
+        min-height: 655px;
+        .alert{
+            margin-bottom: 15px;
+        }
+        table.table{
+            margin-bottom: 40px;
+            td,th{
+                vertical-align: middle;
+                text-align: center;
+                height: 52px;
+            }
+            td{
+                line-height: (18/14);
+                height: 55px;
+            }
+        }
+        .btn-management{
+            .btn{
+                margin: 0 7px;
+            }
+        }
+    }
+
+
+    //User input Individual
+    .user-input-individual{
+        padding-bottom: 50px;
+        form{
+            margin-bottom: 0;
+        }
+        .form-group{
+            @include clearfix;
+            .item-field{
+                width: 165px;
+                float: left;
+                margin: 0;
+                line-height: 45px;
+                @include clearfix;
+                .span-required{
+                    margin-top: 12.5px;
+                    margin-right: 10px;
+                }
+            }
+            .item-value{
+                width: auto;
+                float: left;
+                font-weight: 500;
+                margin: 0;
+                line-height: 45px;
+                .form-control{
+                    width: 275px;
+                    &.w-100 {
+                        width: 120px!important;
+                    }
+                }
+                .w-100.pull-left {
+                    width: 120px!important;
+                    &.monthday {
+                        margin-left: 25px;
+                    }
+                }
+                .avatar-selection{
+                    .custom-radio{
+                        display: inline-block;
+                        margin-right: 25px;
+                    }
+                }
+                .choose-avatar{
+                    padding-top: 5px;
+                    padding-bottom: 5px;
+                    margin-left: 20px;
+                    display: flex;
+                    flex-wrap: nowrap;
+                    overflow-x: hidden;
+                    .custom-radio{
+                        flex: 0 0 auto;
+                        width: 125px;
+                        height: 160px;
+                        position: relative;
+                        margin-right: 22px;
+                        label{
+                            position: absolute;
+                            left: 0;
+                            top: 0;
+                            right: 0;
+                            bottom: 0;
+                            margin: 0;
+                            border-radius: 2px;
+                            background-color: transparent;
+                            &:before{
+                                left: 50%;
+                                top: calc( 100% - 33px );
+                                transform: translate(-50%, 0);
+                            }
+                            &:after{
+                                left: 50%;
+                                top: calc( 100% - 28px );
+                                transform: translate(-50%, 0) scale(0);
+                            }
+                        }
+                        input[type="radio"]:checked + label:after{
+                            -webkit-transform:  translate(-50%, 0) scale(1);
+                            transform:  translate(-50%, 0) scale(1);
+                        }
+                        input[type="radio"]:checked + label{
+                            background-color: #f3f7fc;
+                        }
+                        .avatar{
+                            position: absolute;
+                            width: 106px;
+                            height: 106px;
+                            background-position: center;
+                            background-repeat: no-repeat;
+                            background-size: cover;
+                            left: 50%;
+                            transform: translate(-50%, 0);
+                            top: 8px;
+                            border-radius: 2px;
+                        }
+                    }
+                }
+            }
+            .item-table{
+                margin-bottom: 15px;
+                line-height: 25px;
+            }
+            > table{
+                margin-bottom: 10px;
+                > thead > tr > th{
+                    text-align: center;
+                    &:first-child{
+                        width: 100px;
+                    }
+                }
+                > tbody > tr > td{
+                    text-align: center;
+                }
+            }
+            .left-side{
+                float: left;
+                width: 100px;
+                label{
+                    margin: 0;
+                    line-height: 46px;
+                    &.label-table{
+                        line-height: initial;
+                    }
+                }
+            }
+            .right-side{
+                float: left;
+                width: calc( 100% - 100px );
+                .form-control{
+                    width: 274px;
+                }
+                .table-blue{
+                    > thead tr th{
+                        padding-left: 20px;
+                        &:first-child{
+                            width: 140px;
+                        }
+                    }
+                    td{
+                        &:first-child{
+                            padding-left: 20px;
+                        }
+                        .item {
+                            .custom-select-table{
+                                width: calc( 100% - 42px );
+                                display:inline-block;
+                                select.table-select[multiple]{
+                                    width: 100%;
+                                    height: auto;
+                                    overflow-y: scroll;
+                                }
+                            }
+                            .multiple-group{
+                                display: inline-block;
+                                padding-top:0.5px;
+                                padding-bottom:0.5px;
+                                vertical-align: top;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .center-block{
+            margin-top: 45px;
+        }
+        .btn-management{
+            margin-top: 45px;
+            .btn{
+                margin: 0 7px;
+            }
+        }
+    }
+
+    .error {
+        color: red;
+        margin-bottom: -15px;
+        margin-top: -10px;
+        padding-left: 5px;
+        min-width: 200px;
+    }
+    .link-disabled{
+        background:#797a7d;
+        cursor: not-allowed;
+    }
+    .table-policy {
+        tr {
+            th {
+                font-weight: normal;
+                font-size: 14px;
+                text-align: center;
+                padding-top: 8px;
+                &:first-child {
+                    width: 220px !important;
+                }
+            }
+
+            td {
+                &:nth-child(n+2) {
+                    width: 145px;
+                }
+
+                font-size: 14px;
+                vertical-align: middle;
+                text-align: center;
+                a {
+                    padding-top: 1px;
+                }
+                ul {
+                    list-style-type: none;
+                    li {
+                        margin-right: 20px;
+                        float: left;
+                    }
+                }
+                .custom-checkbox {
+                    label {
+                        padding-top: 1px;
+                        padding-left: 30px;
+                        font-weight: normal;
+                    }
+                }
+            }
+        }
+    }
+    .custom-select{
+        width: 275px;
+    }
+    .btn-custom-sm {
+        margin: 10px auto;
+        padding: 0 10.5px;
+    }
+}
+#user-management .user-list .list-form .group-profile .left-side{
+    width: 125px;
+}
+
+#user-management .user-list .list-form .group-profile .right-side {
+    width: calc(100% - 125px);
+}

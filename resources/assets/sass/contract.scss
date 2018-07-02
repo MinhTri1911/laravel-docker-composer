@@ -1,0 +1,123 @@
+/* 
+    Created on : Jun 20, 2018, 11:39:04 AM
+    Author     : DungLV
+*/
+// Import Mixin
+@import "option/mixins";
+// Import Header
+@import "elements/header";
+// Import Sidebar
+@import "elements/sidebar";
+// import Date Picker Jquery
+@import "option/datepicker";
+// import Time Picker Jquery
+@import "option/timepicker";
+
+.contract{
+    .contract-create, .contract-edit, .contract-restore{
+        .input-group{
+            position: relative;
+            .form-control{
+                padding-right: 50px;
+                
+            }
+            .input-group-addon{
+                position: absolute;
+                width: $input-height-base;
+                right: 4px;
+                top: 4px;
+                bottom: 4px;
+                z-index: 3;
+                background: $color-blue-border;
+                color: $color-blue-text;
+                border-radius: 0;
+                border: 1px solid $color-blue-border;
+                line-height: $input-height-base - 10;
+                padding: 0;
+                cursor: pointer;
+                 -webkit-transition: 0.2s;
+                -o-transition: 0.2s;
+                transition: 0.2s;
+                &:hover{
+                    opacity: 0.8;
+                    -webkit-transition: 0.2s;
+                    -o-transition: 0.2s;
+                    transition: 0.2s;
+                }
+
+                *{
+                    line-height: 1;
+                }
+            }
+        }
+    }
+
+    .form-control{
+        min-width: 270px;
+        width: auto;
+    }
+
+    .modal-service{
+        .modal-row{
+            padding-bottom: 10px;
+            &::after{
+                content: '';
+                display: table;
+                clear: both;
+            }
+            .modal-left{
+                float: left;
+                width: 60%;
+            }
+            .modal-right{
+                float: right;
+                width: 40%;
+            }
+        }
+
+        .table-popup{
+            tr, th, td{
+                text-align: center;
+            }
+        }
+
+        .tbody-popup{
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    }
+
+    .table-fixed {
+        thead {
+            display: block;
+        }
+
+        tbody {
+            height: 225px;
+            overflow-y: auto;
+            width: 100%;
+            display: block;
+            position: relative;
+        }
+
+        tr {
+            display: block;
+
+            td, th {
+                display: block;
+                text-align: center;
+            }
+        }
+    }
+
+    .table-fixed tr:after {
+        content: "";
+        display: block;
+        visibility: hidden;
+        clear: both;
+    }
+
+    .table-fixed tbody td, .table-fixed thead > tr > th {
+        float: left;
+    }
+}

@@ -1,0 +1,187 @@
+// ----------- BEGIN LIBRARY COMMON--------------
+// Import Mixin
+@import "option/mixins";
+// Import Header
+@import "elements/header";
+// Import Sidebar
+@import "elements/sidebar";
+// import Date Picker Jquery
+@import "option/datepicker";
+// ----------- END LIBRARY COMMON--------------
+
+/* Css for screen > 1024px */
+#history-billing {
+  /*Css form*/
+  .form-group {
+      width: 30%;
+      float: left;
+      margin-right: 15px;
+      &.mdr-40 {
+        margin-right: 40px;
+      }
+
+      &.alone {
+        width: 100%;
+        .right-side {
+          width: 40%;
+        }
+      }
+      &.between {
+        width: auto;
+        vertical-align: middle;
+        text-align: center;
+        line-height: 46px;
+      }
+
+      .left-side {
+        float: left;
+        width: 105px;
+      }
+      .right-side {
+        float: left;
+        width: calc(100% - 105px);
+      }
+      .custom-select {
+        width: 100%;
+      }
+      .group-datepicker, .group-timepicker {
+        width: 100%;
+      }
+    }
+  .content-form {
+    padding-left: 20px;
+  }
+
+  .block-title-tbl {
+    .left-side {
+      float: left;
+      width: 105px;
+    }
+    .right-side {
+      float: right;
+      width: auto;
+
+      .form-group {
+        width: auto;
+        margin: 0;
+        .left-side {
+          width: 60px;
+          margin-right: 15px;
+        }
+        .right-side {
+          float: left;
+          width: 140px;
+        }
+      }
+    }
+  }
+
+  /*Css table list history*/
+  #block-tbl-history {
+    clear: both;
+    border-right: 1px solid #d8e3f3;
+    border-left: 1px solid #d8e3f3;
+    border-bottom: 1px solid #d8e3f3;
+    min-width: 897px;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    position: relative;
+
+    table.table-history {
+      min-width: 1300px;
+
+      .tbl-row-id {
+        width: 100px;
+      }
+      .tbl-row-company-name {
+        width: 18%;
+      }
+      .tbl-row-nation {
+        width: 11%;
+      }
+      .tbl-row-create-date {
+        width: 11%;
+      }
+      .tbl-row-deadline-date {
+         width: 11%;
+      }
+      .tbl-row-actual-date{
+        width: 11%;
+      }
+      .tbl-row-money {
+        width: 10%;
+      }
+      .tbl-row-link {
+        width: 15%;
+      }
+      .tbl-row-status {
+         width: 7.5%;
+      }
+
+      thead {
+        width: 100%;
+        display: block;
+
+        tr th {
+          text-align: center;
+          vertical-align: middle;
+        }
+      }
+      tbody {
+        max-height: 675px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        display:block;
+        position: relative;
+
+        tr {
+          td {
+            vertical-align: middle;
+            padding: 0 5px;
+            word-wrap: break-word;
+
+            &.tbl-row-id {
+              text-align: center;
+            }
+            &.tbl-row-company-name {
+            }
+            &.tbl-row-nation {
+              text-align: center;
+            }
+            &.tbl-row-create-date {
+              text-align: center;
+            }
+            &.tbl-row-deadline-date {
+               text-align: center;
+            }
+            &.tbl-row-actual-date{
+              text-align: center;
+            }
+            &.tbl-row-money {
+              text-align: right;
+            }
+            &.tbl-row-link {
+              text-align: center;
+            }
+            &.tbl-row-status {
+              text-align: center;
+            }
+
+            a {
+              color: blue;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Css for screen < 1024px */
+@media (max-width: 1024px) {
+  #history-billing {
+    .form-group {
+       width: 42%;
+    }
+  }
+}

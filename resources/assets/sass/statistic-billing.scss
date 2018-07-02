@@ -1,0 +1,191 @@
+// ----------- BEGIN LIBRARY COMMON--------------
+// Import Mixin
+@import "option/mixins";
+// Import Header
+@import "elements/header";
+// Import Sidebar
+@import "elements/sidebar";
+// import Date Picker Jquery
+@import "option/datepicker";
+// ----------- END LIBRARY COMMON--------------
+
+/* Css for screen > 1024px */
+#statistic-billing {
+
+  /*Css form*/
+  .content-form {
+    padding-left: 20px;
+  }
+
+  .form-group {
+      width: 20%;
+      float: left;
+      margin-right: 35px;
+
+      &.between {
+        width: auto;
+        vertical-align: middle;
+        text-align: center;
+        line-height: 46px;
+      }
+      &.end {
+        width: calc(20% - 85px);
+      }
+
+      .left-side {
+        float: left;
+        width: 85px;
+      }
+      .right-side {
+        float: left;
+        width: calc(100% - 85px);
+      }
+      .custom-select {
+        width: 100%;
+      }
+      .custom-radio {
+          padding-top: 8px;
+      }
+      .group-datepicker, .group-timepicker {
+        width: 100%;
+      }
+    }
+
+  .block-description-year {
+    padding-left: 40px;
+
+    .form-group {
+      margin-right: 25px;
+      width: auto;
+    }
+  }
+
+  .block-title-tbl {
+    .left-side {
+      float: left;
+      width: 105px;
+    }
+    .right-side {
+      float: right;
+      width: auto;
+
+      .form-group {
+        width: auto;
+        margin: 0;
+        .left-side {
+          width: 60px;
+          margin-right: 15px;
+        }
+        .right-side {
+          float: left;
+          width: 140px;
+        }
+      }
+    }
+  }
+
+  /*Css table statistic*/
+  #block-tbl-statistic {
+    clear: both;
+    border-right: 1px solid #d8e3f3;
+    border-left: 1px solid #d8e3f3;
+    border-bottom: 1px solid #d8e3f3;
+    min-width: 897px;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    position: relative;
+
+    table.table-statistic {
+      min-width: 1300px;
+
+      .tbl-row-service {
+        width: 120px;
+      }
+      .tbl-row-month {
+        width: 7.75%;
+      }
+
+      thead {
+        width: 100%;
+        display: block;
+
+        tr th {
+          text-align: center;
+          vertical-align: middle;
+        }
+      }
+      tbody {
+        max-height: 675px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        display:block;
+        position: relative;
+
+        tr {
+          td {
+            vertical-align: middle;
+            padding: 0 5px;
+            word-wrap: break-word;
+
+            &.tbl-row-service {
+              text-align: center;
+            }
+            &.tbl-row-month {
+              text-align: right;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  /*Css chart statistic billing*/
+  .chart-statistic {
+    width: 800px;
+    canvas {
+      margin-left: 50px;
+    }
+  }
+}
+
+/* Css for screen < 1450px */
+@media (max-width: 1450px) {
+  #statistic-billing {
+    .form-btn-statistic {
+      clear: both;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+  }
+}
+
+/* Css for screen < 1024px */
+@media (max-width: 1024px) {
+  #statistic-billing {
+    .form-group {
+      width: 30%;
+      margin-right: 15px;
+
+      &.rdo-year {
+        clear: both;
+      }
+      &.end {
+        width: calc(30% - 85px);
+      }
+
+      .left-side {
+        float: left;
+        width: 85px;
+      }
+      .right-side {
+        float: left;
+        width: calc(100% - 85px);
+      }
+    }
+    .form-btn-statistic {
+      clear: both;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+  }
+}

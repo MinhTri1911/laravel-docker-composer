@@ -1,0 +1,35 @@
+//Import Trumbowyg
+@import "~trumbowyg/dist/ui/sass/trumbowyg";
+//Import Color
+@import "~trumbowyg/dist/plugins/colors/ui/sass/trumbowyg.colors";
+
+.trumbowyg-box{
+    min-height: auto !important;
+    &.trumbowyg-editor-visible .trumbowyg-textarea{
+        display: none;
+    }
+    .trumbowyg-editor{
+        line-height: 20px;
+    }
+}
+.trumbowyg-button-pane{
+    min-height: initial;
+    &:after{
+        display: none;
+    }
+    padding: 0;
+    button{
+        width: 25px;
+        height: 25px;
+        padding:0 !important;
+        &.trumbowyg-btnExtra-button svg{
+            width: 7px;
+        }
+    }
+}
+.trumbowyg-editor, .trumbowyg-textarea{
+    padding: 5px;
+}
+.trumbowyg-fullscreen{
+    width: 100% !important;
+}

@@ -1,0 +1,137 @@
+/* 
+    Created on : Jun 20, 2018, 11:39:04 AM
+    Author     : DungLV
+*/
+// Import Mixin
+@import "option/mixins";
+// Import Header
+@import "elements/header";
+// Import Sidebar
+@import "elements/sidebar";
+// import Date Picker Jquery
+@import "option/datepicker";
+// import Time Picker Jquery
+@import "option/timepicker";
+
+#ship-contract{
+    .detail-ship{
+        .table-block{
+            display: table;
+            width: 100%;
+            .item-row{
+                display: table-row;
+            }
+            .item-label{
+                display: table-cell;
+                width: 80px;
+                white-space: nowrap;
+                padding-right: 20px;
+            }
+
+            .item-value{
+                display: table-cell;
+                padding-top: 5px;
+                padding-bottom: 5px;
+            }
+        }
+
+        .block-handle{
+            margin-top: 15px;
+            margin-bottom: 25px;
+            .btn{
+                &:nth-child(odd){
+                    margin-right: 5px;
+                    margin-left: 5px;
+                }
+            }
+            &:after{
+                content: '';
+                display: table;
+                clear: both;
+            }
+        }
+
+        .table-ship{
+            thead{
+                tr{
+                    >th{
+                        text-align: center;
+                        font-size: 12px;
+                        vertical-align: middle;
+                        
+                        &:first-child{
+                            label{
+                                display: inline;
+                                padding-left: 20px;
+                            }
+                        }
+                    }
+                }
+            }
+
+            tbody{
+                tr{
+                    >td{
+                        text-align: center;
+                        vertical-align: middle;
+                        
+                        &:first-child{
+                            label{
+                                display: inline;
+                                padding-left: 20px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .ship-info-block{
+            .block-handle{
+                .btn{
+                    display: table;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+            }
+        }
+
+        .contract-block{
+            .block-handle{
+                display: table;
+                margin-left: auto;
+            }
+        }
+    
+        .fl-block{
+            
+            .fl-page{
+                float: left;
+            }
+
+            .fl-right{
+                float: right;
+            }
+
+            &::after{
+                content:'';
+                display: table;
+                clear: both;
+            }
+        }
+
+        .spot-block{
+            .fl-block{
+                padding-top: 20px;
+            }
+
+            .block-handle{
+                margin: 0;
+            }
+            .pagination{
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+        }
+    }
+}

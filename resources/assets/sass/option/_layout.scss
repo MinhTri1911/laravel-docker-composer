@@ -1,0 +1,397 @@
+// Import Mixin
+@import "mixins";
+// Import Variable
+@import "variable";
+
+// Make Footer Always Bottom of page
+html {
+    position: relative;
+    min-height: 100%;
+    min-width: 964px;
+}
+body {
+    margin-bottom: 50px;
+    .container-header-fixed{
+        padding-left: 2.5%;
+        padding-right: 2.5%;
+    }
+    .container-menu-fixed{
+        padding-left: 2.5%;
+        padding-right: 2.5%;
+    }
+    .container-body-fixed{
+        padding-left: 2.5%;
+        padding-right: 2.5%;
+        display:table;
+        width: 100%;
+        table-layout: fixed;
+    }
+}
+
+/**
+* -----------------------------------------------------------------------------
+* HEADER LAYOUT
+* -----------------------------------------------------------------------------
+*/
+header.header{
+    background-color: $color-blue-darker;
+    height: 70px;
+    .site-brand{
+        height: 70px;
+        padding: 10px 0;
+        float: left;
+        img{
+            margin-right: 10px;
+            width: 50px;
+            height: 50px;
+            box-shadow: 0px 2px 10px 0px rgba(80, 129, 255, 0.2);
+        }
+        span{
+            max-width: 227px;
+            color: #fff;
+            vertical-align: middle;
+            display: inline-block;
+            line-height: (20/14);
+        }
+    }
+}
+
+/**
+* -----------------------------------------------------------------------------
+* Main Content
+* -----------------------------------------------------------------------------
+*/
+.wrapper{
+    width: 100%;
+    padding: 20px 0 50px;
+    margin: auto;
+    .main-content{
+        display: table-cell;
+        background-color: #ffffff;
+        width: 100%;
+        box-shadow: 0px 3px 10px 0px rgba(0, 55, 196, 0.15);
+        border-radius: 2px;
+        vertical-align: top;
+        .main-heading{
+            margin: 0;
+            height: 64px;
+            background-color: $color-blue-lighest;
+            color: $color-blue-text;
+            padding: 10px 10px 10px 30px;
+            line-height: 44px;
+            font-weight: 700;
+            border-bottom: 1px solid #e1e8f4;
+        }
+        .main-summary{
+            padding: 30px 30px 20px;
+        }
+    }
+    &.no-sidebar{
+        .main-content{
+            display: block;
+        }
+    }
+}
+
+
+/**
+* -----------------------------------------------------------------------------
+* FOOTER LAYOUT
+* -----------------------------------------------------------------------------
+*/
+footer.footer{
+    background-color: $color-blue-extra;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border: 0;
+    height: 50px;
+    p{
+        color: #808eb0;
+        font-size: 14px;
+        line-height: 50px;
+        height: 50px;
+        margin: 0;
+    }
+}
+
+/**
+* -----------------------------------------------------------------------------
+* Go Top arrow
+* -----------------------------------------------------------------------------
+*/
+a#go-top {
+    width: 50px;
+    height: 50px;
+    position: fixed;
+    bottom: 25px;
+    right: 20px;
+    z-index: 9999;
+    text-align: center;
+    border-radius: 50%;
+    display: none;
+    &:hover, &:focus {
+        text-decoration: none;
+        background-color: darken(rgb(61, 78, 121),5%);
+    }
+    img{
+        width: 50px;
+        height: 50px;
+    }
+}
+/**
+    css for icon loading
+*/
+#loading {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom:0;
+    z-index: 9999;
+    background: #f1f4f8;
+    opacity: 0.5;
+    img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+    }
+}
+
+/**
+* css for block button float right
+*/
+
+.block-button {
+    margin-top: $margin-default;
+
+    .btn {
+        float: right;
+        // color: black;
+        margin-left: $margin-default;
+    }
+}
+
+.table-block{
+    display: table;
+    width: 100%;
+    .item-row{
+        display: table-row;
+    }
+    .item-label{
+        display: table-cell;
+        width: 80px;
+        white-space: nowrap;
+        padding-right: 20px;
+        vertical-align: middle;
+    }
+
+    .item-value{
+        display: table-cell;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+
+    table{
+        thead{
+            tr{
+                >th{
+                    text-align: center;
+                    font-size: 12px;
+                    vertical-align: middle;
+
+                    &:first-child{
+                        label{
+                            display: inline;
+                            padding-left: 20px;
+                        }
+                    }
+                }
+            }
+        }
+
+        tbody{
+            tr{
+                >td{
+                    text-align: center;
+                    vertical-align: middle;
+
+                    &:first-child{
+                        label{
+                            display: inline;
+                            padding-left: 20px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+.block-handle{
+    margin-top: 15px;
+    margin-bottom: 25px;
+    display: table;
+    .btn{
+        &:nth-child(odd){
+            margin-right: 5px;
+            margin-left: 5px;
+        }
+    }
+    &:after{
+        content: '';
+        display: table;
+        clear: both;
+    }
+
+    &.align-left{
+        margin-right: auto;
+    }
+
+    &.align-right{
+        margin-left: auto;
+    }
+
+    &.align-center{
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+/*
+* CSS modal common
+*/
+
+.modal-protector {
+  padding-right: 0px !important;
+  .modal-close {
+    position: absolute;
+    right: 30px;
+    top: 30px;
+    text-align: center;
+
+    .btn-close-modal {
+      width: 60px;
+      height: 60px;
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-color: transparent;
+      border:0;
+      display: block;
+      margin-bottom: 7px;
+      opacity: 1;
+      transition: opacity 0.3s;
+      &:focus {
+        outline: 0;
+      }
+      &:hover,&:active {
+        opacity: 0.5;
+        transition: opacity 0.3s;
+      }
+    }
+
+    label {
+      font-size: 17px;
+      letter-spacing: letter-spacing(100);
+      font-weight: 500;
+      color: #fff;
+      display: block;
+    }
+  }
+
+  .modal-dialog {
+    margin-top: 100px;
+    .modal-content {
+      .popup-title {
+        background-color: #ecf3fb;
+        height: 40px;
+        h2 {
+          padding-left: 10px;
+          line-height: 2;
+        }
+      }
+
+      .modal-body {
+        padding: 30px 30px 50px;
+
+        .form-group {
+          clear: both;
+          padding-left: 40px;
+
+          .left-side {
+            width: 100px;
+            float: left;
+          }
+          .right-side {
+            width: 50%;
+            float: left;
+          }
+        }
+
+        .form-btn {
+          padding-top: 25px;
+          button {
+            margin-left: 10px;
+          }
+        }
+
+        .modal-bottom {
+          margin-top: 25px;
+          display: flex;
+          padding: 0 20% 0 20%;
+        }
+      }
+    }
+  }
+}
+
+.modal-stack {
+  .modal-dialog {
+    .modal-content {
+      .popup-title {
+        background-color: #ecf3fb;
+        height: 40px;
+        h2 {
+          padding: 5px;
+        }
+      }
+    }
+  }
+
+  .modal-body {
+    .modal-stack-bottom {
+      margin-top: 25px;
+      display: flex;
+      padding: 0 20% 0 20%;
+    }
+  }
+}
+
+
+/* CSS for table */
+table {
+  &.table.table-blue {
+    margin-bottom: 0;
+  }
+  tr th {
+    position: relative;
+    i.fa-sort {
+      position: absolute;
+      right: 7px;
+      top: calc(50% - 7px);
+    }
+  }
+}
+
+.table-blue {
+  tbody{
+    tr:nth-child(even) {
+      td {
+        background-color: $color-white !important;
+      }
+    }
+  }
+}

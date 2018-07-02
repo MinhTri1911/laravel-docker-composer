@@ -1,0 +1,149 @@
+// Import Layout
+@import "~jquery-ui/themes/base/datepicker.css";
+
+.form-control.custom-datepicker{
+    &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+        color: #b7c6de;
+    }
+    &::-moz-placeholder { /* Firefox 19+ */
+        color: #b7c6de;
+    }
+    &:-ms-input-placeholder { /* IE 10+ */
+        color: #b7c6de;
+    }
+    &:-moz-placeholder { /* Firefox 18- */
+        color: #b7c6de;
+    }
+}
+// Custom Date Picker
+body .ui-datepicker{
+    background-color: #f3f7fc;
+    border: 1px solid #bcc9e0;
+    border-radius: 3px;
+    margin: 12px 0 12px 7.25px;
+    padding: 6px 2px 2px;
+    width: auto;
+    transform: translate(-25%,0);
+    &:before{
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: -10px;
+        transform: translate(-50%,0);
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-bottom: 10px solid #bcc9e0;
+    }
+    &:after{
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: -9px;
+        transform: translate(-50%,0);
+        border-left: 9px solid transparent;
+        border-right: 9px solid transparent;
+        border-bottom: 9px solid #f3f7fc;
+    }
+    .ui-datepicker-header{
+        color: #fff;
+        padding: 0 4px;
+        .ui-datepicker-prev{
+            left: 4px;
+            top: 0;
+            bottom: 0;
+            width: 30px;
+            height: auto;
+            cursor: pointer;
+            *{
+                display: none;
+            }
+            &:before{
+                content: "";
+                position: absolute;
+                background-image: url('../../images/date_arrow_left.png');
+                background-repeat: no-repeat;
+                background-size: cover;
+                left: 11px;
+                top: 50%;
+                transform: translate(0, -50%);
+                width: 6px;
+                height: 7px;
+            }
+        }
+        .ui-datepicker-next{
+            right: 4px;
+            top: 0;
+            bottom: 0;
+            width: 30px;
+            height: auto;
+            cursor: pointer;
+            *{
+                display: none;
+            }
+            &:before{
+                content: "";
+                position: absolute;
+                background-image: url('../../images/date_arrow_right.png');
+                background-repeat: no-repeat;
+                background-size: cover;
+                right: 11px;
+                top: 50%;
+                transform: translate(0, -50%);
+                width: 6px;
+                height: 7px;
+            }
+        }
+        .ui-datepicker-title{
+            width: 100%;
+            background-color: #5482f6;
+            border-top-left-radius: 2px;
+            border-top-right-radius: 2px;
+            margin: 0;
+            font-size: 12px;
+            letter-spacing: letter-spacing(25);
+            font-weight: 700;
+            line-height: 30px;
+        }
+    }
+    table.ui-datepicker-calendar{
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 4px;
+        thead tr th{
+            padding:0;
+            span{
+                font-size: 12px;
+                font-weight: 700;
+            }
+        }
+        tbody tr td{
+            background-color: #fff;
+            border: 1px solid #bcc9e0;
+            border-radius: 1px;
+            padding: 0;
+            a{
+                font-size: 12px;
+                font-weight: 700;
+                color: $color-blue-text;
+                text-align: center;
+                padding: 1px 4px;
+                &:hover{
+                    color: #fff;
+                    background-color: lighten( #5482f6,5%);
+                }
+                &.ui-state-highlight{
+                    color: #fff;
+                    background-color: #5482f6;
+                }
+                &.ui-state-active{
+                    color: #fff;
+                    background-color: darken( #5482f6,5%);
+                }
+            }
+            &.ui-state-disabled{
+                background-color: transparent;
+                border: 1px solid transparent;
+            }
+        }
+    }
+}

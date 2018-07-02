@@ -1,0 +1,45 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Oct 2, 2017, 10:34:51 AM
+    Author     : QuanHV
+*/
+@import "~bootstrap-sass/assets/stylesheets/bootstrap";
+body {
+    h2{
+       // text-align: center;
+       font-weight: bold;
+       padding-top: 50px;
+       padding-bottom: 100px;
+    }
+    .error_lable{
+       font-size: 20px;
+       label{
+           font-weight: normal;
+       }
+    }
+    .error-button{
+        padding-top: 220px;
+        .btn-custom{
+            width: 255px;
+            background-color: #55bfe0;
+            color: #fff;
+            height: 36px;
+            border: 1px solid #97d8ec;
+            margin-bottom: 16px;
+        }
+    }
+    .footer{
+        border-top:2px solid #c1c1c1;
+        border-bottom:2px solid #c1c1c1;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        text-align: center;
+    }
+}
+

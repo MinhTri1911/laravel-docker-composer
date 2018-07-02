@@ -1,0 +1,259 @@
+// ----------- BEGIN LIBRARY COMMON--------------
+// Import Mixin
+@import "option/mixins";
+// Import Header
+@import "elements/header";
+// Import Sidebar
+@import "elements/sidebar";
+// import Date Picker Jquery
+@import "option/datepicker";
+// ----------- END LIBRARY COMMON--------------
+
+/* Css for screen > 1024px */
+#create-billing-paper {
+  /*Css form*/
+  .form-group {
+      width: 30%;
+      float: left;
+
+      .left-side {
+        float: left;
+        width: 105px;
+      }
+      .right-side {
+        float: left;
+        width: calc(100% - 105px);
+      }
+      .custom-select {
+        width: 100%;
+      }
+      .group-datepicker, .group-timepicker {
+        width: 100%;
+      }
+    }
+  .content-form {
+    padding-left: 20px;
+  }
+
+  .block-title-tbl {
+    .left-side {
+      float: left;
+      width: 105px;
+    }
+    .right-side {
+      float: right;
+      width: auto;
+
+      .form-group {
+        width: auto;
+        margin: 0;
+        .left-side {
+          width: 60px;
+          margin-right: 15px;
+        }
+        .right-side {
+          float: left;
+          width: 140px;
+        }
+      }
+    }
+  }
+
+  /*Css table list company*/
+  #block-tbl-company {
+    clear: both;
+    border-right: 1px solid #d8e3f3;
+    border-left: 1px solid #d8e3f3;
+    border-bottom: 1px solid #d8e3f3;
+    min-width: 897px;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    position: relative;
+
+    table.table-list-company {
+      min-width: 1588px;
+
+      .tbl-row-pick {
+        width: 35px;
+      }
+      .tbl-row-no {
+         width: 45px;
+      }
+      .tbl-row-company-name {
+        width: 15%;
+      }
+      .tbl-row-date {
+        width: 9%;
+      }
+      .tbl-row-method {
+         width: 11%;
+      }
+      .tbl-row-ope-name {
+        width: 15%;
+      }
+      .tbl-row-ope-phone {
+        width: 9%;
+      }
+      .tbl-row-ope-email {
+        width: 13%;
+      }
+      .tbl-row-money {
+        width: 7%;
+      }
+      .tbl-row-status {
+         width: 6%;
+      }
+      .tbl-row-approve {
+        width: 6%;
+      }
+      .tbl-row-process {
+        width: 100px;
+      }
+
+      thead {
+        width: 100%;
+        display: block;
+
+        tr th {
+          text-align: center;
+          vertical-align: middle;
+        }
+      }
+      tbody {
+        max-height: 675px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        display:block;
+        position: relative;
+
+        tr {
+          td {
+            vertical-align: middle;
+            padding: 0 5px;
+            word-wrap: break-word;
+
+            &.tbl-row-pick {
+              .custom-radio {
+                label {
+                  padding-left: 23px;
+                }
+              }
+            }
+            &.tbl-row-no {
+              text-align: center;
+            }
+            &.tbl-row-date {
+              text-align: center;
+            }
+            &.tbl-row-method {
+              text-align: center;
+            }
+            &.tbl-row-ope-phone {
+              text-align: center;
+            }
+            &.tbl-row-ope-email {
+              text-align: center;
+            }
+            &.tbl-row-money {
+              text-align: right;
+            }
+            &.tbl-row-status {
+              text-align: center;
+            }
+            &.tbl-row-approve {
+              text-align: center;
+            }
+            &.tbl-row-process {
+              text-align: center;
+              vertical-align: middle;
+              font-size: 25px;
+
+              a {
+                &:hover,&:focus {
+                  text-decoration: none;
+                }
+                .glyphicon {
+                  top: 4px;
+                }
+                .fa {
+                  margin-top: 6px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /*Css create billing*/
+  .create-billing {
+    padding-top: 10px;
+
+    .content-billing {
+      .form-group {
+        width: auto;
+        margin-right: 20px;
+        .left-side {
+          width: auto;
+          margin-right: 10px;
+        }
+        .right-side {
+          width: auto;
+
+          textarea {
+            resize: none;
+          }
+          .custom-checkbox {
+            margin-top: 12px;
+          }
+        }
+      }
+    }
+
+    .process-billing {
+      float: right;
+
+      .form-group {
+        margin-right: 0;
+        margin-top: 3px;
+        width: auto;
+
+        .right-side {
+          width: auto;
+          
+          button {
+            margin-left: 10px;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Css for screen < 1150px */
+@media (max-width: 1150px) {
+  #create-billing-paper {
+    .process-billing {
+      .form-group {
+        .right-side {
+          #btn-back {
+            display: block;
+            margin-right: 0;
+            margin-left: auto;
+            margin-bottom: 8px;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Css for screen < 1024px */
+@media (max-width: 1024px) {
+  #create-billing-paper {
+    .form-group {
+       width: 45%;
+    }
+  }
+}

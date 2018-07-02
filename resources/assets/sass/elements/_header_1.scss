@@ -1,0 +1,48 @@
+// Import Mixin
+@import "../option/mixins";
+// Import Variable
+@import "../option/variable";
+
+/**
+ * -----------------------------------------------------------------------------
+ * HEADER LAYOUT
+ * -----------------------------------------------------------------------------
+*/
+section.menu{
+    padding: 10px 0 3px;
+    background-color: $color-blue-extra;
+    .wrap-menu{
+        width: 100%;
+        margin: auto;
+        .menu-row{
+            margin-left: -2.5px;
+            margin-right: -2.5px;
+            @include clearfix;
+            .menu-link{
+                padding: 0 2.5px;
+                margin-bottom: 7px;
+                float: left;
+                width: 161px;
+                .btn-menu{
+                    color: #d0dbf7;
+                    border-radius: 3px;
+                    background-color: $color-blue-darkest;
+                    height:34px;
+                    padding: 6px 12px;
+                    width: 100%;
+                    line-height: 20px;
+                    box-shadow: none;
+                    &:hover,&.active{
+                        outline: 0 !important;
+                        color: #37476b;
+                        background-color: #ffffff;
+                        box-shadow: none;
+                    }
+                    &:focus{
+                        outline: 0 !important;
+                    }
+                }
+            }
+        }
+    }
+}

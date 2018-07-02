@@ -1,0 +1,153 @@
+// COLOR DARKER
+$primary-color-darker:      		#3d8ccc;
+$success-color-darker:      		#82b366;
+$info-color-darker:         		#23b5de;
+$warning-color-darker:      		#d69a00;
+$danger-color-darker:       		#d92825;
+
+// COLOR COMMON
+$primary-color:             		#d9e7fa;
+$success-color:             		#d4e6d3;
+$info-color:                		#5bc0de;
+$warning-color:             		#ffe6cc;
+$danger-color:              		#d9534f;
+$label-error-color:                 #ff6b43;
+
+// BLUE
+$color-blue-text:					#2b3c62;
+$color-blue-extra:					#3d4e79;
+$color-blue-darkest:				#495982;
+$color-blue-darker:					#5482f6;
+$color-blue:						#cedcf2;
+$color-blue-ligher:			 		#e3e8f4;
+$color-blue-lighest:				#ecf3fb;
+
+
+// ORANGE
+$color-orange: 						#fea628;
+
+// RED
+$color-red:							#ff6b43;
+$color-red-darker:					#d1411a;
+
+// BASE COLOR
+$gray-base:                         #000;
+$gray-darker:                       #222;
+$gray-dark:                         #333;
+$gray:                              #555;
+$gray-light:                        #e2e2e2;
+$gray-lighter:                      #eee;
+$gray-extra: 						#dadada;
+
+// VIEWPORT
+$screen-xs:							480px;
+$screen-sm:                         768px;
+$screen-md:                         1024px;
+$screen-lg:                         1140px;
+$screen-xs-max:                     ($screen-sm - 1);
+$screen-sm-max:                     ($screen-md - 1);
+$screen-md-max:                     ($screen-lg - 1);
+
+// BRAND
+$brand-primary:         			darken(#428bca, 6.5%); // #337ab7
+$brand-success:         			#5cb85c;
+$brand-info:            			#5bc0de;
+$brand-warning:         			#ffd043;
+$brand-danger:          			#ff002d;
+
+// BASIC
+$body-bg:               			$color-blue-ligher;
+
+// GRID
+$grid-gutter-width:                 40px;
+$container-tablet:                  auto;
+$container-desktop:                 auto;
+$container-large-desktop:           auto;
+
+// TEXT
+$font-family-sans-serif:            'Hiragino Sans', 'ヒラギノ角ゴシック', 'Hiragino Kaku Gothic Pro', 'ヒラギノ角ゴ Pro W3', 'メイリオ', 'Meiryo', 'MS Pゴシック', Osaka, Verdana, sans-serif;
+$font-sans-serif:                   $font-family-sans-serif;
+$font-family-serif:                 Georgia, "Times New Roman", Times, serif;
+$font-serif:                        $font-family-serif;
+$text-color:            			$color-blue-text;
+
+$link-color:                        $color-blue-text;
+$link-hover-color:                  darken($link-color, 15%);
+$link-hover-decoration:             underline;
+
+$font-size-base:                    14px;
+$font-size-large:                   16px;
+$font-size-small:                   12px;
+$line-height-base:                  (30/14);
+
+// HEADING
+$font-size-h1:                      24px;
+$font-size-h2:                      20px;
+$font-size-h3:                      17px;
+$font-size-h4:                      16px;
+$font-size-h5:                      $font-size-base;
+$font-size-h6:                      12px;
+
+$headings-font-weight:              700;
+$headings-line-height:              1.2;
+$headings-color:                    $color-blue-text;
+$headings-small-color:              $color-blue-text;
+
+
+// Alert
+$state-danger-text:              	#8c2f2f;
+$state-danger-bg:                	#fff4f4;
+$state-danger-border:            	#ffcacd;
+
+$state-info-text:                	#001854;
+$state-info-bg:                 	#f1f5ff;
+$state-info-border:              	#cfddff;
+
+$state-warning-text:              	#4e3000;
+$state-warning-bg:                	#fffbe8;
+$state-warning-border:            	#ffdba9;
+
+$alert-padding:						4px 10px 1px;
+
+// NAV
+$navbar-default-color:             #777;
+$navbar-default-bg:                #fff;
+
+//** Point at which the navbar becomes uncollapsed.
+$grid-float-breakpoint:     		$screen-md;
+
+// FORM
+$input-bg:							#fff;
+$input-color: 						$color-blue-text;
+$input-border:						$color-blue-lighest;
+$input-border-focus: 				#c7d6ef;
+$input-border-radius: 				6px;
+$input-height-base: 				46px;
+
+//== Tables
+//** Border color for table and cell borders.
+$table-border-color:            	$color-blue-ligher;
+
+// MODAL
+$modal-inner-padding:         		15px !default;
+$modal-title-padding:         		15px !default;
+
+$modal-title-line-height:     		$line-height-base !default;
+
+$modal-content-bg:                  #fff !default;
+$modal-content-border-color:         transparent;
+$modal-content-fallback-border-color:transparent;
+
+$modal-backdrop-bg:           		$color-blue-extra !default;
+$modal-backdrop-opacity:      		.9 !default;
+$modal-header-border-color:  		#e5e5e5 !default;
+
+$modal-footer-border-color:   		$modal-header-border-color !default;
+
+$modal-lg:                    		900px !default;
+$modal-md:                    		725px !default;
+$modal-sm:                    		500px !default;
+
+
+// Import Variable
+@import "~bootstrap-sass/assets/stylesheets/bootstrap/variables";

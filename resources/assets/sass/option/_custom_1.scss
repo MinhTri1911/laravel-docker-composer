@@ -1,0 +1,251 @@
+// Import Mixin
+@import "mixins";
+// Import Mixin Bootstrap
+@import "variable";
+
+// Custom Alert Info
+.alert-info{
+    @include alert-variant($state-info-bg, $state-info-border, $state-info-text);
+    padding: 0;
+    .block-info{
+        padding: 5px 15px;
+        &:not(:last-child){
+            border-bottom: 1px solid #d7e2ff;
+        }
+        label{
+            margin: 0;
+            line-height: 30px;
+        }
+    }
+}
+
+// Custom Alert Warning
+.alert-warning{
+    @include alert-variant($state-warning-bg, $state-warning-border, $state-warning-text);
+    padding: 0;
+    .block-warning{
+        padding: 5px 15px;
+        &:not(:last-child){
+            border-bottom: 1px solid #fff5c8;
+        }
+        label{
+            margin: 0;
+            line-height: 30px;
+        }
+    }
+}
+
+.alert-success{
+    padding: 0;
+    .block-success{
+        @include clearfix;
+        padding: 8.5px 10px 8.5px; 
+        min-height: 40px; 
+        &:not(:last-child){
+            border-bottom: 1px solid $success-color;
+        }
+        .fa{
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            float: left;
+            margin-top: 3px;
+        }
+        label{
+            float: left;
+            width: calc( 100% - 25px );
+            letter-spacing: letter-spacing(25);
+            line-height: 23px;
+            margin-bottom: 0;
+        }
+    }
+}
+
+// Custom Alert Danger
+.alert-danger{
+    padding: 0;
+    .block-error{
+        @include clearfix;
+        padding: 5px 10px 0;
+        &:not(:last-child){
+            border-bottom: 1px solid #facdcd;
+        }
+        .fa{
+            width: 20px;
+            height: 20px;
+            background-color: $color-red;
+            border-radius: 50%;
+            margin-right: 5px;
+            color: #fff;
+            position: relative;
+            float: left;
+            margin-top: 5px;
+            &:before{
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 11px;
+            }
+        }
+        label{
+            float: left;
+            width: calc( 100% - 25px );
+        }
+    }
+}
+
+.has-error .label-error,
+.text-error {
+    color: $label-error-color;
+}
+
+// Custom Pagination
+.pagination {
+    > li {
+        > a,
+        > span {
+            color: #000;
+            background-color: $color-blue-lighest;
+            border: 1px solid #d5ddea;
+            margin-left: -1px;
+            min-width: 40px;
+            text-align: center;
+            padding: 3px 10px;
+            font-size: 15px;
+            font-family: 'Roboto', 'Hiragino Sans', 'ヒラギノ角ゴシック', 'Hiragino Kaku Gothic Pro', 'ヒラギノ角ゴ Pro W3', 'メイリオ', 'Meiryo', 'MS Pゴシック', Osaka, Verdana, sans-serif;
+        }
+        &.previous-20{
+            a{
+                margin-right: 20px;
+                width: 100px;
+                border-radius: 20px;
+                font-family: $font-sans-serif;
+            }
+            span{
+                font-family: $font-sans-serif;
+            }
+        }
+        &.next-20{
+            a{
+                margin-left: 20px;
+                width: 100px;
+                border-radius: 20px;
+                font-family: $font-sans-serif;
+            }
+            span{
+                font-family: $font-sans-serif;
+            }
+        }
+        &.disable{
+            a{
+                border: 0 !important;
+                background: transparent !important;
+                color: #000 !important;
+            }
+        }
+        &.first-page {
+            > a,
+            > span {
+                margin-left: 0;
+                @include border-left-radius(2px);
+            }
+        }
+        &.last-page {
+            > a,
+            > span {
+                @include border-right-radius(2px);
+            }
+        }
+        &.active,&:hover,&:focus{
+            >a,>span{
+                background-color: $color-blue-darker;
+                border: 1px solid $color-blue-darker;
+                color: #fff;
+            }
+        }
+        &.active{
+            >a,>span{
+                &:hover, &:focus{
+                    background-color: $color-blue-darker;
+                    border: 1px solid $color-blue-darker;
+                    color: #fff;
+                }
+            }
+        }
+    }
+}
+
+
+// Perfect Scrollbar
+.ps__rail-y{
+    opacity: 1 !important;
+    .ps__thumb-y{
+        right: 4px;
+        width: 3px;
+        background-color: #3d4e79;
+        border-radius: 3px;
+    }
+    &:hover,&:focus{
+        background-color: transparent;
+        opacity: 0.9 !important;
+        .ps__thumb-y{
+            background-color: #3d4e79;
+            width: 10px;
+        }
+    }
+}
+
+// Perfect Scrollbar
+.ps__rail-x{
+    opacity: 1 !important;
+    .ps__thumb-x{
+        bottom: 4px;
+        height: 3px;
+        background-color: #3d4e79;
+        border-radius: 3px;
+    }
+    &:hover,&:focus{
+        background-color: transparent;
+        opacity: 0.9 !important;
+        .ps__thumb-x{
+            background-color: #3d4e79;
+            height: 10px;
+        }
+    }
+}
+
+// custom Select2
+.select2-container--default .select2-dropdown.select2-table-select{
+    border: 1px solid #bcc9e0;
+    &.select2-dropdown--below{
+        border-top: none;
+    }
+    .select2-results__options{
+        position: relative;
+        .select2-results__option{
+            padding: 3px 15px;
+            letter-spacing: letter-spacing(25);
+            border-top: 0;
+            + .select2-results__option{
+                border-top: 1px solid #e3e8f4;
+            }
+
+            &--highlighted[aria-selected] {
+                background-color: #88a0db;
+                color: $text-color;
+            }
+
+            &[aria-selected=true], &--highlighted[aria-selected=true] {
+                background-color:  #e3e8f4;
+            }
+        }
+    }
+}
+.select2-selection__clear{
+    display: none !important;
+}
+.select2-selection__placeholder{
+    color: $text-color !important;
+    opacity: 0.5;
+}

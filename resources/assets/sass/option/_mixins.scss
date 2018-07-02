@@ -1,0 +1,56 @@
+// Import Mixin Bootstrap
+@import "~bootstrap-sass/assets/stylesheets/bootstrap/mixins";
+
+// Import Mixin Bootstrap
+@import "variable";
+
+
+@mixin custom-form-control-validation($text-color: #555, $border-color: #ccc, $background-color: #f5f5f5, $shadow-color: #ff6b43) {
+    // Color the label and help text
+    .help-block,
+    .control-label,
+    .radio,
+    .checkbox,
+    .radio-inline,
+    .checkbox-inline,
+    &.radio label,
+    &.checkbox label,
+    &.radio-inline label,
+    &.checkbox-inline label  {
+        color: $text-color;
+    }
+    // Set the border and box shadow on specific inputs to match
+    .form-control {
+        /*border-color: $border-color;*/
+        background-color: $background-color;
+        /*@include box-shadow(inset 0px 0px 0px 1px $shadow-color); // Redeclare so transitions work*/
+/*        &:focus {
+            border-color: darken($border-color, 10%);
+            $shadow: inset 0px 0px 0px 1px darken($shadow-color, 20%);
+            @include box-shadow($shadow);
+        }*/
+    }
+    // Set validation states also for addons
+    .input-group-addon {
+        color: $text-color;
+        border-color: $border-color;
+        background-color: $background-color;
+    }
+    // Optional feedback icon
+    .form-control-feedback {
+        color: $text-color;
+    }
+}
+
+// letter Spacing
+@function letter-spacing($letter-spacing-psd) {
+    @return ( $letter-spacing-psd / 1000 ) * 1em
+}
+
+@mixin grayscale {
+    -moz-filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale");
+    -o-filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale");
+    -webkit-filter: grayscale(100%);
+    filter: gray;
+    filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale");
+}

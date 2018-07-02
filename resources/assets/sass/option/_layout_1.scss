@@ -1,0 +1,162 @@
+// Import Mixin
+@import "mixins";
+// Import Variable
+@import "variable";
+
+// Make Footer Always Bottom of page
+html {
+    position: relative;
+    min-height: 100%;
+    min-width: 964px;
+}
+body {
+    margin-bottom: 50px;
+    .container-header-fixed{
+        padding-left: 2.5%;
+        padding-right: 2.5%;
+    }
+    .container-menu-fixed{
+        padding-left: 2.5%;
+        padding-right: 2.5%;
+    }
+    .container-body-fixed{
+        padding-left: 2.5%;
+        padding-right: 2.5%;
+        display:table;
+        width: 100%;
+        table-layout: fixed;
+    }
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * HEADER LAYOUT
+ * -----------------------------------------------------------------------------
+*/
+header.header{
+    background-color: $color-blue-darker;
+    height: 70px;
+    .site-brand{
+        height: 70px;
+        padding: 10px 0;
+        float: left;
+        img{
+            margin-right: 10px;
+            width: 50px;
+            height: 50px;
+            box-shadow: 0px 2px 10px 0px rgba(80, 129, 255, 0.2);
+        }
+        span{
+            max-width: 227px;
+            color: #fff;
+            vertical-align: middle;
+            display: inline-block;
+            line-height: (20/14);
+        }
+    }
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * Main Content
+ * -----------------------------------------------------------------------------
+*/
+.wrapper{
+    width: 100%;
+    padding: 20px 0 50px;
+    margin: auto;
+    .main-content{
+        display: table-cell;
+        background-color: #ffffff;
+        width: 100%;
+        box-shadow: 0px 3px 10px 0px rgba(0, 55, 196, 0.15);
+        border-radius: 2px;
+        vertical-align: top;
+        .main-heading{
+            margin: 0;
+            height: 64px;
+            background-color: $color-blue-lighest;
+            color: $color-blue-text;
+            padding: 10px 10px 10px 30px;
+            line-height: 44px;
+            font-weight: 700;
+            border-bottom: 1px solid #e1e8f4;
+        }
+        .main-summary{
+            padding: 30px 30px 20px;
+        }
+    }
+    &.no-sidebar{
+        .main-content{
+            display: block;
+        }
+    }
+}
+
+
+/**
+ * -----------------------------------------------------------------------------
+ * FOOTER LAYOUT
+ * -----------------------------------------------------------------------------
+*/
+footer.footer{
+    background-color: $color-blue-extra;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border: 0;
+    height: 50px;
+    p{
+        color: #808eb0;
+        font-size: 14px;
+        line-height: 50px;
+        height: 50px;
+        margin: 0;
+    }
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * Go Top arrow
+ * -----------------------------------------------------------------------------
+*/
+a#go-top {
+    width: 50px;
+    height: 50px;
+    position: fixed;
+    bottom: 25px;
+    right: 20px;
+    z-index: 9999;
+    text-align: center;
+    border-radius: 50%;
+    display: none;
+    &:hover, &:focus {
+        text-decoration: none;
+        background-color: darken(rgb(61, 78, 121),5%);
+    }
+    img{
+        width: 50px;
+        height: 50px;
+    }
+}
+/**
+    css for icon loading
+*/
+#loading {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom:0;
+    z-index: 9999;
+    background: #f1f4f8;
+    opacity: 0.5;
+    img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+    }
+}

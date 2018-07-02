@@ -1,0 +1,53 @@
+// Import Mixin
+@import "../option/mixins";
+// Import Variable
+@import "../option/variable";
+
+/**
+ * -----------------------------------------------------------------------------
+ * Main Sidebar
+ * -----------------------------------------------------------------------------
+*/
+.main-sidebar{
+
+    width: 230px;
+    min-width: 230px;
+    display: table-cell;
+    background-color: #ffffff;
+    box-shadow: 0px 3px 10px 0px rgba(0, 55, 196, 0.15);
+    border-radius: 2px;
+    vertical-align: top;
+    ul{
+        /*display: inline-block;*/
+        li{
+            width: 100%;
+            &:first-child{
+                background-color: $color-blue-darker;
+                border-top-left-radius: 2px;
+                border-top-right-radius: 2px;
+                color: #fff;
+                padding: 15px 5px 15px 20px;
+                line-height: 30px;
+                font-size: 16px;
+                font-weight: 300;
+                letter-spacing: letter-spacing(100);
+            }
+            a{
+                padding: 13px 5px 13px 20px;
+                line-height: 24px;
+                font-size: 14px;
+                font-weight: 300;
+                width: 100%;
+                letter-spacing: letter-spacing(25);
+                &:hover,&:focus{
+                    background-color: $color-blue-lighest;
+                }
+            }
+            &.active{
+                a{
+                    background-color: #ecf3fb;
+                }
+            }
+        }
+    }
+}

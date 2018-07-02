@@ -1,0 +1,58 @@
+// Import Mixin
+@import "option/mixins";
+// Import Variable
+@import "option/variable";
+
+body.login-layout{
+    margin:0;
+    height:100%;
+    .login-wrapper{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        padding: 50px 45px;
+        width: 580px;
+        background-color: #fff;
+        box-shadow: 0 3px 10px 0 rgba(0, 55, 196, 0.15);
+        .alert{
+            margin-bottom: 35px;
+        }
+        form{
+            margin-right: -4px;
+            margin-bottom: 0;
+            .form-group{
+                @include clearfix;
+                margin-right: 0;
+                label{
+                    float: left;
+                    line-height: 46px;
+                    font-size: 14px;
+                    letter-spacing: letter-spacing(25);
+                    margin: 0;
+                }
+                input{
+                    float: right;
+                    min-width: 273px;
+                    width: auto;
+                }
+            }
+        }
+        .title-page{
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        
+        .login-group-btn{
+            display: table;
+            margin-left: auto;
+            margin-top: 20px;
+            
+            button{
+                margin-left: 10px;
+            }
+        }
+    }
+}

@@ -1,0 +1,103 @@
+/*!
+ * @author waanhappy@163.com
+ * timepicker 时间选择器less
+ */
+.wickedpicker {
+    float: left;
+    display: none;
+    width: 95px;
+    padding: 12px 8px;
+    margin: 12px 0 0 16.5px;
+    list-style: none;
+    font-size: 14px;
+    text-align: center;
+    background-color: #f3f7fc;
+    border: 1px solid #bcc9e0;
+    border-radius: 3px;
+    -webkit-box-shadow: 0px 3px 10px 0px rgba(0, 55, 196, 0.1);
+    box-shadow: 0px 3px 10px 0px rgba(0, 55, 196, 0.1);
+    &:before,&:after {
+        content: '';
+        border-top: 0;
+        left: 50%;
+        transform: translate(-50%,0);
+        display: inline-block;
+        position: absolute;
+    }
+    &:before {
+      top: -10px;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-bottom: 10px solid #bcc9e0;
+    }
+    &:after {
+      top: -9px;
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-bottom: 9px solid #f3f7fc;
+    }
+    .wickedpicker__title{
+        display: none;
+    }
+    ul.wickedpicker__controls {
+        list-style: none;
+        padding: 0;
+        margin: 0 5px;
+        li{
+            display: inline-block;
+            margin: 0 2.5px;
+            span{
+                display: block;
+                font-size: 14px;
+                font-weight: 600;
+                &:focus{
+                    outline: 0;
+                }
+            }
+            .wickedpicker__controls__control-up {
+                background-image: url('../../images/time_arrow_up.png');
+                width: 7px;
+                height: 20px;
+                display: block;
+                margin: auto;
+                background-position: center center;
+                background-repeat: no-repeat;
+                background-size: 100%;
+                cursor: pointer;
+                &:hover{
+                    opacity: 0.7;
+                }
+            }
+            .wickedpicker__controls__control-down{
+                background-image: url('../../images/time_arrow_down.png');
+                width: 7px;
+                height: 20px;
+                display: block;
+                margin: auto;
+                background-position: center center;
+                background-repeat: no-repeat;
+                background-size: 100%;
+                cursor: pointer;
+                &:hover{
+                    opacity: 0.7;
+                }
+            }
+        }
+    }
+}
+
+// Custom Time Picker
+.form-control.custom-timepicker{
+    &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+        color: #b7c6de;
+    }
+    &::-moz-placeholder { /* Firefox 19+ */
+        color: #b7c6de;
+    }
+    &:-ms-input-placeholder { /* IE 10+ */
+        color: #b7c6de;
+    }
+    &:-moz-placeholder { /* Firefox 18- */
+        color: #b7c6de;
+    }
+}
