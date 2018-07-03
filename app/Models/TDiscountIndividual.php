@@ -1,10 +1,8 @@
 <?php
 
 /**
- * Model DiscountIndividual
- * 
- * @author QuangPM.
- * @date 2018/05/11.
+ * Created by Reliese Model.
+ * Date: Mon, 02 Jul 2018 07:56:57 +0000.
  */
 
 namespace App\Models;
@@ -15,12 +13,11 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * Class TDiscountIndividual
  * 
  * @property int $id
- * @property int $ship_id
- * @property string $setting_month
- * @property string $type
- * @property string $currency
- * @property float $amount_discount
- * @property string $notice
+ * @property int $contract_id
+ * @property \Carbon\Carbon $setting_month
+ * @property int $currency_id
+ * @property float $money_discount
+ * @property string $remark
  * @property bool $del_flag
  * @property string $created_by
  * @property \Carbon\Carbon $created_at
@@ -36,18 +33,22 @@ class TDiscountIndividual extends Eloquent
 
     protected $casts = [
         'id' => 'int',
-        'ship_id' => 'int',
-        'amount_discount' => 'float',
+        'contract_id' => 'int',
+        'currency_id' => 'int',
+        'money_discount' => 'float',
         'del_flag' => 'bool'
     ];
 
+    protected $dates = [
+        'setting_month'
+    ];
+
     protected $fillable = [
-        'ship_id',
+        'contract_id',
         'setting_month',
-        'type',
-        'currency',
-        'amount_discount',
-        'notice',
+        'currency_id',
+        'money_discount',
+        'remark',
         'del_flag',
         'created_by',
         'updated_by'

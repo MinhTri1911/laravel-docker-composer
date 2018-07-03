@@ -20,10 +20,12 @@ return [
     // Label
     'lbl_login_id'   => 'ログインID',
     'lbl_password'   => 'パスワード',
+
     // Button
     'btn_login' => 'ログイン',
     'btn_reset' => 'リセット',
-    
-    // Logout
+
+    // Messages
+    'failed' => 'IDまたパスワードは間違っています。',
     'msg_logout' => 'ログアウトしました。',
 ];

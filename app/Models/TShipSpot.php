@@ -1,10 +1,8 @@
 <?php
 
 /**
- * Model ShipSPOT
- * 
- * @author QuangPM.
- * @date 2018/05/11.
+ * Created by Reliese Model.
+ * Date: Mon, 02 Jul 2018 07:56:57 +0000.
  */
 
 namespace App\Models;
@@ -16,11 +14,11 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * 
  * @property int $id
  * @property int $ship_id
- * @property string $usage_month
- * @property string $type
- * @property string $currency
+ * @property \Carbon\Carbon $month_usage
+ * @property int $spot_id
+ * @property int $currency_id
  * @property float $amount_charge
- * @property string $notice
+ * @property string $remark
  * @property bool $del_flag
  * @property string $created_by
  * @property \Carbon\Carbon $created_at
@@ -37,17 +35,23 @@ class TShipSpot extends Eloquent
     protected $casts = [
         'id' => 'int',
         'ship_id' => 'int',
+        'spot_id' => 'int',
+        'currency_id' => 'int',
         'amount_charge' => 'float',
         'del_flag' => 'bool'
     ];
 
+    protected $dates = [
+        'month_usage'
+    ];
+
     protected $fillable = [
         'ship_id',
-        'usage_month',
-        'type',
-        'currency',
+        'month_usage',
+        'spot_id',
+        'currency_id',
         'amount_charge',
-        'notice',
+        'remark',
         'del_flag',
         'created_by',
         'updated_by'

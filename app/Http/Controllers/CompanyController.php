@@ -31,19 +31,28 @@ class CompanyController extends Controller
      */
     public function index(Request $request)
     {
-        // 1.3 init list company
-        $companies = $this->companyBusiness->initListCompany();
+        // get data for SMA0001 sheet define handle index => 3 sort data
+        $data = [
+            'field' => $request->field,
+            'sortBy' => $request->sortBy,
+        ];
+        // SMA0001 sheet define handle index => 1.3 init list company
+        $companies = $this->companyBusiness->initListCompany($data['field'], $data['sortBy']);
 
-        // paginate ajax
+        // SMA0001 sheet define handle index => 1.3 init list company paginate ajax
         if ($request->ajax()) {
             return response()->json([
                 'code' => 200,
                 'table' => view('company.component.list.table-tbody-company', ['companies' => $companies])->render(),
-                'paginate' => view('company.component.paginate.default', ['paginator' => $companies, 'type' => 0])->render(),
+                'paginate' => view('company.component.paginate.default', [
+                    'paginator' => $companies,
+                    'url' => route('company.index') . '?page=',
+                ])->render(),
+                'typeRender' => 'filter',
             ]);
         }
 
-        return view('company.list', compact('companies'));
+        return view('company.list', ['companies' => $companies, 'url' => route('company.index') . '?page=',]);
     }
 
     /**
@@ -57,9 +66,14 @@ class CompanyController extends Controller
             return response()->json(['code' => 500]);
         }
 
-        $data = $request->only('group', 'load');
-        // 2 search company
-        $companies = $this->companyBusiness->searchCompany($data['group'], $data['load']);
+        $data = [
+            'group' => $request->group,
+            'load' => $request->load,
+            'field' => $request->field,
+            'sortBy' => $request->sortBy,
+        ];
+        // SMA0001 sheet define  handle index => 2 search company
+        $companies = $this->companyBusiness->searchCompany($data['group'], $data['load'], $data['field'], $data['sortBy']);
 
         if ($data['group'] != config('company.group_company') && $data['group'] != config('company.group_service')) {
             $data['group'] = config('company.group_company');
@@ -72,27 +86,32 @@ class CompanyController extends Controller
         $tableview = !$data['group']
             ? view('company.component.list.table-group-company', ['companies' => $companies])->render()
             : view('company.component.list.table-group-service', ['companies' => $companies])->render();
-        $paginationView = view('company.component.paginate.default', ['paginator' => $companies, 'type' => 0])->render();
+        // SMA0001 sheet define  handle index => 2 search company pagination
+        $paginationView = view('company.component.paginate.default', [
+            'paginator' => $companies,
+            'url' => route('company.search', $data) . '&page=',
+        ])->render();
 
         return response()->json([
             'code' => 200,
             'table' => $tableview,
             'paginate' => $paginationView,
+            'typeRender' => 'search',
         ]);
     }
 
     /**
-     *
+     * Filter list company by group and load result
+     * @param Illuminate\Http\Request request
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function filterCompany(Request $request)
     {
-        // if (!$request->ajax()) {
-        //     return response()->json(['code' => 500]);
-        // }
+        if (!$request->ajax()) {
+            return response()->json(['code' => 500]);
+        }
 
         $data = $request->only([
-            'group-type',
-            'paginate-record',
             'filter-company',
             'filter-service',
             'filter-nation',
@@ -106,27 +125,39 @@ class CompanyController extends Controller
             'filter-company-ope-person-phone-2',
         ]);
 
-        // 2 search company
-        $companies = $this->companyBusiness->filterCompany($data, $data['group-type'], $data['paginate-record']);
+        $data['field'] = $request->field;
+        $data['sortBy'] = $request->sortBy;
+        $data['group'] = $request->group;
+        $data['load'] = $request->load;
 
-        if ($data['group-type'] != config('company.group_company') && $data['group-type'] != config('company.group_service')) {
-            $data['group-type'] = config('company.group_company');
+        // SMA0001 sheet define  handle index => 2 filter company
+        $companies = $this->companyBusiness->filterCompany($data, $data['group'], $data['load'], [
+            'field' => $data['field'],
+            'sortBy' =>  $data['sortBy'],
+        ]);
+
+        if ($data['group'] != config('company.group_company') && $data['group'] != config('company.group_service')) {
+            $data['group'] = config('company.group_company');
         }
 
-        if (!in_array($data['paginate-record'], config('pagination.paginate_value'))) {
-            $data['paginate-record'] = config('pagination.default');
+        if (!in_array($data['load'], config('pagination.paginate_value'))) {
+            $data['load'] = config('pagination.default');
         }
 
-        $tableview = !$data['group-type']
+        $tableview = !$data['group']
             ? view('company.component.list.table-tbody-company', ['companies' => $companies])->render()
             : view('company.component.list.table-tbody-service', ['companies' => $companies])->render();
-        $url = route('company.filter', $data) . '&page=';
-        $paginationView = view('company.component.paginate.default', ['paginator' => $companies, 'url' => $url, 'type' => 1])->render();
+        // SMA0001 sheet define  handle index => 6 filter company pagination
+        $paginationView = view('company.component.paginate.default', [
+            'paginator' => $companies,
+            'url' => route('company.filter', $data) . '&page=',
+        ])->render();
 
         return response()->json([
             'code' => 200,
             'table' => $tableview,
             'paginate' => $paginationView,
+            'typeRender' => 'filter',
         ]);
     }
 

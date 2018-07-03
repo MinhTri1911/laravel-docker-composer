@@ -1,15 +1,12 @@
 <?php
 
 /**
- * Model UserLogin
- * 
- * @author QuangPM.
- * @date 2018/05/11.
+ * Created by Reliese Model.
+ * Date: Mon, 02 Jul 2018 07:56:57 +0000.
  */
 
 namespace App\Models;
 
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Scopes\SoftDeletes\SoftDeleteCustoms;
 
@@ -17,11 +14,17 @@ use App\Scopes\SoftDeletes\SoftDeleteCustoms;
  * Class TUserLogin
  * 
  * @property int $id
- * @property string $operation_person
+ * @property string $name
  * @property int $ope_company_id
  * @property string $department
  * @property string $position
- * @property string $job
+ * @property bool $auth_create
+ * @property bool $auth_approve
+ * @property bool $auth_reference
+ * @property bool $auth_admin
+ * @property string $login_id
+ * @property string $password
+ * @property int $type
  * @property bool $del_flag
  * @property string $created_by
  * @property \Carbon\Carbon $created_at
@@ -32,25 +35,86 @@ use App\Scopes\SoftDeletes\SoftDeleteCustoms;
  */
 class TUserLogin extends Authenticatable
 {
-    use Notifiable, SoftDeleteCustoms;
+    use SoftDeleteCustoms;
 
+    /**
+     * Setting column in database is delete_at
+     */
+    const DELETED_AT = 'del_flag';
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 't_user_login';
+
+    /**
+     * Use a non-incrementing or a non-numeric primary key
+     *
+     * @var bool
+     */
     public $incrementing = false;
 
+    /**
+     * Provides a convenient method of converting attributes to common data types
+     *
+     * @var array
+     */
     protected $casts = [
         'id' => 'int',
         'ope_company_id' => 'int',
+        'auth_create' => 'bool',
+        'auth_approve' => 'bool',
+        'auth_reference' => 'bool',
+        'auth_admin' => 'bool',
+        'type' => 'int',
         'del_flag' => 'bool'
     ];
 
+    /**
+     * The attributes that should be hidden for arrays
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'password'
+    ];
+
+    /**
+     * The attributes that are mass assignable
+     *
+     * @var array
+     */
     protected $fillable = [
-        'operation_person',
+        'name',
         'ope_company_id',
         'department',
         'position',
-        'job',
+        'auth_create',
+        'auth_approve',
+        'auth_reference',
+        'auth_admin',
+        'login_id',
+        'password',
+        'type',
         'del_flag',
         'created_by',
         'updated_by'
     ];
+
+    /**
+     * Overrides the method to ignore the remember token
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return void
+     */
+    public function setAttribute($key, $value)
+    {
+        $isRememberTokenAttribute = $key == $this->getRememberTokenName();
+        if (!$isRememberTokenAttribute) {
+            parent::setAttribute($key, $value);
+        }
+    }
 }

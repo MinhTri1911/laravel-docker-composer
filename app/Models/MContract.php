@@ -1,10 +1,8 @@
 <?php
 
 /**
- * Model Contract
- * 
- * @author QuangPM.
- * @date 2018/05/11.
+ * Created by Reliese Model.
+ * Date: Mon, 02 Jul 2018 07:56:57 +0000.
  */
 
 namespace App\Models;
@@ -15,14 +13,15 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * Class MContract
  * 
  * @property int $id
- * @property string $revision_number
- * @property int $company_id
+ * @property float $revision_number
  * @property int $ship_id
- * @property int $system_id
+ * @property int $service_id
+ * @property int $currency_id
  * @property \Carbon\Carbon $start_date
  * @property \Carbon\Carbon $end_date
- * @property bool $del_flag
- * @property bool $status
+ * @property int $status
+ * @property int $approved_flag
+ * @property string $reason_reject
  * @property string $created_by
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
@@ -37,11 +36,12 @@ class MContract extends Eloquent
 
     protected $casts = [
         'id' => 'int',
-        'company_id' => 'int',
+        'revision_number' => 'float',
         'ship_id' => 'int',
-        'system_id' => 'int',
-        'del_flag' => 'bool',
-        'status' => 'bool'
+        'service_id' => 'int',
+        'currency_id' => 'int',
+        'status' => 'int',
+        'approved_flag' => 'int'
     ];
 
     protected $dates = [
@@ -51,13 +51,14 @@ class MContract extends Eloquent
 
     protected $fillable = [
         'revision_number',
-        'company_id',
         'ship_id',
-        'system_id',
+        'service_id',
+        'currency_id',
         'start_date',
         'end_date',
-        'del_flag',
         'status',
+        'approved_flag',
+        'reason_reject',
         'created_by',
         'updated_by'
     ];

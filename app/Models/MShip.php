@@ -1,10 +1,8 @@
 <?php
 
 /**
- * Model Ship
- * 
- * @author QuangPM.
- * @date 2018/05/11.
+ * Created by Reliese Model.
+ * Date: Mon, 02 Jul 2018 07:56:57 +0000.
  */
 
 namespace App\Models;
@@ -17,19 +15,23 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property int $id
  * @property string $name
  * @property int $company_id
- * @property bool $language
  * @property string $imo_number
  * @property string $mmsi_number
- * @property string $nationality
- * @property string $classification
- * @property string $classification_control_number
- * @property bool $type
- * @property string $specification
+ * @property int $nation_id
+ * @property int $classification_id
+ * @property string $register_number
+ * @property int $type_id
+ * @property int $width
+ * @property int $height
+ * @property int $water_draft
+ * @property int $total_weight_ton
+ * @property int $total_ton
+ * @property int $member_number
  * @property string $url_1
  * @property string $url_2
  * @property string $url_3
+ * @property string $remark
  * @property bool $del_flag
- * @property bool $status
  * @property string $created_by
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
@@ -45,28 +47,38 @@ class MShip extends Eloquent
     protected $casts = [
         'id' => 'int',
         'company_id' => 'int',
-        'language' => 'bool',
-        'type' => 'bool',
-        'del_flag' => 'bool',
-        'status' => 'bool'
+        'nation_id' => 'int',
+        'classification_id' => 'int',
+        'type_id' => 'int',
+        'width' => 'int',
+        'height' => 'int',
+        'water_draft' => 'int',
+        'total_weight_ton' => 'int',
+        'total_ton' => 'int',
+        'member_number' => 'int',
+        'del_flag' => 'bool'
     ];
 
     protected $fillable = [
         'name',
         'company_id',
-        'language',
         'imo_number',
         'mmsi_number',
-        'nationality',
-        'classification',
-        'classification_control_number',
-        'type',
-        'specification',
+        'nation_id',
+        'classification_id',
+        'register_number',
+        'type_id',
+        'width',
+        'height',
+        'water_draft',
+        'total_weight_ton',
+        'total_ton',
+        'member_number',
         'url_1',
         'url_2',
         'url_3',
+        'remark',
         'del_flag',
-        'status',
         'created_by',
         'updated_by'
     ];

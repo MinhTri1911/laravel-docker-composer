@@ -1,10 +1,8 @@
 <?php
 
 /**
- * Model CompanyOperation
- * 
- * @author QuangPM.
- * @date 2018/05/11.
+ * Created by Reliese Model.
+ * Date: Mon, 02 Jul 2018 07:56:57 +0000.
  */
 
 namespace App\Models;
@@ -17,6 +15,8 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property int $id
  * @property string $name
  * @property string $short_name
+ * @property int $nation_id
+ * @property string $address
  * @property bool $language
  * @property bool $del_flag
  * @property string $created_by
@@ -33,6 +33,7 @@ class MCompanyOperation extends Eloquent
 
     protected $casts = [
         'id' => 'int',
+        'nation_id' => 'int',
         'language' => 'bool',
         'del_flag' => 'bool'
     ];
@@ -40,6 +41,8 @@ class MCompanyOperation extends Eloquent
     protected $fillable = [
         'name',
         'short_name',
+        'nation_id',
+        'address',
         'language',
         'del_flag',
         'created_by',

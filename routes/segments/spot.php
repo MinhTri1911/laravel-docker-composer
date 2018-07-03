@@ -6,4 +6,6 @@
  * and open the template in the editor.
  */
 
-Route::resource('/spot', 'SpotController', ['only' => ['create', 'edit']]);
+Route::group(['middleware' => 'auth'], function() {
+    Route::resource('/spot', 'SpotController', ['only' => ['create', 'edit']]);
+});

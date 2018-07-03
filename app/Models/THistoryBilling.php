@@ -1,10 +1,8 @@
 <?php
 
 /**
- * Model HistoryBilling
- * 
- * @author QuangPM.
- * @date 2018/05/11.
+ * Created by Reliese Model.
+ * Date: Mon, 02 Jul 2018 07:56:57 +0000.
  */
 
 namespace App\Models;
@@ -19,21 +17,17 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \Carbon\Carbon $claim_date
  * @property int $billing_method_id
  * @property \Carbon\Carbon $payment_due_date
+ * @property int $payment_deadline_no
  * @property int $billing_day_no
  * @property \Carbon\Carbon $payment_actual_date
- * @property string $currency
+ * @property int $currency_id
  * @property float $total_amount_billing
- * @property float $total_monthly_charge
- * @property float $total_inital_charge
- * @property float $total_create_data_cost
- * @property float $total_spot_cost
- * @property float $total_discount
- * @property float $total_commission_other_charge
- * @property float $total_consumption_tax
- * @property string $notice
+ * @property float $total_money
  * @property int $ope_company_id
+ * @property string $remark
  * @property string $pdf_original_link
- * @property bool $del_flag
+ * @property int $approved_flag
+ * @property string $reason_reject
  * @property string $created_by
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
@@ -50,17 +44,13 @@ class THistoryBilling extends Eloquent
         'id' => 'int',
         'company_id' => 'int',
         'billing_method_id' => 'int',
+        'payment_deadline_no' => 'int',
         'billing_day_no' => 'int',
+        'currency_id' => 'int',
         'total_amount_billing' => 'float',
-        'total_monthly_charge' => 'float',
-        'total_inital_charge' => 'float',
-        'total_create_data_cost' => 'float',
-        'total_spot_cost' => 'float',
-        'total_discount' => 'float',
-        'total_commission_other_charge' => 'float',
-        'total_consumption_tax' => 'float',
+        'total_money' => 'float',
         'ope_company_id' => 'int',
-        'del_flag' => 'bool'
+        'approved_flag' => 'int'
     ];
 
     protected $dates = [
@@ -74,21 +64,17 @@ class THistoryBilling extends Eloquent
         'claim_date',
         'billing_method_id',
         'payment_due_date',
+        'payment_deadline_no',
         'billing_day_no',
         'payment_actual_date',
-        'currency',
+        'currency_id',
         'total_amount_billing',
-        'total_monthly_charge',
-        'total_inital_charge',
-        'total_create_data_cost',
-        'total_spot_cost',
-        'total_discount',
-        'total_commission_other_charge',
-        'total_consumption_tax',
-        'notice',
+        'total_money',
         'ope_company_id',
+        'remark',
         'pdf_original_link',
-        'del_flag',
+        'approved_flag',
+        'reason_reject',
         'created_by',
         'updated_by'
     ];

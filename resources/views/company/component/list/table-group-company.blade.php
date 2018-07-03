@@ -9,10 +9,10 @@
                     <label for="cb-all"></label>
                 </div>
             </th>
-            <th class="col-company-name">
+            <th class="col-company-name" id="demo">
                 <div class="th-line-one">
                     {{ trans('company.header_company_name') }}
-                    <i class="fa fa-sort"></i>
+                    <i class="fa fa-sort" data-sort="filter-company"></i>
                 </div>
                 <div class="th-line-two">
                     {{ Form::text('filter-company', null, ['class' => 'form-control', 'tabindex' => 9]) }}
@@ -21,7 +21,7 @@
             <th class="col-company-nation">
                 <div class="th-line-one">
                     {{ trans('company.header_company_national') }}
-                    <i class="fa fa-sort"></i>
+                    <i class="fa fa-sort" data-sort="filter-nation"></i>
                 </div>
                 <div class="th-line-two">
                     {{ Form::text('filter-nation', null, ['class' => 'form-control', 'tabindex' => 10]) }}
@@ -30,7 +30,7 @@
             <th class="col-office-address">
                 <div class="th-line-one">
                     {{ trans('company.header_company_address') }}
-                    <i class="fa fa-sort"></i>
+                    <i class="fa fa-sort" data-sort="filter-address"></i>
                 </div>
                 <div class="th-line-two">
                     {{ Form::text('filter-address', null, ['class' => 'form-control', 'tabindex' => 11]) }}
@@ -39,7 +39,7 @@
             <th class="col-ope-company">
                 <div class="th-line-one">
                     {{ trans('company.header_company_operation_name') }}
-                    <i class="fa fa-sort"></i>
+                    <i class="fa fa-sort" data-sort="filter-company-operation"></i>
                 </div>
                 <div class="th-line-two">
                     {{ Form::text('filter-company-operation', null, ['class' => 'form-control', 'tabindex' => 12]) }}

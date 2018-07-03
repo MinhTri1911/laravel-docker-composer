@@ -51,6 +51,18 @@
                             'data-url' => route('company.search'),
                         ])
                     }}
+                    {{ Form::hidden('value-after-search', '{"group": "0", "load": "10"}', ['id' => 'value-after-search']) }}
+                    {{ Form::hidden('sort-value', '{
+                            "filter-company": "0",
+                            "filter-service": "0",
+                            "filter-nation": "0",
+                            "filter-address": "0",
+                            "filter-company-operation": "0"
+                        }', [
+                            'id' => 'sort-value',
+                            'data-url' => $url,
+                        ])
+                    }}
                 </div>
             </div>
             <!--end form search-->
@@ -83,7 +95,7 @@
             <div class="row"></div>
 
             <div class="col-md-12" id="area-paginate">
-                @include('company.component.paginate.default', ['paginator' => $companies, 'type' => 0])
+                @include('company.component.paginate.default', ['paginator' => $companies])
             </div>
         </div>
     </div>

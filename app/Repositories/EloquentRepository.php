@@ -389,4 +389,16 @@ abstract class EloquentRepository implements RepositoryInterface
 
         return $this;
     }
+
+    public function orderBy($column, $direction = 'asc')
+    {
+        $this->_model = $this->_model->orderBy($column, $direction);
+
+        return $this;
+    }
+
+    public function toSql()
+    {
+        return $this->_model->toSql();
+    }
 }

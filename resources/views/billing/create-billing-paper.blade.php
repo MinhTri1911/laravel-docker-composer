@@ -12,7 +12,7 @@
 
 @section('content')
     <div class="main-content" id="create-billing-paper">
-        <h1 class="main-heading">{{__('billing.title')}}</h1>
+        <h1 class="main-heading">{{__('billing.title_create_billing_paper')}}</h1>
         <div class="main-summary billing-paper col-md-12">
             <div class="titlle-form-search">
                 <h2>{{ __('billing.head_search') }}</h2>

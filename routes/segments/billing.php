@@ -11,7 +11,7 @@
  * @date 2018/06/19
 */
 
-Route::group(['prefix' => 'billing', 'as' => 'billing.'], function () {
+Route::group(['middleware' => 'auth', 'prefix' => 'billing', 'as' => 'billing.'], function () {
     Route::get('/', 'BillingPaperController@index')->name('create.billing.paper');
     Route::get('/history', 'HistoryBillingController@index')->name('history.billing');
     Route::get('/statistic', 'StatisticBillingController@index')->name('statistic.billing');

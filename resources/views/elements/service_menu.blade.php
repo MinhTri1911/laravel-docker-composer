@@ -22,6 +22,16 @@
                        Trang chủ
                     </a>
                 </div>
+                @auth
+                <div class="menu-link">
+                    <a href="{{ route('logout') }}" class="btn btn-menu" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        Logout
+                    </a>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        {{ csrf_field() }}
+                    </form>
+                </div>
+                @endauth
             </div>
         </div>
     </div>

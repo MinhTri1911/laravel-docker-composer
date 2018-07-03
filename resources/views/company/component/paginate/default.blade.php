@@ -26,13 +26,13 @@
             <!-- first/previous -->
             @if($current > 1)
                 <li class="previous-20">
-                    <a id="paginate-prev" data-url="{{ ($type == 0) ? $paginator->url($current - 1) : $url . ($current - 1) }}" >
-                        <span>前の{{ $paginator->perPage() }}件</span>
+                    <a id="paginate-prev" data-url="{{ $url . ($current - 1) }}" >
+                        <span>{{ trans('company.btn_prev') }}</span>
                     </a>
                 </li>
                 @if($total > 5 && $current > $interval + 1)
                     <li class="first-page">
-                        <a id="paginate-1" data-url="{{ ($type == 0) ? $paginator->url(1) : $url . 1 }}">
+                        <a id="paginate-first-page" data-url="{{ $url . 1 }}">
                             <span>1</span>
                         </a>
                     </li>
@@ -53,7 +53,7 @@
                     @if ($isCurrentPage)
                         <a>{{ $i }}</a>
                     @else
-                        <a id="paginate-{{ $i }}" data-url="{{ ($type == 0) ? $paginator->url($i) : $url . $i }}">{{$i}}</a>
+                        <a id="paginate-{{ $i }}" data-url="{{ $url . $i }}">{{$i}}</a>
                     @endif
                 </li>
             @endfor
@@ -68,14 +68,14 @@
                         </a>
                     </li>
                     <li class="last-page">
-                        <a id="paginate-{{ $total }}" data-url="{{ ($type == 0) ? $paginator->url($total) : $url . $total }}">
+                        <a id="paginate-{{ $total }}" data-url="{{ $url . $total }}">
                             <span>{{ $total }}</span>
                         </a>
                     </li>
                 @endif
                     <li class="next-20">
-                        <a id="paignate-{{ $current + 1 }}" data-url="{{ ($type == 0) ? $paginator->url($current + 1) : $url . ($current + 1) }}">
-                            <span>次の{{ $paginator->perPage() }}件</span>
+                        <a id="paignate-last-page" data-url="{{ $url . ($current + 1) }}">
+                            <span>{{ trans('company.btn_next') }}</span>
                         </a>
                     </li>
             @endif
