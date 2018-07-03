@@ -14,12 +14,12 @@
             @if (!in_array($index, $tracker))
                 <tr>
                     <td rowspan="{{ $count }}" class="custom-checkbox checkbox-table col-checkbox">
-                        {{ Form::checkbox('cb-company[]', 1, false, ['id' => 'cb-company-1']) }}
-                        <label for="cb-company-1"></label>
+                        {{ Form::checkbox('cb-get-id[]', $company->id, false, ['id' => 'cb-company-' .  $company->id]) }}
+                        <label for="cb-company-{{ $company->id }}"></label>
                     </td>
                     <td  rowspan="{{ $count }}" class="col-company-name">
                         <a href="javascript:void(0)"
-                            id="select-protector-btn"
+                            id="select-protector-btn-{{ $company->id }}"
                             class="open-popup-detail-company"
                             data-url="{{ route('company.detail') }}">
                                 {{ $company->name_jp }}
