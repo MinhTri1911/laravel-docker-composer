@@ -66,7 +66,7 @@ function replaceUrlPagination () {
             break;
         } else {
             query = {
-                'field': 'filter-company',
+                'field': '',
                 'sortBy': 0
             }
         }
@@ -85,7 +85,9 @@ function replaceUrlPagination () {
  * @description custom paginate list company
  */
 $(document).on('click', '.pagination li a', function (event) {
-    let url = $('#' + $(this).attr('id')).attr('data-url')
+    let url = $('#' + $(this).attr('id')).attr('data-url');
+    // save state checkbox
+    saveCheckedWhenLoad();
     $.get(url, function (res) {
         if (res.code == 200) {
             if (res.typeRender === 'filter') {
@@ -102,6 +104,8 @@ $(document).on('click', '.pagination li a', function (event) {
             // reset url for sort action
             $('#sort-value').attr('data-url', url);
             replaceUrlPagination ();
+            // make checked checkbox
+            checkedState();
         }
     })
 })
@@ -113,7 +117,7 @@ $(document).on('click', '.pagination li a', function (event) {
 $(document).on('click', '#btn-filter', function (event) {
     let keywords = $(":input").serializeArray();
     let url = $(this).attr('data-url') + '?page=1';
-    keywords.forEach(function(element, index) {
+    keywords.forEach(function (element, index) {
         if (element.name !== '_token')
             url += '&' + element.name + '=' + element.value;
     });
@@ -159,21 +163,24 @@ $('#btn-search-company').on('click', function () {
             restartPs();
             // reset url for sort action
             $('#sort-value').attr('data-url', url);
+            // make checked checkbox
+            checkedState();
         }
     });
 });
 
 /**
- * @description click sort data
+ * @description action click sort data
  */
 $(document).on('click', '.th-line-one i', function (event) {
     let dataSort = $(this).attr('data-sort');
     let obj = JSON.parse($('#sort-value').val());
     let url = $('#sort-value').attr('data-url');
+    let demo = JSON.parse($('#value-after-search').val());
     let query = {
         'field' : dataSort,
-        'group' : $('#group-type').val(),
-        'load' : $('#load-result').val(),
+        'group' : demo.group,
+        'load' : demo.load,
     }
 
     // set status for sort
@@ -202,6 +209,54 @@ $(document).on('click', '.th-line-one i', function (event) {
             // reset url for sort action
             $('#sort-value').attr('data-url', url);
             replaceUrlPagination ();
+            // make checked checkbox
+            checkedState();
         }
     })
 })
+
+/**
+ * @description action click check all
+ */
+$('#cb-all').change(function() {
+    if(this.checked) {
+        $("input[name='cb-get-id[]']").each(function () {
+            this.checked = true;
+        })
+    } else {
+        $("input[name='cb-get-id[]']").each(function () {
+            this.checked = false;
+        })
+    }
+
+    // saveCheckedWhenLoad()
+});
+
+// $(document).on('click', ".table-result tbody tr td input:checkbox[name='cb-get-id[]']:checked", function (event) {
+//     console.log($(this).val())
+// })
+
+function saveCheckedWhenLoad () {
+    let demo = $("input:checkbox[name='cb-get-id[]']:checked").serializeArray();
+    let storage = JSON.parse(window.localStorage.getItem('tracker'));
+
+    if (storage === null) storage = {}
+
+    storage[$('#current-page').attr('data-page')] = [];
+    demo.forEach(function (element, index) {
+        storage[$('#current-page').attr('data-page')][element.value] = element.value
+    });
+
+    window.localStorage.setItem('tracker', JSON.stringify(storage));
+}
+
+function checkedState () {
+    let page = $('#current-page').attr('data-page');
+    let storage = JSON.parse(window.localStorage.getItem('tracker'));
+
+    if (storage === null) return true;
+
+    for (var index in storage[page]) {
+        $('#cb-company-' + storage[page][index]).prop('checked', true);
+    }
+}

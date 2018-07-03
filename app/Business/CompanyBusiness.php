@@ -67,8 +67,9 @@ class CompanyBusiness
                 !$groupType ? 'm_company.id' : 'm_service.id',
                 !$groupType ? 'm_service.id' : 'm_company.id',
             ])
-            ->orderBy($this->transFormNameToColumn($column), $orderBy)
-            ->orderBy('m_company.id', $orderBy)
+            ->orderBy($this->transFormNameToColumn($column, $groupType), $orderBy)
+            ->orderBy(!$groupType ? 'm_company.id' : 'm_service.id', $orderBy)
+            // ->orderBy('m_service.id', $orderBy)
             ->paginate($pagination);
     }
 
@@ -92,7 +93,7 @@ class CompanyBusiness
                 !$groupType ? 'm_service.id' : 'm_company.id',
             ])
             ->orderBy($this->transFormNameToColumn($option['field'], $groupType), $option['sortBy'])
-            ->orderBy('m_company.id', $option['sortBy'])
+            ->orderBy(!$groupType ? 'm_company.id' : 'm_service.id', $option['sortBy'])
             ->paginate($pagination);
     }
 
