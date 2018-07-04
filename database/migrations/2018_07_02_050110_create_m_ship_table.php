@@ -14,7 +14,7 @@ class CreateMShipTable extends Migration
     public function up()
     {
         Schema::create('m_ship', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->bigIncrements('id');
             $table->string('name', 100);
             $table->bigInteger('company_id');
             $table->string('imo_number', 15);

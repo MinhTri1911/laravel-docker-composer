@@ -32,10 +32,13 @@ return [
     'lbl_currency_name' => '使用通貨',
     'lbl_create_paper_date' => '請求年月日',
     'lbl_payment_deadline_date' => '支払期限',
-    'lbl_status' => '支払状態',
     'lbl_payment_actual_date' => '入金確認日',
     'lbl_total_money' => '総請求額',
+    'lbl_status_approve' => '承認',
+    'lbl_year' => '年',
+    'lbl_month' => '月',
 
+//    History billing
     'lbl_object_statistic' => '対象',
     'lbl_statistic_year' => '年',
     'lbl_statistic_many_year' => '集計',
@@ -71,6 +74,7 @@ return [
         'ope_total_money' => '請求総額',
         'status' => '状態',
         'status_approve' => '承認',
+        'reason' => '却下理由',
     ],
 
     // Header table history billing
@@ -98,8 +102,9 @@ return [
     'btn_back' => '戻る',
     'btn_cancel' => 'キャンセル',
     'btn_update' => '更新',
+    'btn_create' => '作成',
     'btn_export_csv' => 'CSV形式で出力',
-    'btn_create_billing_paper' => '発行',
+    'btn_delivery' => '発行',
     'btn_statistic' => '表示',
     'btn_output_csv' => 'CSV出力',
     'btn_print' => '印刷',

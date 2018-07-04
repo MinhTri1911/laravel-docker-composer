@@ -14,7 +14,7 @@ class CreateMContractTable extends Migration
     public function up()
     {
         Schema::create('m_contract', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->bigIncrements('id');
             $table->double('revision_number', 3, 1)->nullable();
             $table->bigInteger('ship_id');
             $table->bigInteger('service_id');

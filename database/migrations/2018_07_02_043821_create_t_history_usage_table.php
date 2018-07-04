@@ -14,7 +14,7 @@ class CreateTHistoryUsageTable extends Migration
     public function up()
     {
         Schema::create('t_history_ussage', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->bigIncrements('id');
             $table->bigInteger('ship_id');
             $table->date('month_usage');
             $table->bigInteger('currency_id');

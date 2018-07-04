@@ -14,7 +14,7 @@ class CreateMCompanyTable extends Migration
     public function up()
     {
         Schema::create('m_company', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->bigIncrements('id');
             $table->string('name_jp', 100);
             $table->string('name_en', 100);
             $table->bigInteger('nation_id');
@@ -22,7 +22,7 @@ class CreateMCompanyTable extends Migration
             $table->string('head_office_address', 150)->nullable();
             $table->string('represent_person', 100);
             $table->double('fund', 20, 2)->nullable();
-            $table->integer('employees_number')->unsigned();
+            $table->integer('employees_number')->unsigned()->nullable();
             $table->string('year_research', 4)->nullable();
             $table->bigInteger('billing_method_id');
             $table->string('month_billng', 30);

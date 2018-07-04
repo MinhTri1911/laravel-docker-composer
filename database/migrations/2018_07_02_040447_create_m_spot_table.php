@@ -14,7 +14,7 @@ class CreateMSpotTable extends Migration
     public function up()
     {
         Schema::create('m_spot', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->bigIncrements('id');
             $table->string('name_jp', 50);
             $table->string('name_en', 50);
             $table->bigInteger('currency_id');

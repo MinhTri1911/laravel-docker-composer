@@ -67,6 +67,12 @@ class LoginController extends Controller
      */
     public function login(Request $request)
     {
+        // Validate the user login request
+        $this->validate($request, [
+            $this->username() => 'required',
+            'password' => 'required'
+        ]);
+
         // Get the needed authorization credentials from the request
         $credentials = $request->only($this->username(), 'password');
 

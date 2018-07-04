@@ -31,71 +31,47 @@
                 </div>
                 <div class="form-group">
                     <div class="left-side">
-                        <label class="label-control">{{__('billing.lbl_payment_due_date')}}</label>
-                    </div>
-                    <div class="right-side">
-                        <div class="group-datepicker">
-                            {!! Form::text('payment_due_date', null, ['class' => 'form-control custom-datepicker', 'placeholder' => __('billing.lbl_payment_due_date'), 'id' => 'payment-due-date']) !!}
-                            <span class="icon-picker"><i class="fa fa-calendar"></i></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="left-side">
                         <label class="label-control">{{__('billing.lbl_status')}}</label>
                     </div>
                     <div class="right-side">
                         <div class="custom-select">
-                            {!! Form::select(0, $model['statusSelector'], null, ['class' => 'form-control']) !!}
+                            {!! Form::select(0, $model['statusSelector'], null, ['class' => 'form-control', 'id' => 'slt-status']) !!}
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="left-side">
-                        <label class="label-control">{{__('billing.lbl_ope_person_name_1')}}</label>
+                        <label class="label-control">{{__('billing.lbl_status_approve')}}</label>
                     </div>
                     <div class="right-side">
-                        {!! Form::text('ope_name_1', null, ['class' => 'form-control', 'placeholder' => __('billing.lbl_ope_person_name_1'), 'id' => 'ope-name-1']) !!}
+                        <div class="custom-select">
+                            {!! Form::select(0, $model['statusApproveSelector'], null, ['class' => 'form-control', 'id' => 'slt-approve']) !!}
+                        </div>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group alone clear-both">
                     <div class="left-side">
-                        <label class="label-control">{{__('billing.lbl_ope_phone_1')}}</label>
+                        <label class="label-control">{{__('billing.lbl_payment_due_date')}}</label>
                     </div>
                     <div class="right-side">
-                        {!! Form::text('ope_phone_1', null, ['class' => 'form-control', 'placeholder' => __('billing.lbl_ope_phone_1'), 'id' => 'ope-phone-1']) !!}
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="left-side">
-                        <label class="label-control">{{__('billing.lbl_ope_email_1')}}</label>
-                    </div>
-                    <div class="right-side">
-                        {!! Form::text('ope_email_1', null, ['class' => 'form-control', 'placeholder' => __('billing.lbl_ope_email_1'), 'id' => 'ope-email-1']) !!}
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="left-side">
-                        <label class="label-control">{{__('billing.lbl_ope_person_name_2')}}</label>
-                    </div>
-                    <div class="right-side">
-                        {!! Form::text('ope_name_2', null, ['class' => 'form-control', 'placeholder' => __('billing.lbl_ope_person_name_2'), 'id' => 'ope-name-2']) !!}
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="left-side">
-                        <label class="label-control">{{__('billing.lbl_ope_phone_2')}}</label>
-                    </div>
-                    <div class="right-side">
-                        {!! Form::text('ope_phone_2', null, ['class' => 'form-control', 'placeholder' => __('billing.lbl_ope_phone_2'), 'id' => 'ope-phone-2']) !!}
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="left-side">
-                        <label class="label-control">{{__('billing.lbl_ope_email_2')}}</label>
-                    </div>
-                    <div class="right-side">
-                         {!! Form::text('ope_email_2', null, ['class' => 'form-control', 'placeholder' => __('billing.lbl_ope_email_2'), 'id' => 'ope-email-2']) !!}
+                        <div class="custom-select year">
+                            {!! Form::selectRange("start_year", $model['year']['start'], $model['year']['end'], date('Y'), ['class' => 'year single', 'id' => "start-year"]) !!}
+                        </div>
+                        <span class="pull-left">{{__('billing.lbl_year')}}</span>
+                        <div class="custom-select month">
+                            {!! Form::selectRange("start_month", 1, 12, (integer)date('m'), ['class' => 'month single', 'id' => "start-month"]) !!}
+                        </div>
+                        <span class="pull-left">{{__('billing.lbl_month')}}</span>
+                        <div class="between f-left">～</div>
+                        <div class="custom-select year">
+                            {!! Form::selectRange("end_year", $model['year']['start'], $model['year']['end'], date('Y'), ['class' => 'year single', 'id' => "end-year"]) !!}
+                        </div>
+                        <span class="pull-left">{{__('billing.lbl_year')}}</span>
+
+                        <div class="custom-select month">
+                            {!! Form::selectRange("end_month", 1, 12, (integer)date('m'), ['class' => 'month single', 'id' => "end-month"]) !!}
+                        </div>
+                        <span class="pull-left">{{__('billing.lbl_month')}}</span>
                     </div>
                 </div>
                 <div class="form-btn">
@@ -137,6 +113,7 @@
                             <th rowspan="2" class="tbl-row-money">{{__('billing.tbl_list_company_header.ope_total_money')}}</th>
                             <th rowspan="2" class="tbl-row-status">{{__('billing.tbl_list_company_header.status')}}</th>
                             <th rowspan="2" class="tbl-row-approve">{{__('billing.tbl_list_company_header.status_approve')}}</th>
+                            <th rowspan="2" class="tbl-row-reason">{{__('billing.tbl_list_company_header.reason')}}</th>
                             <th rowspan="2" class="tbl-row-process"></th>
                         </tr>
                         <tr>
@@ -146,7 +123,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @for($i = 0; $i<25; $i++ )
+                        @for($i = 0; $i<5; $i++ )
                             <tr>
                                 <td class="tbl-row-pick">
                                     <div class="custom-radio">
@@ -162,8 +139,9 @@
                                 <td class="tbl-row-ope-phone">0944584584</td>
                                 <td class="tbl-row-ope-email">abc123456@gmail.com</td>
                                 <td class="tbl-row-money">1.000（円）</td>
-                                <td class="tbl-row-status">未発行</td>
+                                <td class="tbl-row-status">請求書発行待ち</td>
                                 <td class="tbl-row-approve">承認済み</td>
+                                <td class="tbl-row-reason">承認済み承認済み承認済み承認済み</td>
                                 <td class="tbl-row-process">
                                     <a href="{{route('billing.preview.billing.paper')}}" target="_blank" id="btn-pdf">
                                         <i class="glyphicon glyphicon-file"></i>
@@ -205,15 +183,15 @@
                     </div>
                 </div>
                 <div class="process-billing">
-                    <div class="form-group">
-                        <div class="right-side">
-                             {!! Form::button( __('billing.btn_back'), ["class"=>"btn btn-blue-light btn-w150", 'id' => 'btn-back']) !!}
-                             {!! Form::button( __('billing.btn_export_csv'), ["class"=>"btn btn-blue-dark btn-w150", 'id' => 'btn-export-csv']) !!}
-                             {!! Form::button( __('billing.btn_create_billing_paper'), ["class"=>"btn btn-green-dark btn-w150", 'id' => 'btn-create-billing']) !!}
-                        </div>
+                    <div class="right-side">
+                        {!! Form::button( __('billing.btn_back'), ["class"=>"btn btn-blue-light btn-w150", 'id' => 'btn-back']) !!}
+                        {!! Form::button( __('billing.btn_create'), ["class"=>"btn btn-green-dark btn-w150", 'id' => 'btn-create']) !!}
+                        {!! Form::button( __('billing.btn_export_csv'), ["class"=>"btn btn-blue-dark btn-w150", 'id' => 'btn-export-csv']) !!}
+                        {!! Form::button( __('billing.btn_delivery'), ["class"=>"btn btn-green-dark btn-w150", 'id' => 'btn-delivery']) !!}
                     </div>
                 </div>
             </div>
+
             <div class="col-md-12 clear-both">
                 <nav class="text-center" aria-label="...">
                     <ul class="pagination">

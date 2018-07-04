@@ -29,20 +29,33 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td rowspan="3">AAA海運</td>
-                            <td rowspan="2">CMAXS-PMS</td>
-                            <td>A丸</td>
-                            <td></td>
+                            <td rowspan="{{ $detailGroup->count() + 1 }}">{{ $detailGroup->first()->company_jp }}</td>
                         </tr>
-                        <tr>
-                            <td>B丸</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td rowspan="1">CMAXS-SPICS</td>
-                            <td>A丸</td>
-                            <td></td>
-                        </tr>
+                        @php $count = 1; $tracker = []; @endphp
+                        @foreach ($detailGroup as $index => $company)
+                            @for ($i = $index + 1; $i < $detailGroup->count(); $i++)
+                                @if ($detailGroup[$i]->service_id === $detailGroup[$index]->service_id && !in_array($i, $tracker))
+                                    @php $count++; $tracker[] = $i; @endphp
+                                @else
+                                    @break
+                                @endif
+                            @endfor
+                            @if (!in_array($index, $tracker))
+                                <tr>
+                                    <td rowspan="{{ $count }}">{{ $company->service_jp }}</td>
+                                    <td>{{ $company->ship_name }}</td>
+                                    <td>{{ $company->contract_start_date }}</td>
+                                </tr>
+                            @elseif (in_array($index, $tracker))
+                                <tr>
+                                    <td>{{ $company->ship_name }}</td>
+                                    <td>{{ $company->contract_start_date }}</td>
+                                </tr>
+                                @if ($index == $detailGroup->count() - 1 || $company->service_id !== $detailGroup[$index + 1]->service_id)
+                                    @php $count = 1; $tracker = []; @endphp
+                                @endif
+                            @endif
+                        @endforeach
                     </tbody>
                 </table>
             </div>

@@ -51,7 +51,7 @@
                 @endphp
                 <li class="{{ $isCurrentPage ? 'active' : '' }}">
                     @if ($isCurrentPage)
-                        <a>{{ $i }}</a>
+                        <a id="current-page" data-page="{{ $current }}">{{ $i }}</a>
                     @else
                         <a id="paginate-{{ $i }}" data-url="{{ $url . $i }}">{{$i}}</a>
                     @endif

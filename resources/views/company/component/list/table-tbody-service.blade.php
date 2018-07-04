@@ -1,11 +1,11 @@
 <table class="table table-blue table-result">
     <tbody>
-        @php $count = 1; $tracker = [];@endphp
+        @php $count = 1; $tracker = []; $groupCompanyId = []; $totalLicense = 0; @endphp
 
         @foreach ($companies as $index => $company)
             @for ($i = $index + 1; $i < $companies->count(); $i++)
                 @if ($companies[$i]->service_id === $companies[$index]->service_id && !in_array($i, $tracker))
-                    @php $count++; $tracker[] = $i; @endphp
+                    @php $count++; $tracker[] = $i; $groupCompanyId[] = $companies[$i]->id; $totalLicense += $companies[$i]->license; @endphp
                 @else
                     @break
                 @endif
@@ -14,12 +14,18 @@
             @if (!in_array($index, $tracker))
                 <tr>
                     <td rowspan="{{ $count }}" class="custom-checkbox checkbox-table col-checkbox">
-                        {{ Form::checkbox('cb-get-id[]', 1, false, ['id' => 'cb-get-id-' . $company->id]) }}
-                        <label for="cb-get-id-{{ $company->id }}"></label>
+                        {{ Form::checkbox('cb-get-id[]', $company->service_id, false, [
+                                'id' => 'cb-get-id-' . $company->service_id,
+                                'data-company-ids' => $company->id . ',' . implode(',', $groupCompanyId),
+                            ])
+                        }}
+                        <label for="cb-get-id-{{ $company->service_id }}"></label>
                     </td>
                     <td rowspan="{{ $count }}" class="col-service-name">
-                        <a href="javascript:void(0)" class="open-popup-detail-system"
-                            data-url="{{ route('company.detail') }}">{{ $company->service_name_jp }}
+                        <a href="javascript:void(0)"
+                            class="open-popup-detail-service"
+                            id="select-protector-btn-{{ $company->service_id }}"
+                            data-url="{{ route('company.detail', ['id' => $company->service_id]) }}">{{ $company->service_name_jp }}
                         </a>
                     </td>
                     <td class="col-company-nation">
@@ -53,7 +59,7 @@
                         {{ $company->name_jp }}
                     </td>
                     <td class="col-license">{{ $company->license }}</td>
-                    <td rowspan="{{ $count }}" class="col-toltal-license">35</td>
+                    <td rowspan="{{ $count }}" class="col-toltal-license">{{ $company->total_license }}</td>
                     <td class="table-action col-action">
                         <a href="{{ route('company.show', $company->id) }}" class="btn btn-blue-dark btn-custom-sm btn-lock">
                             {{ trans('company.btn_detail') }}
@@ -100,7 +106,7 @@
                     </td>
                 </tr>
                 @if ($index == $companies->count() - 1 || $company->service_id !== $companies[$index + 1]->service_id)
-                    @php $count = 1; $tracker = []; @endphp
+                    @php $count = 1; $tracker = []; $groupCompanyId = []; $totalLicense = 0; @endphp
                 @endif
             @endif
         @endforeach

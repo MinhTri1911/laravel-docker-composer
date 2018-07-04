@@ -83,7 +83,10 @@
 
             <div class="col-md-12 block-button">
                 <a class="btn btn-green-dark btn-w150" href="{{ route('company.create') }}" >{{ trans('company.go_to_create_company') }}</a>
-                <a class="btn btn-green-dark btn-w150" href="{{ route('billing.history.billing') }}" >
+                <a class="btn btn-green-dark btn-w150"
+                    data-url="{{ route('billing.history.billing') }}"
+                    href="javascript:void(0)"
+                    id="history-billing">
                     {{ trans('company.go_to_history_billing') }}
                 </a>
                 <a class="btn btn-green-dark btn-w150" href="{{ route('billing.create.billing.paper') }}" >

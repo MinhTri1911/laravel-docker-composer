@@ -122,6 +122,24 @@ and open the template in the editor.
       }
     }
   }
+
+  .table-dropdown {
+    thead {
+      tr {
+        th {
+          width: 110px;
+          word-break: break-all !important;
+        }
+      }
+    }
+    tbody {
+      tr {
+        td {
+          word-break: break-all !important;
+        }
+      }
+    }
+  }
 }
 /*
 * start css detail company

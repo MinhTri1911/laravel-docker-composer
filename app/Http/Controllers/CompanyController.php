@@ -14,7 +14,9 @@ use App\Business\CompanyBusiness;
 
 class CompanyController extends Controller
 {
-    private $companyBusiness;
+    private $_companyBusiness;
+    private const _CODE_SUCCESS = 200;
+    private const _CODE_ERROR = 500;
 
     /**
      * Function construct
@@ -22,7 +24,7 @@ class CompanyController extends Controller
      */
     public function __construct(CompanyBusiness $companyBusiness)
     {
-        $this->companyBusiness = $companyBusiness;
+        $this->_companyBusiness = $companyBusiness;
     }
 
     /**
@@ -33,16 +35,16 @@ class CompanyController extends Controller
     {
         // get data for SMA0001 sheet define handle index => 3 sort data
         $data = [
-            'field' => $request->field,
-            'sortBy' => $request->sortBy,
+            'field' => $request->field, // field to order by
+            'sortBy' => $request->sortBy, // ordery by
         ];
         // SMA0001 sheet define handle index => 1.3 init list company
-        $companies = $this->companyBusiness->initListCompany($data['field'], $data['sortBy']);
+        $companies = $this->_companyBusiness->initListCompany($data['field'], $data['sortBy']);
 
         // SMA0001 sheet define handle index => 1.3 init list company paginate ajax
         if ($request->ajax()) {
             return response()->json([
-                'code' => 200,
+                'code' => self::_CODE_SUCCESS,
                 'table' => view('company.component.list.table-tbody-company', ['companies' => $companies])->render(),
                 'paginate' => view('company.component.paginate.default', [
                     'paginator' => $companies,
@@ -63,17 +65,17 @@ class CompanyController extends Controller
     public function searchCompany(Request $request)
     {
         if (!$request->ajax()) {
-            return response()->json(['code' => 500]);
+            return response()->json(['code' => self::_CODE_ERROR]);
         }
 
         $data = [
             'group' => $request->group,
             'load' => $request->load,
-            'field' => $request->field,
-            'sortBy' => $request->sortBy,
+            'field' => $request->field, // field to order by
+            'sortBy' => $request->sortBy, // order by
         ];
         // SMA0001 sheet define  handle index => 2 search company
-        $companies = $this->companyBusiness->searchCompany($data['group'], $data['load'], $data['field'], $data['sortBy']);
+        $companies = $this->_companyBusiness->searchCompany($data['group'], $data['load'], $data['field'], $data['sortBy']);
 
         if ($data['group'] != config('company.group_company') && $data['group'] != config('company.group_service')) {
             $data['group'] = config('company.group_company');
@@ -93,7 +95,7 @@ class CompanyController extends Controller
         ])->render();
 
         return response()->json([
-            'code' => 200,
+            'code' => self::_CODE_SUCCESS,
             'table' => $tableview,
             'paginate' => $paginationView,
             'typeRender' => 'search',
@@ -108,7 +110,7 @@ class CompanyController extends Controller
     public function filterCompany(Request $request)
     {
         if (!$request->ajax()) {
-            return response()->json(['code' => 500]);
+            return response()->json(['code' => self::_CODE_ERROR]);
         }
 
         $data = $request->only([
@@ -125,13 +127,13 @@ class CompanyController extends Controller
             'filter-company-ope-person-phone-2',
         ]);
 
-        $data['field'] = $request->field;
-        $data['sortBy'] = $request->sortBy;
+        $data['field'] = $request->field; // field to order by
+        $data['sortBy'] = $request->sortBy; // order by
         $data['group'] = $request->group;
         $data['load'] = $request->load;
 
         // SMA0001 sheet define  handle index => 2 filter company
-        $companies = $this->companyBusiness->filterCompany($data, $data['group'], $data['load'], [
+        $companies = $this->_companyBusiness->filterCompany($data, $data['group'], $data['load'], [
             'field' => $data['field'],
             'sortBy' =>  $data['sortBy'],
         ]);
@@ -154,7 +156,7 @@ class CompanyController extends Controller
         ])->render();
 
         return response()->json([
-            'code' => 200,
+            'code' => self::_CODE_SUCCESS,
             'table' => $tableview,
             'paginate' => $paginationView,
             'typeRender' => 'filter',
@@ -188,18 +190,19 @@ class CompanyController extends Controller
     public function detail(Request $request)
     {
         if (!$request->ajax()) {
-            return response()->json(['code' => 500]);
+            return response()->json(['code' => self::_CODE_ERROR]);
         }
 
         $data = $request->all();
+        $detailGroup = $this->_companyBusiness->getDetailGroup($request->id, empty($data['detail-type']) ? 0 : $data['detail-type']);
 
         if (empty($data['detail-type']) || $data['detail-type'] == 0) {
-            $view = view('company.component.list.popup-detail-company')->render();
+            $view = view('company.component.list.popup-detail-company', compact('detailGroup'))->render();
         } else {
-            $view = view('company.component.list.popup-detail-service')->render();
+            $view = view('company.component.list.popup-detail-service', compact('detailGroup'))->render();
         }
 
-        return response()->json(['view' => $view, 'code' => 200]);
+        return response()->json(['view' => $view, 'code' => self::_CODE_SUCCESS]);
     }
 
     /**

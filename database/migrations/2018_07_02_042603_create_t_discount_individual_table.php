@@ -14,7 +14,7 @@ class CreateTDiscountIndividualTable extends Migration
     public function up()
     {
         Schema::create('t_discount_individual', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->bigIncrements('id');
             $table->bigInteger('contract_id');
             $table->date('setting_month');
             $table->bigInteger('currency_id');

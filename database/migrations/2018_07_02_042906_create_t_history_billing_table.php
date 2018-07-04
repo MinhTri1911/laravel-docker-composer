@@ -14,7 +14,7 @@ class CreateTHistoryBillingTable extends Migration
     public function up()
     {
         Schema::create('t_history_billing', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->bigIncrements('id');
             $table->bigInteger('company_id');
             $table->date('claim_date');
             $table->bigInteger('billing_method_id');

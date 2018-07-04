@@ -14,7 +14,7 @@ class CreateTDetailHistoryUsageTable extends Migration
     public function up()
     {
         Schema::create('t_detail_history_usage', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->bigIncrements('id');
             $table->bigInteger('history_usage_id');
             $table->tinyInteger('charge_type_id');
             $table->tinyInteger('detail_charge_type_id');

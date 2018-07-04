@@ -14,7 +14,7 @@ class CreateMShipTypeTable extends Migration
     public function up()
     {
         Schema::create('m_ship_type', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->bigIncrements('id');
             $table->string('code', 10);
             $table->string('type', 50);
             $table->boolean('del_flag')->default(0);

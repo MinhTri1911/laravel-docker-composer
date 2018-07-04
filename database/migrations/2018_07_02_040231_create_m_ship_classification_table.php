@@ -14,7 +14,7 @@ class CreateMShipClassificationTable extends Migration
     public function up()
     {
         Schema::create('m_ship_classification', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->bigIncrements('id');
             $table->string('code', 10);
             $table->string('name_jp', 50);
             $table->string('name_en', 50);

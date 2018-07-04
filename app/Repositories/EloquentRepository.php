@@ -127,20 +127,6 @@ abstract class EloquentRepository implements RepositoryInterface
         return $result;
     }
 
-    // /**
-    //  * Count
-    //  *
-    //  * @return mixed
-    //  */
-    // public function count()
-    // {
-    //     $result = $this->_model->count();
-    //     // reset the model after count
-    //     $this->setModel();
-
-    //     return $result;
-    // }
-
     /**
      * Create
      * @param array $attributes
@@ -395,10 +381,5 @@ abstract class EloquentRepository implements RepositoryInterface
         $this->_model = $this->_model->orderBy($column, $direction);
 
         return $this;
-    }
-
-    public function toSql()
-    {
-        return $this->_model->toSql();
     }
 }

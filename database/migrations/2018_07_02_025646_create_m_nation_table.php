@@ -14,7 +14,7 @@ class CreateMNationTable extends Migration
     public function up()
     {
         Schema::create('m_nation', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->bigIncrements('id');
             $table->string('code', 10);
             $table->integer('iso_number')->unsigned();
             $table->string('iso_code', 20);

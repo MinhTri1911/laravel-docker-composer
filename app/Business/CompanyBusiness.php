@@ -14,18 +14,6 @@ use App\Repositories\Company\CompanyInterface;
 
 class CompanyBusiness
 {
-
-    /**
-    * Type of user
-    */
-    protected $type;
-
-
-    private $_key;
-
-
-    public $name;
-
     protected $companyRepository;
 
     public function __construct(CompanyInterface $companyInterface)
@@ -33,9 +21,15 @@ class CompanyBusiness
         $this->companyRepository = $companyInterface;
     }
 
+    /**
+     * Business init page company
+     * @param Type string column
+     * @param Type int orderBy asc = 0 or null / desc = 1
+     * @return Paginate
+     */
     public function initListCompany($column = null, $orderBy = null)
     {
-        $query = $this->companyRepository->getListCompanyComon()
+        $query = $this->companyRepository->getListCompanyCommon()
             ->groupBy([
                 'm_company.id',
                 'm_service.id',
@@ -43,12 +37,19 @@ class CompanyBusiness
 
         $orderBy = $orderBy ? 'desc' : 'asc';
 
-        return $query
-            ->orderBy($this->transFormNameToColumn($column), $orderBy)
+        return $query->orderBy($this->_transFormNameToColumn($column), $orderBy)
             ->orderBy('m_company.id', $orderBy)
             ->paginate(config('pagination.default'));
     }
 
+    /**
+     * Business search company
+     * @param Type int groupType company = 0/ service = 1
+     * @param Type int pagination
+     * @param Type string column
+     * @param Type int orderBy asc = 0 or null / desc = 1
+     * @return Paginate
+     */
     public function searchCompany($groupType = 0, $pagination = 10, $column = null, $orderBy = null)
     {
         // SMA0001 sheet define hanlde index => 2 search company
@@ -62,16 +63,24 @@ class CompanyBusiness
 
         $orderBy = $orderBy ? 'desc' : 'asc';
 
-        return $this->companyRepository->getListCompanyComon()
+        return $this->companyRepository->getListCompanyCommon($groupType)
             ->groupBy([
                 !$groupType ? 'm_company.id' : 'm_service.id',
                 !$groupType ? 'm_service.id' : 'm_company.id',
             ])
-            ->orderBy($this->transFormNameToColumn($column), $orderBy)
-            ->orderBy('m_company.id', $orderBy)
+            ->orderBy($this->_transFormNameToColumn($column, $groupType), $orderBy)
+            ->orderBy(!$groupType ? 'm_company.id' : 'm_service.id', $orderBy)
             ->paginate($pagination);
     }
 
+    /**
+     * Business filter company
+     * @param Type array param condition filter
+     * @param Type int groupType company = 0/ service = 1
+     * @param Type int pagination
+     * @param Type array option sort with column and ordery by
+     * @return Paginate
+     */
     public function filterCompany($param, $groupType = 0, $pagination = 10, $option = [])
     {
         if ($groupType != config('company.group_company') && $groupType != config('company.group_service')) {
@@ -82,21 +91,26 @@ class CompanyBusiness
             $pagination = config('pagination.default');
         }
 
-        $param = $this->checkValueExists($param);
+        $param = $this->_checkValueExists($param);
         $option['sortBy'] = $option['sortBy'] ? 'desc' : 'asc';
 
-        return $this->companyRepository->getListCompanyComon()
+        return $this->companyRepository->getListCompanyCommon($groupType)
             ->conditionSearchCompany($param)
             ->groupBy([
                 !$groupType ? 'm_company.id' : 'm_service.id',
                 !$groupType ? 'm_service.id' : 'm_company.id',
             ])
-            ->orderBy($this->transFormNameToColumn($option['field'], $groupType), $option['sortBy'])
-            ->orderBy('m_company.id', $option['sortBy'])
+            ->orderBy($this->_transFormNameToColumn($option['field'], $groupType), $option['sortBy'])
+            ->orderBy(!$groupType ? 'm_company.id' : 'm_service.id', $option['sortBy'])
             ->paginate($pagination);
     }
 
-    private function checkValueExists($params)
+    /**
+     * Check parameter is match with database
+     * @param Type array params
+     * @return array params
+     */
+    private function _checkValueExists($params)
     {
         $data = [];
 
@@ -127,7 +141,14 @@ class CompanyBusiness
         return $data;
     }
 
-    private function transFormNameToColumn($name, $option = 0)
+    /**
+     * Return array map with column in database
+     * @param Type var name
+     * @param Type int option
+     * @description default with option = 0 will be return m_company.name_jp
+     * @return String column name
+     */
+    private function _transFormNameToColumn($name, $option = 0)
     {
         $columns = [
             'filter-company' => 'm_company.name_jp',
@@ -138,5 +159,18 @@ class CompanyBusiness
         ];
 
         return !empty($columns[$name]) ? $columns[$name] : ($option ? $columns['filter-service'] : $columns['filter-company']);
+    }
+
+    /**
+     * Get detail group company/ detail group service
+     * @param Type int id
+     * @param Type int type group company = 0/ type group service = 1
+     * @return Collection
+     */
+    public function getDetailGroup($id, $type = 0)
+    {
+        if (!$id) throw new \Exception("Error");
+
+        return $this->companyRepository->getDetailByGroup($id, $type);
     }
 }

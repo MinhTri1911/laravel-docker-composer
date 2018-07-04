@@ -14,7 +14,7 @@ class CreateTPriceServiceTable extends Migration
     public function up()
     {
         Schema::create('t_price_service', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->bigIncrements('id');
             $table->bigInteger('service_id');
             $table->bigInteger('currency_id');
             $table->double('price', 20, 2);

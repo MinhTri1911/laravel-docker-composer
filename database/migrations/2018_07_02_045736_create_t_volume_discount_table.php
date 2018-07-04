@@ -14,7 +14,7 @@ class CreateTVolumeDiscountTable extends Migration
     public function up()
     {
         Schema::create('t_volume_discount', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->bigIncrements('id');
             $table->bigInteger('service_id');
             $table->integer('cl_number');
             $table->double('money_discount', 20, 2);

@@ -16,6 +16,22 @@
       width: 30%;
       float: left;
 
+      &.alone {
+        width: 100%;
+        .pull-left {
+          line-height: 46px;
+          margin-right: 10px;
+          margin-left: 5px;
+        }
+        .between {
+          text-align: center;
+          vertical-align: middle;
+          line-height: 46px; 
+          margin-left: 10px;
+          margin-right: 10px;
+        }
+      }
+
       .left-side {
         float: left;
         width: 105px;
@@ -26,6 +42,10 @@
       }
       .custom-select {
         width: 100%;
+        &.year, &.month {
+          width: 115px;
+          float: left;
+        }
       }
       .group-datepicker, .group-timepicker {
         width: 100%;
@@ -65,37 +85,37 @@
     border-right: 1px solid #d8e3f3;
     border-left: 1px solid #d8e3f3;
     border-bottom: 1px solid #d8e3f3;
-    min-width: 897px;
+    min-width: 880px;
     overflow-y: hidden;
     overflow-x: scroll;
     position: relative;
 
     table.table-list-company {
-      min-width: 1588px;
+      min-width: 1800px;
 
       .tbl-row-pick {
-        width: 35px;
+        width: 2%;
       }
       .tbl-row-no {
          width: 45px;
       }
       .tbl-row-company-name {
-        width: 15%;
+        width: 12%;
       }
       .tbl-row-date {
-        width: 9%;
+        width: 6%;
       }
       .tbl-row-method {
          width: 11%;
       }
       .tbl-row-ope-name {
-        width: 15%;
+        width: 12%;
       }
       .tbl-row-ope-phone {
-        width: 9%;
+        width: 8%;
       }
       .tbl-row-ope-email {
-        width: 13%;
+        width: 12%;
       }
       .tbl-row-money {
         width: 7%;
@@ -106,8 +126,11 @@
       .tbl-row-approve {
         width: 6%;
       }
+      .tbl-row-reason {
+        width: 10%;
+      }
       .tbl-row-process {
-        width: 100px;
+        width: 6%;
       }
 
       thead {
@@ -213,36 +236,30 @@
 
     .process-billing {
       float: right;
+      width: 55%;
 
-      .form-group {
-        margin-right: 0;
-        margin-top: 3px;
+      .right-side {
+        float: right;
         width: auto;
+        text-align: right;
 
-        .right-side {
-          width: auto;
-          
-          button {
-            margin-left: 10px;
-          }
+        button {
+          margin-left: 10px;
+          margin-bottom: 8px;
         }
       }
     }
   }
 }
 
-/* Css for screen < 1150px */
-@media (max-width: 1150px) {
+/* Css for screen < 1350px */
+@media (max-width: 1350px) {
   #create-billing-paper {
-    .process-billing {
-      .form-group {
+    .create-billing {
+      .process-billing {
+        width: 40%;
         .right-side {
-          #btn-back {
-            display: block;
-            margin-right: 0;
-            margin-left: auto;
-            margin-bottom: 8px;
-          }
+
         }
       }
     }

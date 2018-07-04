@@ -14,7 +14,7 @@ class CreateTShipSpotTable extends Migration
     public function up()
     {
         Schema::create('t_ship_spot', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->bigIncrements('id');
             $table->bigInteger('ship_id');
             $table->date('month_usage');
             $table->bigInteger('spot_id');

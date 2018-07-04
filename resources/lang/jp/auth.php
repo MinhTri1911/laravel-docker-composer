@@ -15,11 +15,11 @@ return [
 
     'head_service_login' => 'サービスログイン',
     'head_company_login' => '企業ログイン',
-    'title_login' => 'LOGIN CMAXS System',
+    'title_login' => 'CMAXSシステムログイン',
     
     // Label
     'lbl_login_id'   => 'ログインID',
-    'lbl_password'   => 'パスワード',
+    'lbl_password'   => 'ログインパスワード',
 
     // Button
     'btn_login' => 'ログイン',

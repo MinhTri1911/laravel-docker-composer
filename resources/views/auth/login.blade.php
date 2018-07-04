@@ -26,11 +26,11 @@
         {{ Form::open(['route' => 'login', 'novalidate' => 'novalidate', 'id' => 'form-login']) }}
         <div class="form-group{{ $errors->has('login_id') ? ' has-error' : '' }}">
             {{ Form::label('text', __('auth.lbl_login_id'), ['class' => $errors->has('login_id') ? 'label-error' : '']) }}
-            {{ Form::text('login_id', null, ['class' => 'form-control', 'id' => 'login_id', 'maxlength' => '64']) }}
+            {{ Form::text('login_id', null, ['placeholder' => __('auth.lbl_login_id'), 'class' => 'form-control', 'id' => 'login_id', 'maxlength' => '64']) }}
         </div>
         <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
             {{ Form::label('password', __('auth.lbl_password'), ['class' => $errors->has('password') ? 'label-error' : '']) }}
-            {{ Form::password('password', ['class' => 'form-control', 'id' => 'password']) }}
+            {{ Form::password('password', ['placeholder' => __('auth.lbl_password'), 'class' => 'form-control', 'id' => 'password']) }}
         </div>
         <div class="login-group-btn">
             <button type="reset" class="btn btn-blue-light btn-w150">{{ __('auth.btn_reset') }}</button>

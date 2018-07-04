@@ -14,7 +14,7 @@ class CreateTDiscountCommonTable extends Migration
     public function up()
     {
         Schema::create('t_discount_common', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->bigIncrements('id');
             $table->bigInteger('company_id');
             $table->date('setting_month');
             $table->bigInteger('currency_id');
