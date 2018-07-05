@@ -9,6 +9,9 @@
 Route::group(['middleware' => 'auth'], function() {
     Route::resource('/company', 'CompanyController', [
         'only' => ['index', 'create', 'edit'],
+        'middleware' => [
+            'index' => 'prevent-history',
+        ],
     ]);
 
     Route::group(['prefix' => 'company', 'as' => 'company.'], function () {

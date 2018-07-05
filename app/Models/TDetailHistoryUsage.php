@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Mon, 02 Jul 2018 07:56:57 +0000.
+ * Date: Wed, 04 Jul 2018 03:46:32 +0000.
  */
 
 namespace App\Models;
@@ -31,10 +31,8 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 class TDetailHistoryUsage extends Eloquent
 {
     protected $table = 't_detail_history_usage';
-    public $incrementing = false;
 
     protected $casts = [
-        'id' => 'int',
         'history_usage_id' => 'int',
         'charge_type_id' => 'int',
         'detail_charge_type_id' => 'int',

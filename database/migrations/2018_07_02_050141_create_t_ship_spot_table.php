@@ -21,6 +21,8 @@ class CreateTShipSpotTable extends Migration
             $table->bigInteger('currency_id');
             $table->double('amount_charge', 20, 2)->nullable();
             $table->string('remark', 255)->nullable();
+            $table->tinyInteger('approved_flag')->default(2);
+            $table->text('reason_reject')->nullable();
             $table->boolean('del_flag')->default(0);
             $table->string('created_by', 150)->nullable();
             $table->timestamps();

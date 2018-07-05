@@ -28,7 +28,7 @@
                                 0 => trans('company.select_group_company'),
                                 1 => trans('company.select_group_system'),
                             ], null,
-                            ['class' => 'form-control', 'tabindex' => 7, 'id' => 'group-type'])
+                            ['class' => 'form-control', 'tabindex' => 1, 'id' => 'group-type'])
                         }}
                     </div>
                 </div>
@@ -39,13 +39,13 @@
                     </div>
                     <div class="form-input custom-select">
                         {{ Form::select('paginate-record', config('pagination.paginate_value'), config('pagination.default'),
-                            ['class' => 'form-control', 'tabindex' => 7, 'id' => 'load-result'])
+                            ['class' => 'form-control', 'tabindex' => 2, 'id' => 'load-result'])
                         }}
                     </div>
 
                     {{ Form::button(trans('company.btn_search_company'), [
                             'class' => 'btn btn-blue-dark btn-w150',
-                            'tabindex' => 8,
+                            'tabindex' => 3,
                             'name' => 'search-company',
                             'id' => 'btn-search-company',
                             'data-url' => route('company.search'),
@@ -82,17 +82,18 @@
             <div class="row"></div>
 
             <div class="col-md-12 block-button">
-                <a class="btn btn-green-dark btn-w150" href="{{ route('company.create') }}" >{{ trans('company.go_to_create_company') }}</a>
+                <a class="btn btn-green-dark btn-w150" href="{{ route('company.create') }}" tabindex="19">{{ trans('company.go_to_create_company') }}</a>
                 <a class="btn btn-green-dark btn-w150"
                     data-url="{{ route('billing.history.billing') }}"
                     href="javascript:void(0)"
-                    id="history-billing">
+                    id="history-billing"
+                    tabindex="18">
                     {{ trans('company.go_to_history_billing') }}
                 </a>
-                <a class="btn btn-green-dark btn-w150" href="{{ route('billing.create.billing.paper') }}" >
+                <a class="btn btn-green-dark btn-w150" href="{{ route('billing.create.billing.paper') }}" tabindex="17">
                     {{ trans('company.go_to_create_billing_paper') }}
                 </a>
-                <a href="{{ route('ship.index') }}" class="btn btn-green-dark btn-w150">{{ trans('company.go_to_list_ship') }}</a>
+                <a href="{{ route('ship.index') }}" class="btn btn-green-dark btn-w150" tabindex="16">{{ trans('company.go_to_list_ship') }}</a>
             </div>
 
             <div class="row"></div>
@@ -120,7 +121,7 @@
                 content.style.height = '300px'
             });
 
-            // remove class when init
+            // Remove class when init
             $('.block-table').removeClass('ps--active-y');
         });
     </script>

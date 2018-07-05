@@ -13,7 +13,7 @@ class CreateTHistoryUsageTable extends Migration
      */
     public function up()
     {
-        Schema::create('t_history_ussage', function (Blueprint $table) {
+        Schema::create('t_history_usage', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('ship_id');
             $table->date('month_usage');
@@ -36,6 +36,6 @@ class CreateTHistoryUsageTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('t_history_ussage');
+        Schema::dropIfExists('t_history_usage');
     }
 }

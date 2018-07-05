@@ -10,16 +10,17 @@ namespace App\Models;
 use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
- * Class TShipSpot
+ * Class THistoryUsage
  * 
  * @property int $id
  * @property int $ship_id
  * @property \Carbon\Carbon $month_usage
- * @property int $spot_id
  * @property int $currency_id
- * @property float $amount_charge
+ * @property float $total_amount_billing
+ * @property float $total_money
  * @property string $remark
- * @property bool $del_flag
+ * @property bool $billed_flag
+ * @property bool $status
  * @property string $created_by
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
@@ -27,16 +28,17 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  *
  * @package App\Models
  */
-class TShipSpot extends Eloquent
+class THistoryUsage extends Eloquent
 {
-    protected $table = 't_ship_spot';
+    protected $table = 't_history_usage';
 
     protected $casts = [
         'ship_id' => 'int',
-        'spot_id' => 'int',
         'currency_id' => 'int',
-        'amount_charge' => 'float',
-        'del_flag' => 'bool'
+        'total_amount_billing' => 'float',
+        'total_money' => 'float',
+        'billed_flag' => 'bool',
+        'status' => 'bool'
     ];
 
     protected $dates = [
@@ -46,11 +48,12 @@ class TShipSpot extends Eloquent
     protected $fillable = [
         'ship_id',
         'month_usage',
-        'spot_id',
         'currency_id',
-        'amount_charge',
+        'total_amount_billing',
+        'total_money',
         'remark',
-        'del_flag',
+        'billed_flag',
+        'status',
         'created_by',
         'updated_by'
     ];

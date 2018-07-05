@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Mon, 02 Jul 2018 07:56:57 +0000.
+ * Date: Wed, 04 Jul 2018 03:46:32 +0000.
  */
 
 namespace App\Models;
@@ -27,10 +27,8 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 class TVolumeDiscount extends Eloquent
 {
     protected $table = 't_volume_discount';
-    public $incrementing = false;
 
     protected $casts = [
-        'id' => 'int',
         'service_id' => 'int',
         'cl_number' => 'int',
         'money_discount' => 'float',

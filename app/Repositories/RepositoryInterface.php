@@ -11,39 +11,45 @@ interface RepositoryInterface
 {
     /**
      * Cast eloquent to query builder, use in first query like $this->builder()->where()->get()
-     *
+     * @access public
      * @return mixed
      */
     public function builder();
 
     /**
      * Get all
+     * @access public
      * @return mixed
      */
     public function getAll();
 
     /**
      * Get one
-     * @param $id
+     * @param int id
+     * @access public
      * @return mixed
      */
     public function find($id);
 
     /**
      * Select columns to get
+     * @access public
+     * @param array columns
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function get(array $colums = ['*']);
 
     /**
      * Execute the query and get the first result.
-     * @param $columns
+     * @access public
+     * @param array columns
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function first(array $columns = ['*']);
 
     /**
-     * Find a model by its primary key or throw an exception.
+     * Find a model by its primary key or throw an exception
+     * @access public
      * @param $id, $columns
      * @return Model|Collection
      */
@@ -51,6 +57,7 @@ interface RepositoryInterface
 
     /**
      * Create
+     * @access public
      * @param array $attributes
      * @return mixed
      */
@@ -58,6 +65,7 @@ interface RepositoryInterface
 
     /**
      * Update
+     * @access public
      * @param $id
      * @param array $attributes
      * @return mixed
@@ -66,6 +74,7 @@ interface RepositoryInterface
 
     /**
      * Delete
+     * @access public
      * @param $id
      * @return mixed
      */
@@ -73,6 +82,7 @@ interface RepositoryInterface
 
     /**
      * Lock
+     * @access public
      * @param $id
      * @return mixed
      */
@@ -80,6 +90,7 @@ interface RepositoryInterface
 
     /**
      * Where condition
+     * @access public
      * @param  $column, $value, $option = null
      * @return mixed
      */
@@ -87,7 +98,7 @@ interface RepositoryInterface
 
     /**
      * orWhere
-     *
+     * @access public
      * @param $column, $value, $option = null
      * @return mixed
      */
@@ -95,7 +106,7 @@ interface RepositoryInterface
 
     /**
      * Where in
-     *
+     * @access public
      * @param $column, $array
      * @return mixed
      */
@@ -103,79 +114,87 @@ interface RepositoryInterface
 
     /**
      * Check result is exists
-     *
+     * @access public
      * @return boolean
      */
     public function exists();
 
     /**
      * Inner join table
-     * @param Type var table
-     * @param Type var first
-     * @param Type var operator
-     * @param Type var second
+     * @access public
+     * @param string table
+     * @param string first
+     * @param string operator
+     * @param string second
      * @return mixed
      */
     public function join($table, $first, $operator = null, $second = null);
 
     /**
      * Left join table
-     * @param Type var table
-     * @param Type var first
-     * @param Type var operator
-     * @param Type var second
+     * @access public
+     * @param string table
+     * @param string first
+     * @param string operator
+     * @param string second
      * @return mixed
      */
     public function leftJoin($table, $first, $operator = null, $second = null);
 
     /**
      * Right join table
-     * @param Type var table
-     * @param Type var first
-     * @param Type var operator
-     * @param Type var second
+     * @access public
+     * @param string table
+     * @param string first
+     * @param string operator
+     * @param string second
      * @return mixed
      */
     public function rightJoin($table, $first, $operator = null, $second = null);
 
     /**
      * Pagination
-     * @param Type int limit
-     * @param Type array columns
+     * @access public
+     * @param int limit
+     * @param array columns
      * @return Illuminate\Pagination\LengthAwarePaginator
      */
     public function paginate($limit, $columns = ['*']);
 
     /**
      * Group
-     * @param Type array groups
+     * @access public
+     * @param array groups
      * @return mixed
      */
     public function groupBy($groups);
 
     /**
      * Count
-     * @param Type var columns
+     * @access public
+     * @param string columns
      * @return int
      */
     public function count($columns = '*');
 
     /**
      * Select columns
-     * @param Type array columns
+     * @access public
+     * @param array columns
      * @return mixed
      */
     public function select($columns = ['*']);
 
     /**
      * Select distinct record
+     * @access public
      * @return mixed
      */
     public function distinct();
 
     /**
      * Order by
-     *
+     * @access public
      * @return mixed
      */
     public function orderBy($column, $direction = 'asc');

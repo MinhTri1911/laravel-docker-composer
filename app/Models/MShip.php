@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Mon, 02 Jul 2018 07:56:57 +0000.
+ * Date: Wed, 04 Jul 2018 03:46:31 +0000.
  */
 
 namespace App\Models;
@@ -42,10 +42,8 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 class MShip extends Eloquent
 {
     protected $table = 'm_ship';
-    public $incrementing = false;
 
     protected $casts = [
-        'id' => 'int',
         'company_id' => 'int',
         'nation_id' => 'int',
         'classification_id' => 'int',

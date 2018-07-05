@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Mon, 02 Jul 2018 07:56:57 +0000.
+ * Date: Wed, 04 Jul 2018 03:46:31 +0000.
  */
 
 namespace App\Models;
@@ -29,10 +29,8 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 class MCompanyOperation extends Eloquent
 {
     protected $table = 'm_company_operation';
-    public $incrementing = false;
 
     protected $casts = [
-        'id' => 'int',
         'nation_id' => 'int',
         'language' => 'bool',
         'del_flag' => 'bool'

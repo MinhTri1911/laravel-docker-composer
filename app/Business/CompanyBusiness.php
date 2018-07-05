@@ -1,12 +1,13 @@
 <?php
 
 /**
-* File Company controller
-* Handle business related to company
-* @package App\Repositories\Company
-* @author tri_hnm
-* @date 2018/06/19
-*/
+ * File company business
+ *
+ * Handle business related to company
+ * @package App\Business
+ * @author Rikkei.trihnm
+ * @date 2018/06/19
+ */
 
 namespace App\Business;
 
@@ -23,8 +24,9 @@ class CompanyBusiness
 
     /**
      * Business init page company
-     * @param Type string column
-     * @param Type int orderBy asc = 0 or null / desc = 1
+     * @access public
+     * @param string column
+     * @param int orderBy asc = 0 or null / desc = 1
      * @return Paginate
      */
     public function initListCompany($column = null, $orderBy = null)
@@ -35,6 +37,7 @@ class CompanyBusiness
                 'm_service.id',
             ]);
 
+        // Check order by is desc or asc
         $orderBy = $orderBy ? 'desc' : 'asc';
 
         return $query->orderBy($this->_transFormNameToColumn($column), $orderBy)
@@ -44,25 +47,29 @@ class CompanyBusiness
 
     /**
      * Business search company
-     * @param Type int groupType company = 0/ service = 1
-     * @param Type int pagination
-     * @param Type string column
-     * @param Type int orderBy asc = 0 or null / desc = 1
+     * @access public
+     * @param int groupType company = 0/ service = 1
+     * @param int pagination
+     * @param string column
+     * @param int orderBy asc = 0 or null / desc = 1
      * @return Paginate
      */
     public function searchCompany($groupType = 0, $pagination = 10, $column = null, $orderBy = null)
     {
-        // SMA0001 sheet define hanlde index => 2 search company
+        // Check group type is exists if not set default group company
         if ($groupType != config('company.group_company') && $groupType != config('company.group_service')) {
             $groupType = config('company.group_company');
         }
 
+        // Check load result is exists if not set default is 10
         if (!in_array($pagination, config('pagination.paginate_value'))) {
             $pagination = config('pagination.default');
         }
 
+        // Check order by is desc or asc
         $orderBy = $orderBy ? 'desc' : 'asc';
 
+        // Return limit companies
         return $this->companyRepository->getListCompanyCommon($groupType)
             ->groupBy([
                 !$groupType ? 'm_company.id' : 'm_service.id',
@@ -75,10 +82,11 @@ class CompanyBusiness
 
     /**
      * Business filter company
-     * @param Type array param condition filter
-     * @param Type int groupType company = 0/ service = 1
-     * @param Type int pagination
-     * @param Type array option sort with column and ordery by
+     * @access public
+     * @param array param condition filter
+     * @param int groupType company = 0/ service = 1
+     * @param int pagination
+     * @param array option sort with column and ordery by
      * @return Paginate
      */
     public function filterCompany($param, $groupType = 0, $pagination = 10, $option = [])
@@ -107,7 +115,8 @@ class CompanyBusiness
 
     /**
      * Check parameter is match with database
-     * @param Type array params
+     * @access private
+     * @param array params
      * @return array params
      */
     private function _checkValueExists($params)
@@ -143,8 +152,9 @@ class CompanyBusiness
 
     /**
      * Return array map with column in database
-     * @param Type var name
-     * @param Type int option
+     * @access private
+     * @param string name
+     * @param int option
      * @description default with option = 0 will be return m_company.name_jp
      * @return String column name
      */
@@ -163,8 +173,10 @@ class CompanyBusiness
 
     /**
      * Get detail group company/ detail group service
-     * @param Type int id
-     * @param Type int type group company = 0/ type group service = 1
+     * @access public
+     * @param int id
+     * @param int type group company = 0/ type group service = 1
+     * @throws Exception
      * @return Collection
      */
     public function getDetailGroup($id, $type = 0)

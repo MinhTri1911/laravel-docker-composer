@@ -270,10 +270,10 @@ abstract class EloquentRepository implements RepositoryInterface
 
     /**
      * Inner join table
-     * @param Type var table
-     * @param Type var first
-     * @param Type var operator
-     * @param Type var second
+     * @param string table
+     * @param string first
+     * @param string operator
+     * @param string second
      * @return mixed
      */
     public function join($table, $first, $operator = null, $second = null)
@@ -285,10 +285,10 @@ abstract class EloquentRepository implements RepositoryInterface
 
     /**
      * Left join table
-     * @param Type var table
-     * @param Type var first
-     * @param Type var operator
-     * @param Type var second
+     * @param string table
+     * @param string first
+     * @param string operator
+     * @param string second
      * @return mixed
      */
     public function leftJoin($table, $first, $operator = null, $second = null)
@@ -300,10 +300,10 @@ abstract class EloquentRepository implements RepositoryInterface
 
     /**
      * Right join table
-     * @param Type var table
-     * @param Type var first
-     * @param Type var operator
-     * @param Type var second
+     * @param string table
+     * @param string first
+     * @param string operator
+     * @param string second
      * @return mixed
      */
     public function rightJoin($table, $first, $operator = null, $second = null)
@@ -315,8 +315,8 @@ abstract class EloquentRepository implements RepositoryInterface
 
     /**
      * Pagination
-     * @param Type int limit
-     * @param Type array columns
+     * @param int limit
+     * @param array columns
      * @return Illuminate\Pagination\LengthAwarePaginator
      */
     public function paginate($limit, $columns = ['*'])
@@ -329,7 +329,7 @@ abstract class EloquentRepository implements RepositoryInterface
 
     /**
      * Group
-     * @param Type array groups
+     * @param array groups
      * @return mixed
      */
     public function groupBy($groups)
@@ -342,7 +342,7 @@ abstract class EloquentRepository implements RepositoryInterface
 
     /**
      * Count
-     * @param Type var columns
+     * @param string columns
      * @return int
      */
     public function count($columns = '*')
@@ -355,7 +355,7 @@ abstract class EloquentRepository implements RepositoryInterface
 
     /**
      * Select columns
-     * @param Type array columns
+     * @param array columns
      * @return mixed
      */
     public function select($columns = ['*'])
@@ -376,6 +376,12 @@ abstract class EloquentRepository implements RepositoryInterface
         return $this;
     }
 
+    /**
+     * Order by
+     * @param string column
+     * @param string direction
+     * @return mixed
+     */
     public function orderBy($column, $direction = 'asc')
     {
         $this->_model = $this->_model->orderBy($column, $direction);

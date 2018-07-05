@@ -1,13 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Create js list company
+ *
+ * @author Rikkei.trihnm
+ * @date 2018/06/19
  */
 
 /**
  * @name function call ajax show popup detail company/system
- * @param {type} url
- * @returns {undefined}
+ * @param string url
+ * @returns void
  */
 function showPopup(url) {
     $.get(url, function (res) {
@@ -18,7 +19,8 @@ function showPopup(url) {
 }
 
 /**
- * @name function restart Perfect scroll
+ * @name function restart perfect scroll
+ * @returns void
  */
 function restartPs() {
     const table = document.querySelector('.block-table');
@@ -37,10 +39,12 @@ function restartPs() {
 
 /**
  * @description replace url paginate when sort data
+ * @returns void
  */
 function replaceUrlPagination() {
     let obj = JSON.parse($('#sort-value').val());
-    // set query string
+
+    // Set query string
     for (var key in obj) {
         if (obj[key] == 1) {
             query = {
@@ -57,7 +61,8 @@ function replaceUrlPagination() {
     }
 
     $('.pagination li').find('a').each(function (index) {
-        // replace url for paginate when sorting
+
+        // Replace url for paginate when sorting
         if ($(this).attr('data-url')) {
             let url = $(this).attr('data-url') + '&field=' + query.field + '&sortBy=' + query.sortBy;
             $(this).attr('data-url', url);
@@ -67,6 +72,7 @@ function replaceUrlPagination() {
 
 /**
  * @description save id to localstorage when checkbox checked
+ * @returns void
  */
 function saveCheckedWhenLoad() {
     let checkboxs = $("input:checkbox[name='cb-get-id[]']:checked").serializeArray();
@@ -74,6 +80,7 @@ function saveCheckedWhenLoad() {
     let storage = null;
     let storageService = null;
 
+    // Get id checkbox form localstorage
     if (typeGroup.group == 0) {
         storage = JSON.parse(window.localStorage.getItem('tracker-group-company'));
     } else {
@@ -87,7 +94,7 @@ function saveCheckedWhenLoad() {
 
     if (storage === null) storage = {}
 
-    // save checkbox id to object
+    // Save checkbox id to object
     storage[$('#current-page').attr('data-page')] = [];
 
     checkboxs.forEach(function (element, index) {
@@ -98,7 +105,7 @@ function saveCheckedWhenLoad() {
         }
     });
 
-    // save id checkbox to localstorage with group = 0 is company group = 1 is service
+    // Save id checkbox to localstorage with group = 0 is company group = 1 is service
     typeGroup.group == 0
         ? window.localStorage.setItem('tracker-group-company', JSON.stringify(storage))
         : window.localStorage.setItem('tracker-group-service', JSON.stringify(storage));
@@ -108,14 +115,17 @@ function saveCheckedWhenLoad() {
 
 /**
  * @description make checkbox checked when load page
+ * @returns void
  */
 function checkedStateOfCheckbox() {
     let typeGroup = JSON.parse($('#value-after-search').val());
-    // get current page
+
+    // Get current page
     let page = parseInt($('#current-page').attr('data-page'));
     let storage = null;
     let countCheckboxInCurrentPage = 0;
 
+    // Get id checkbox form localstorage
     if (typeGroup.group == 0) {
         storage = JSON.parse(window.localStorage.getItem('tracker-group-company'));
     } else {
@@ -124,7 +134,7 @@ function checkedStateOfCheckbox() {
 
     if (storage == null) return true;
 
-    // make checkbox checked
+    // Make checkbox checked
     for (var index in storage[page]) {
         if (storage[page][index] != null) {
             $('#cb-get-id-' + storage[page][index]).prop('checked', true);
@@ -132,6 +142,7 @@ function checkedStateOfCheckbox() {
         }
     }
 
+    // Check if group company and have same record is check in prev page
     if (typeGroup.group == 0 && page != 1 && storage[page - 1] != undefined) {
         for (var indexPrev in storage[page - 1]) {
             if (storage[page - 1][indexPrev] != null) {
@@ -140,6 +151,7 @@ function checkedStateOfCheckbox() {
         }
     }
 
+    // Check if group company and have same record is check in next page
     if (typeGroup.group == 0 && storage[page + 1] != undefined) {
         for (var indexNext in storage[page + 1]) {
             if (storage[page + 1][indexNext] != null) {
@@ -153,6 +165,7 @@ function checkedStateOfCheckbox() {
         status++;
     });
 
+    // Mark checkbox check all
     if (status == countCheckboxInCurrentPage && countCheckboxInCurrentPage > 0) {
         $('#cb-all').prop('checked', true);
     }
@@ -160,6 +173,7 @@ function checkedStateOfCheckbox() {
 
 /**
  * @description remove id in localstorage when change action filter/ search/ sort
+ * @returns void
  */
 function removeStateChecked () {
     if (window.localStorage.getItem('tracker-group-company') !== null) {
@@ -184,23 +198,23 @@ function removeStateChecked () {
 $(document).on('click', '.open-popup-detail-company', function () {
     let url = $(this).attr('data-url') + '&detail-type=0';
     showPopup(url);
-})
+});
 
 /**
  * @description click show popup detail system
  */
 $(document).on('click', '.open-popup-detail-service', function () {
-    console.log(123);
     let url = $(this).attr('data-url') + '&detail-type=1';
     showPopup(url);
-})
+});
 
 /**
  * @description custom paginate list company
  */
 $(document).on('click', '.pagination li a', function (event) {
-    let url = $('#' + $(this).attr('id')).attr('data-url')
-    // save checkbox is checked
+    let url = $('#' + $(this).attr('id')).attr('data-url');
+
+    // Save checkbox is checked
     saveCheckedWhenLoad();
     $('#cb-all').prop('checked', false);
 
@@ -217,14 +231,18 @@ $(document).on('click', '.pagination li a', function (event) {
             $('#area-paginate').empty()
             $('#area-paginate').append(res.paginate)
             restartPs();
-            // reset url for sort action
+
+            // Reset url for sort action
             $('#sort-value').attr('data-url', url);
+
+            // Replace url
             replaceUrlPagination();
-            // make checkbox checked
+
+            // Mark checkbox checked
             checkedStateOfCheckbox();
         }
-    })
-})
+    });
+});
 
 /**
  * @description click filter company
@@ -240,6 +258,8 @@ $(document).on('click', '#btn-filter', function (event) {
     });
 
     let searchValue = JSON.parse($('#value-after-search').val());
+
+    // Set query string to group type and load result
     let query = {
         'group': searchValue.group,
         'load': searchValue.load,
@@ -252,7 +272,8 @@ $(document).on('click', '#btn-filter', function (event) {
             $('#area-paginate').empty();
             $('#area-paginate').append(res.paginate);
             restartPs();
-            // reset url for sort action
+
+            // Reset url for sort action
             $('#sort-value').attr('data-url', url);
         }
     });
@@ -264,12 +285,14 @@ $(document).on('click', '#btn-filter', function (event) {
 $('#btn-search-company').on('click', function () {
     removeStateChecked();
     let url = $(this).attr('data-url');
+
+    // Set query string to group type and load result
     let query = {
         'group': $('#group-type').val(),
         'load': $('#load-result').val(),
     }
 
-    // set value select after click search
+    // Set value select after click search
     $('#value-after-search').val(JSON.stringify(query));
 
     $.get(url, query, function (res) {
@@ -279,10 +302,11 @@ $('#btn-search-company').on('click', function () {
             $('#area-paginate').empty();
             $('#area-paginate').append(res.paginate);
             restartPs();
-            // reset url for sort action
+
+            // Reset url for sort action
             $('#sort-value').attr('data-url', url);
 
-            // checked
+            // Mark checkbox checked
             checkedStateOfCheckbox();
         }
     });
@@ -297,13 +321,15 @@ $(document).on('click', '.th-line-one i', function (event) {
     let obj = JSON.parse($('#sort-value').val());
     let url = $('#sort-value').attr('data-url');
     let searchValue = JSON.parse($('#value-after-search').val());
+
+    // Set query string to group type and load result, field to sort
     let query = {
         'field': dataSort,
         'group': searchValue.group,
         'load': searchValue.load,
     }
 
-    // set status for sort
+    // Set status for sort 1 is desc, 0 is asc
     for (var key in obj) {
         if (key === dataSort) {
             obj[key] = (obj[key] == 1) ? 0 : 1;
@@ -311,27 +337,30 @@ $(document).on('click', '.th-line-one i', function (event) {
         }
     }
 
-    $('#sort-value').val(JSON.stringify(obj))
+    $('#sort-value').val(JSON.stringify(obj));
 
     $.get(url, query, function (res) {
         if (res.code == 200) {
             if (res.typeRender === 'filter') {
-                $('.table-content').empty()
-                $('.table-content').append(res.table)
+                $('.table-content').empty();
+                $('.table-content').append(res.table);
             } else {
-                $('.block-table').empty()
-                $('.block-table').append(res.table)
+                $('.block-table').empty();
+                $('.block-table').append(res.table);
             }
 
-            $('#area-paginate').empty()
-            $('#area-paginate').append(res.paginate)
+            $('#area-paginate').empty();
+            $('#area-paginate').append(res.paginate);
             restartPs();
-            // reset url for sort action
+
+            // Reset url for sort action
             $('#sort-value').attr('data-url', url);
+
+            // Replace url
             replaceUrlPagination();
         }
-    })
-})
+    });
+});
 
 /**
  * @description action click check all
@@ -340,11 +369,11 @@ $(document).on('change', '#cb-all', function() {
     if(this.checked) {
         $("input[name='cb-get-id[]']").each(function () {
             this.checked = true;
-        })
+        });
     } else {
         $("input[name='cb-get-id[]']").each(function () {
            this.checked = false;
-        })
+        });
     }
 });
 
@@ -362,36 +391,38 @@ $(document).on('change', '.checkbox-table', function (event) {
  * @description click button redirect to histori billing
  */
 $('#history-billing').on('click', function () {
-    saveCheckedWhenLoad()
+    saveCheckedWhenLoad();
     let typeGroup = JSON.parse($('#value-after-search').val());
     let storage = null;
     let url =$(this).attr('data-url');
+    let ids = '';
 
+    // Get id checkbox from localstorage
     if (typeGroup.group == 0) {
         storage = JSON.parse(window.localStorage.getItem('tracker-group-company'));
     } else {
         storage = JSON.parse(window.localStorage.getItem('tracker-value-service'));
     }
 
-    if (storage == null) {
-        window.location.href = url;
-    } else {
-        url += '?id=';
-        for (var pageId in storage) {
-            storage[pageId].forEach(function (element, index) {
-                if (element != null) {
-                    url += element + ',';
-                }
-            });
-        }
+    // Get ids company
+    for (var pageId in storage) {
+        storage[pageId].forEach(function (element, index) {
+            if (element != null) {
+                ids += element + ',';
+            }
+        });
+    }
 
-        url = url.split(',').filter(function (item, i, allItems){
+    // Remove duplicate ids company
+    if (ids != '') {
+        url += '?id=';
+        url += ids.split(',').filter(function (item, i, allItems) {
             return i == allItems.indexOf(item);
         }).join(',').slice(0, -1);
-
-        window.location.href = url;
     }
-})
+
+    window.location.href = url;
+});
 
 /**
  * @description init page
@@ -399,4 +430,4 @@ $('#history-billing').on('click', function () {
 $(document).ready(function () {
     removeStateChecked ();
     checkedStateOfCheckbox();
-})
+});

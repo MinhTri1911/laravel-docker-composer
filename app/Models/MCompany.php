@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Mon, 02 Jul 2018 07:56:57 +0000.
+ * Date: Wed, 04 Jul 2018 03:46:31 +0000.
  */
 
 namespace App\Models;
@@ -23,7 +23,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property int $employees_number
  * @property string $year_research
  * @property int $billing_method_id
- * @property string $month_billng
+ * @property string $month_billing
  * @property int $payment_deadline_no
  * @property int $billing_day_no
  * @property string $currency_code
@@ -57,10 +57,8 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 class MCompany extends Eloquent
 {
     protected $table = 'm_company';
-    public $incrementing = false;
 
     protected $casts = [
-        'id' => 'int',
         'nation_id' => 'int',
         'fund' => 'float',
         'employees_number' => 'int',
@@ -83,7 +81,7 @@ class MCompany extends Eloquent
         'employees_number',
         'year_research',
         'billing_method_id',
-        'month_billng',
+        'month_billing',
         'payment_deadline_no',
         'billing_day_no',
         'currency_code',

@@ -50,19 +50,11 @@ class TUserLogin extends Authenticatable
     protected $table = 't_user_login';
 
     /**
-     * Use a non-incrementing or a non-numeric primary key
-     *
-     * @var bool
-     */
-    public $incrementing = false;
-
-    /**
      * Provides a convenient method of converting attributes to common data types
      *
      * @var array
      */
     protected $casts = [
-        'id' => 'int',
         'ope_company_id' => 'int',
         'auth_create' => 'bool',
         'auth_approve' => 'bool',

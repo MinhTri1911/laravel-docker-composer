@@ -1,11 +1,12 @@
 <?php
+
 /**
-* File Company controller
-*
-* @package App\Http\Controllers
-* @author tri_hnm
-* @date 2018/06/19
-*/
+ * File company controller
+ *
+ * @package App\Http\Controllers
+ * @author Rikkei.trihnm
+ * @date 2018/06/19
+ */
 
 namespace App\Http\Controllers;
 
@@ -20,6 +21,7 @@ class CompanyController extends Controller
 
     /**
      * Function construct
+     * @access public
      * @return void
      */
     public function __construct(CompanyBusiness $companyBusiness)
@@ -29,19 +31,22 @@ class CompanyController extends Controller
 
     /**
      * Show list company
-     * @return view
+     * @access public
+     * @param Illuminate\Http\Request request
+     * @return View, \Symfony\Component\HttpFoundation\Response
      */
     public function index(Request $request)
     {
-        // get data for SMA0001 sheet define handle index => 3 sort data
+        // Get data for sort data
         $data = [
             'field' => $request->field, // field to order by
             'sortBy' => $request->sortBy, // ordery by
         ];
-        // SMA0001 sheet define handle index => 1.3 init list company
+
+        // Init list company
         $companies = $this->_companyBusiness->initListCompany($data['field'], $data['sortBy']);
 
-        // SMA0001 sheet define handle index => 1.3 init list company paginate ajax
+        // Paginate list company ajax
         if ($request->ajax()) {
             return response()->json([
                 'code' => self::_CODE_SUCCESS,
@@ -59,6 +64,7 @@ class CompanyController extends Controller
 
     /**
      * Search list company by group and load result
+     * @access public
      * @param Illuminate\Http\Request request
      * @return \Symfony\Component\HttpFoundation\Response
      */
@@ -68,27 +74,33 @@ class CompanyController extends Controller
             return response()->json(['code' => self::_CODE_ERROR]);
         }
 
+        // Set data group by, load result, order by, filed column to order by
         $data = [
             'group' => $request->group,
             'load' => $request->load,
-            'field' => $request->field, // field to order by
-            'sortBy' => $request->sortBy, // order by
+            'field' => $request->field,
+            'sortBy' => $request->sortBy,
         ];
-        // SMA0001 sheet define  handle index => 2 search company
+
+        // Get data search company
         $companies = $this->_companyBusiness->searchCompany($data['group'], $data['load'], $data['field'], $data['sortBy']);
 
+        // Check exists group type if not set default is group company
         if ($data['group'] != config('company.group_company') && $data['group'] != config('company.group_service')) {
             $data['group'] = config('company.group_company');
         }
 
+        // Check exists data load result if not set default is 10
         if (!in_array($data['load'], config('pagination.paginate_value'))) {
             $data['load'] = config('pagination.default');
         }
 
+        // Render data after search by group company or group service
         $tableview = !$data['group']
             ? view('company.component.list.table-group-company', ['companies' => $companies])->render()
             : view('company.component.list.table-group-service', ['companies' => $companies])->render();
-        // SMA0001 sheet define  handle index => 2 search company pagination
+
+        // Render data paginate after search
         $paginationView = view('company.component.paginate.default', [
             'paginator' => $companies,
             'url' => route('company.search', $data) . '&page=',
@@ -104,6 +116,7 @@ class CompanyController extends Controller
 
     /**
      * Filter list company by group and load result
+     * @access public
      * @param Illuminate\Http\Request request
      * @return \Symfony\Component\HttpFoundation\Response
      */
@@ -113,6 +126,7 @@ class CompanyController extends Controller
             return response()->json(['code' => self::_CODE_ERROR]);
         }
 
+        // Get data for filter
         $data = $request->only([
             'filter-company',
             'filter-service',
@@ -127,29 +141,40 @@ class CompanyController extends Controller
             'filter-company-ope-person-phone-2',
         ]);
 
-        $data['field'] = $request->field; // field to order by
-        $data['sortBy'] = $request->sortBy; // order by
+        // Set data field column to order by
+        $data['field'] = $request->field;
+
+        // Set data order by
+        $data['sortBy'] = $request->sortBy;
+
+        // Set data group by
         $data['group'] = $request->group;
+
+        // Set data load result
         $data['load'] = $request->load;
 
-        // SMA0001 sheet define  handle index => 2 filter company
+        // Get data filter company
         $companies = $this->_companyBusiness->filterCompany($data, $data['group'], $data['load'], [
             'field' => $data['field'],
             'sortBy' =>  $data['sortBy'],
         ]);
 
+        // Check group type is exists if not set default is group company
         if ($data['group'] != config('company.group_company') && $data['group'] != config('company.group_service')) {
             $data['group'] = config('company.group_company');
         }
 
+        // Check load result is exists if not set default is 10
         if (!in_array($data['load'], config('pagination.paginate_value'))) {
             $data['load'] = config('pagination.default');
         }
 
+        // Render data result after filter
         $tableview = !$data['group']
             ? view('company.component.list.table-tbody-company', ['companies' => $companies])->render()
             : view('company.component.list.table-tbody-service', ['companies' => $companies])->render();
-        // SMA0001 sheet define  handle index => 6 filter company pagination
+
+        // Render data pagination after filter
         $paginationView = view('company.component.paginate.default', [
             'paginator' => $companies,
             'url' => route('company.filter', $data) . '&page=',
@@ -184,6 +209,7 @@ class CompanyController extends Controller
 
     /**
      * Show popup detail grouping by company or service
+     * @access public
      * @param Illuminate\Http\Request request
      * @return \Symfony\Component\HttpFoundation\Response
      */
@@ -193,10 +219,14 @@ class CompanyController extends Controller
             return response()->json(['code' => self::_CODE_ERROR]);
         }
 
+        // Get all parameter
         $data = $request->all();
+
+        // Get data detail by group company or group service
         $detailGroup = $this->_companyBusiness->getDetailGroup($request->id, empty($data['detail-type']) ? 0 : $data['detail-type']);
 
-        if (empty($data['detail-type']) || $data['detail-type'] == 0) {
+        // Check detail type exists if not set default is detail group company
+        if (empty($data['detail-type']) || !$data['detail-type'] || $data['detail-type'] != 1) {
             $view = view('company.component.list.popup-detail-company', compact('detailGroup'))->render();
         } else {
             $view = view('company.component.list.popup-detail-service', compact('detailGroup'))->render();

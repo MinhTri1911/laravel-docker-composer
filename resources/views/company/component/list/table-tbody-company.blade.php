@@ -1,16 +1,26 @@
 <table class="table table-blue table-result">
     <tbody>
-        @php $count = 1; $tracker = []; $totalLicense = 0; @endphp
 
+        <!-- Init variable count and tracker for group -->
+        @php $count = 1; $tracker = []; @endphp
+
+        <!-- Loop companies -->
         @foreach ($companies as $index => $company)
+
+            <!-- Count rowspan and tracker for group  -->
             @for($i = $index + 1; $i < $companies->count(); $i++)
+
+                <!-- Check company id was tracked, if not count + 1 and mark company is tracked for group -->
                 @if ($companies[$i]->id === $companies[$index]->id && !in_array($i, $tracker))
-                    @php $count++; $tracker[] = $i; $totalLicense += $companies[$i]->license; @endphp
+                    @php $count++; $tracker[] = $i; @endphp
                 @else
+
+                    <!-- Break loop if company[i] != companies[index] -->
                     @break
                 @endif
             @endfor
-            <!--begin grouping by company row 1-->
+
+            <!-- Check companies[index] was tracked, if not add rowspan -->
             @if (!in_array($index, $tracker))
                 <tr>
                     <td rowspan="{{ $count }}" class="custom-checkbox checkbox-table col-checkbox">
@@ -61,13 +71,17 @@
                         </a>
                     </td>
                 </tr>
+
+            <!-- Check companies[index] was tracked -->
             @elseif (in_array($index, $tracker))
                 <tr>
                     <td class="col-service-name">{{ $company->service_name_jp }}</td>
                     <td class="col-license">{{ $company->license }}</td>
                 </tr>
+
+                <!-- Check id companies[index] != id companies[index + 1] and reset variabel count and tracker -->
                 @if ($index == $companies->count() - 1 || $company->id !== $companies[$index + 1]->id)
-                    @php $count = 1; $tracker = []; $totalLicense = 0; @endphp
+                    @php $count = 1; $tracker = []; @endphp
                 @endif
             @endif
         @endforeach

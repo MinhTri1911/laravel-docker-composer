@@ -25,7 +25,7 @@ class CreateMCompanyTable extends Migration
             $table->integer('employees_number')->unsigned()->nullable();
             $table->string('year_research', 4)->nullable();
             $table->bigInteger('billing_method_id');
-            $table->string('month_billng', 30);
+            $table->string('month_billing', 30);
             $table->integer('payment_deadline_no')->unsigned()->nullable();
             $table->integer('billing_day_no')->unsigned()->nullable();
             $table->string('currency_code', 5);
