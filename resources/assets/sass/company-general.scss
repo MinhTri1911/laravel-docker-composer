@@ -123,19 +123,27 @@ and open the template in the editor.
     }
   }
 
-  .table-dropdown {
-    thead {
-      tr {
-        th {
-          width: 110px;
-          word-break: break-all !important;
+  .table-detail-group {
+    border-left: 1px solid #d8e3f3;
+    .table-dropdown {
+      thead {
+        tr {
+          th {
+            width: 110px !important;
+            word-break: break-all !important;
+          }
         }
       }
-    }
-    tbody {
-      tr {
-        td {
-          word-break: break-all !important;
+      tbody {
+        tr {
+          td {
+            width: 110px !important;
+            word-break: break-all !important;
+          }
+
+          td:first-child {
+            border-left: none !important;
+          }
         }
       }
     }

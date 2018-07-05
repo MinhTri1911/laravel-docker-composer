@@ -366,6 +366,7 @@ $('#history-billing').on('click', function () {
     let typeGroup = JSON.parse($('#value-after-search').val());
     let storage = null;
     let url =$(this).attr('data-url');
+    let ids = '';
 
     if (typeGroup.group == 0) {
         storage = JSON.parse(window.localStorage.getItem('tracker-group-company'));
@@ -373,24 +374,22 @@ $('#history-billing').on('click', function () {
         storage = JSON.parse(window.localStorage.getItem('tracker-value-service'));
     }
 
-    if (storage == null) {
-        window.location.href = url;
-    } else {
-        url += '?id=';
-        for (var pageId in storage) {
-            storage[pageId].forEach(function (element, index) {
-                if (element != null) {
-                    url += element + ',';
-                }
-            });
-        }
+    for (var pageId in storage) {
+        storage[pageId].forEach(function (element, index) {
+            if (element != null) {
+                ids += element + ',';
+            }
+        });
+    }
 
-        url = url.split(',').filter(function (item, i, allItems){
+    if (ids != '') {
+        url += '?id=';
+        url += ids.split(',').filter(function (item, i, allItems) {
             return i == allItems.indexOf(item);
         }).join(',').slice(0, -1);
-
-        window.location.href = url;
     }
+
+    window.location.href = url;
 })
 
 /**

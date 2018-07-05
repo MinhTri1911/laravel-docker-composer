@@ -9,7 +9,7 @@
             <h2>{{ trans('company.title_popup_detail_system') }}</h2>
         </div>
         <div class="modal-body">
-            <div>
+            <div class="table-detail-group">
                 <table class="table table-blue table-dropdown">
                     <thead>
                         <tr>
