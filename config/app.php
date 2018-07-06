@@ -187,6 +187,7 @@ return [
 
         // Generator models
         Reliese\Coders\CodersServiceProvider::class,
+        Barryvdh\Debugbar\ServiceProvider::class,
 
     ],
 
@@ -240,6 +241,7 @@ return [
         'Html' => Collective\Html\HtmlFacade::class,
         // Helper
         'Str' => App\Helpers\Str::class,
+        'Debugbar' => Barryvdh\Debugbar\Facade::class,
         
 
     ],

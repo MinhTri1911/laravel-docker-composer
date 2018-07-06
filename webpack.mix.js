@@ -70,6 +70,10 @@ mix.babel([
         'node_modules/chart.js/dist/Chart.min.js',
         'resources/assets/js/statistic-billing.js'
     ], 'public/js/statistic-billing.js')
+    .babel([
+        'node_modules/mustache/mustache.min.js',
+        'resources/assets/js/ship-contract.js'
+    ], 'public/js/ship-contract.js')
     .sass('resources/assets/sass/vendor.scss', 'public/css')
     .sass('resources/assets/sass/auth.scss', 'public/css')
     .sass('resources/assets/sass/user-general.scss', 'public/css')

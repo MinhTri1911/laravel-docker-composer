@@ -86,7 +86,7 @@ class CompanyBusiness
      * @param array param condition filter
      * @param int groupType company = 0/ service = 1
      * @param int pagination
-     * @param array option sort with column and ordery by
+     * @param array option sort with column and order by
      * @return Paginate
      */
     public function filterCompany($param, $groupType = 0, $pagination = 10, $option = [])

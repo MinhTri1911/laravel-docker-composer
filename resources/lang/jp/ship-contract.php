@@ -40,12 +40,11 @@ return [
 
         'btn_edit_ship' => '編集',
 
-
-        'lbl_ship_contract' => 'スポット費用編集',
+        'lbl_ship_contract' => '契約',
         'lbl_no_ship_contract' => '合計:number件',
         'lbl_contract_id' => '契約ID',
         'lbl_contract_version' => '改定番号',
-        'lbl_contract_service' => 'システ',
+        'lbl_contract_service' => 'サービス',
         'lbl_contract_start' => '契約開始年月日',
         'lbl_contract_end' => '契約終了年月日',
         'lbl_contract_status' => '状態',
@@ -53,7 +52,6 @@ return [
         'lbl_contract_date_create' => '作成日',
         'lbl_contract_date_update' => '更新日',
 
-        'btn_back' => '',
         'btn_contract_create' => '作成',
         'btn_contract_disable' => '中断',
         'btn_contract_delete' => '削除',
@@ -70,7 +68,6 @@ return [
         'lbl_spot_date_create' => '作成日',
         'lbl_spot_date_update' => '更新日',
        
-
         'btn_back' => '戻る',
         'btn_create' => '作成',
         'btn_disable' => '中断',

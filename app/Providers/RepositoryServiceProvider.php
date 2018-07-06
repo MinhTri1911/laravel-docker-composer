@@ -31,6 +31,10 @@ class RepositoryServiceProvider extends ServiceProvider
             'company' => [
                 'interface' => \App\Repositories\Company\CompanyInterface::class,
                 'repository' => \App\Repositories\Company\CompanyRepository::class,
+            ],
+            'ship' => [
+                'interface' => \App\Repositories\Ship\ShipInterface::class,
+                'repository' => \App\Repositories\Ship\ShipRepository::class
             ]
         ];
 

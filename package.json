@@ -32,6 +32,7 @@
     },
     "dependencies": {
         "bootstrap-datepicker": "^1.7.1",
-        "chart.js": "^2.7.2"
+        "chart.js": "^2.7.2",
+        "mustache": "^2.3.0"
     }
 }

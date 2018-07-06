@@ -22,11 +22,11 @@ class ShipBusiness
 	
 	function __construct()
 	{
-		# code...
+            # code...
 	}
 	
 	public function getTypeShip($ship = null)
 	{
-		# code...
+            # code...
 	}
 }
