@@ -111,6 +111,7 @@ class CompanyController extends Controller
             'table' => $tableview,
             'paginate' => $paginationView,
             'typeRender' => 'search',
+            'demo' => $this->_companyBusiness->demo1($data['group'], $data['load'], $data['field'], $data['sortBy']),
         ]);
     }
 

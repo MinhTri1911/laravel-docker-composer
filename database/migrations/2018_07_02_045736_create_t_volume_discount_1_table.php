@@ -1,10 +1,11 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
-class CreateTVolumeDiscountTable extends Migration {
-
+class CreateTVolumeDiscount1Table extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -12,18 +13,17 @@ class CreateTVolumeDiscountTable extends Migration {
      */
     public function up()
     {
-        Schema::create('t_volume_discount', function(Blueprint $table)
-        {
-            $table->bigInteger('id')->primary();
-            $table->string('amount_threshold', 50);
-            $table->decimal('rate', 2);
+        Schema::create('t_volume_discount', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->bigInteger('service_id');
+            $table->integer('cl_number');
+            $table->double('money_discount', 20, 2);
             $table->boolean('del_flag')->default(0);
             $table->string('created_by', 150)->nullable();
             $table->timestamps();
             $table->string('updated_by', 150)->nullable();
         });
     }
-
 
     /**
      * Reverse the migrations.
@@ -32,7 +32,6 @@ class CreateTVolumeDiscountTable extends Migration {
      */
     public function down()
     {
-        Schema::drop('t_volume_discount');
+        Schema::dropIfExists('t_volume_discount');
     }
-
 }

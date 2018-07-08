@@ -80,6 +80,35 @@ class CompanyBusiness
             ->paginate($pagination);
     }
 
+    public function demo1($groupType = 0, $pagination = 10, $column = null, $orderBy = null)
+    {
+        // Check group type is exists if not set default group company
+        if ($groupType != config('company.group_company') && $groupType != config('company.group_service')) {
+            $groupType = config('company.group_company');
+        }
+
+        // Check load result is exists if not set default is 10
+        if (!in_array($pagination, config('pagination.paginate_value'))) {
+            $pagination = config('pagination.default');
+        }
+
+        // Check order by is desc or asc
+        $orderBy = $orderBy ? 'desc' : 'asc';
+
+        // Return limit companies
+        return [
+            $this->companyRepository->getListCompanyCommon($groupType)
+                ->groupBy([
+                    !$groupType ? 'm_company.id' : 'm_service.id',
+                    !$groupType ? 'm_service.id' : 'm_company.id',
+                ])
+                ->orderBy($this->_transFormNameToColumn($column, $groupType), $orderBy)
+                ->orderBy(!$groupType ? 'm_company.id' : 'm_service.id', $orderBy)
+                ->toSql(),
+                $this->_transFormNameToColumn($column, $groupType), $orderBy
+            ];
+    }
+
     /**
      * Business filter company
      * @access public
@@ -111,6 +140,30 @@ class CompanyBusiness
             ->orderBy($this->_transFormNameToColumn($option['field'], $groupType), $option['sortBy'])
             ->orderBy(!$groupType ? 'm_company.id' : 'm_service.id', $option['sortBy'])
             ->paginate($pagination);
+    }
+
+    public function demo($param, $groupType = 0, $pagination = 10, $option = [])
+    {
+        if ($groupType != config('company.group_company') && $groupType != config('company.group_service')) {
+            $groupType = config('company.group_company');
+        }
+
+        if (!in_array($pagination, config('pagination.paginate_value'))) {
+            $pagination = config('pagination.default');
+        }
+
+        $param = $this->_checkValueExists($param);
+        $option['sortBy'] = $option['sortBy'] ? 'desc' : 'asc';
+
+        return $this->companyRepository->getListCompanyCommon($groupType)
+            ->conditionSearchCompany($param)
+            ->groupBy([
+                !$groupType ? 'm_company.id' : 'm_service.id',
+                !$groupType ? 'm_service.id' : 'm_company.id',
+            ])
+            ->orderBy($this->_transFormNameToColumn($option['field'], $groupType), $option['sortBy'])
+            ->orderBy(!$groupType ? 'm_company.id' : 'm_service.id', $option['sortBy'])
+            ->toSql();
     }
 
     /**

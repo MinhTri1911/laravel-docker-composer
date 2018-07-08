@@ -1,0 +1,250 @@
+1,4,AFG,Afghanistan,アフガニスタン・イスラム共和国,AFN
+2,248,ALA,Aland Islands,オーランド諸島,EUR
+3,8,ALB,Albania,アルバニア共和国,ALL
+4,12,DZA,Algeria,アルジェリア民主人民共和国,DZD
+5,16,ASM,American Samoa,米領サモア,WST
+6,20,AND,Andorra,アンドラ公国,EUR
+7,24,AGO,Angola,アンゴラ共和国,AOA
+8,660,AIA,Anguilla,アンギラ,XCD
+9,10,ATA,Antarctica,南極,aAAAA
+10,28,ATG,Antigua and Barbuda,アンティグア・バーブーダ,XCD
+11,32,ARG,Argentina,アルゼンチン共和国,ARS
+12,51,ARM,Armenia,アルメニア共和国,AMD
+13,533,ABW,Aruba,アルバ,AWG
+14,36,AUS,Australia,オーストラリア連邦,AUD
+15,40,AUT,Austria,オーストリア共和国,EUR
+16,31,AZE,Azerbaijan,アゼルバイジャン共和国,AZN
+17,44,BHS,Bahamas,バハマ国,BSD
+18,48,BHR,Bahrain,バーレーン王国,BHD
+19,50,BGD,Bangladesh,バングラデシュ人民共和国,BDT
+20,52,BRB,Barbados,バルバドス,BBD
+21,112,BLR,Belarus,ベラルーシ共和国,BYN
+22,56,BEL,Belgium,ベルギー王国,EUR
+23,84,BLZ,Belize,ベリーズ,BZD
+24,204,BEN,Benin,ベナン共和国,XOF
+25,60,BMU,Bermuda,バミューダ諸島,BMD
+26,64,BTN,Bhutan,ブータン王国,BTN
+27,68,BOL,Bolivia Plurinational State of,ボリビア多民族国,BOB
+28,535,BES,Bonaire Saint Eustatius and Saba,ボネール、シント・ユースタティウスおよびサバ,USD
+29,70,BIH,Bosnia and Herzegovina,ボスニア・ヘルツェゴビナ,BAM
+30,72,BWA,Botswana,ボツワナ共和国,BWP
+31,74,BVT,Bouvet Island,ブーベ島,NOK
+32,76,BRA,Brazil,ブラジル連邦共和国,BRL
+33,86,IOT,British Indian Ocean Territory,英領インド洋地域,GBP
+34,96,BRN,Brunei Darussalam,ブルネイ・ダルサラーム国,BND
+35,100,BGR,Bulgaria,ブルガリア共和国,BGN
+36,854,BFA,Burkina,Faso	ブルキナファソ,XOF
+37,108,BDI,Burundi,ブルンジ共和国,BIF
+38,116,KHM,Cambodia,カンボジア王国,KHR
+39,120,CMR,Cameroon,カメルーン共和国,XAF
+40,124,CAN,Canada,カナダ,CAD
+41,132,CPV,Cape Verde,カーボベルデ共和国,CVE
+42,136,CYM,Cayman Islands,ケイマン諸島,KYD
+43,140,CAF,Central African Republic,中央アフリカ共和国,XAF
+44,148,TCD,Chad,チャド共和国,XAF
+45,152,CHL,Chile,チリ共和国,CLP
+46,156,CHN,China,中華人民共和国	,NY
+47,162,CXR,Christmas Island,クリスマス島,AUD
+48,166,CCK,Cocos (Keeling) Islands,ココス諸島,AUD
+49,170,COL,Colombia,コロンビア共和国,COP
+50,174,COM,Comoros,コモロ連合,KMF
+51,178,COG,Congo Republic of the,コンゴ共和国,XAF
+52,180,COD,Congo Democratic Republic of the,コンゴ民主共和国,CDF
+53,184,COK,Cook Islands,クック諸島,NZD
+54,188,CRI,Costa Rica,コスタリカ共和国,CRC
+55,384,CIV,Cote d'Ivoire,コートジボワール共和国,XOF
+56,191,HRV,Croatia,クロアチア共和国,HRK
+57,192,CUB,Cuba,キューバ共和国,CUC
+58,531,CUW,Curacao,キュラソー,ANG
+59,196,CYP,Cyprus,キプロス共和国,EUR
+60,203,CZE,Czech Republic,チェコ共和国,CZK
+61,208,DNK,Denmark,デンマーク王国,DKK
+62,262,DJI,Djibouti,ジブチ共和国,DJF
+63,212,DMA,Dominica,ドミニカ国,XCD
+64,214,DOM,Dominican Republic,ドミニカ共和国,DOP
+65,218,ECU,Ecuador,エクアドル共和国,USD
+66,818,EGY,Egypt,エジプト・アラブ共和国,EGP
+67,222,SLV,El Salvador,エルサルバドル共和国,SVC
+68,226,GNQ,Equatorial Guinea,赤道ギニア共和国,XAF
+69,232,ERI,Eritrea,エリトリア国,ERN
+70,233,EST,Estonia,エストニア共和国,EUR
+71,231,ETH,Ethiopia,エチオピア連邦民主共和国,ETB
+72,238,FLK,Falkland Islands (Malvinas),フォークランド(マルビナス)諸島,FKP
+73,234,FRO,Faroe Islands,フェロー諸島,DKK
+74,242,FJI,Fiji,フィジー諸島共和国,FJD
+75,246,FIN,Finland,フィンランド共和国,EUR
+76,250,FRA,France,フランス共和国,EUR
+77,254,GUF,French Guiana,フランス領ギアナ,EUR
+78,258,PYF,French Polynesia,フランス領ポリネシア,XPF
+79,260,ATF,French Southern Territories,フランス領極南諸島,XPF
+80,266,GAB,Gabon,ガボン共和国,XAF
+81,270,GMB,Gambia,ガンビア共和国,GMD
+82,268,GEO,Georgia,グルジア,GEL
+83,276,DEU,Germany,ドイツ連邦共和国,EUR
+84,288,GHA,Ghana,ガーナ共和国,GHC
+85,292,GIB,Gibraltar,ジブラルタル,GIP
+86,300,GRC,Greece,ギリシャ共和国,EUR
+87,304,GRL,Greenland,グリーンランド,DKK
+88,308,GRD,Grenada,グレナダ,XCD
+89,312,GLP,Guadeloupe,グアドループ島,EUR
+90,316,GUM,Guam,グアム,USD
+91,320,GTM,Guatemala,グアテマラ共和国,GTQ
+92,831,GGY,Guernsey,ガーンジー島,なし
+93,324,GIN,Guinea,ギニア共和国,GNF
+94,624,GNB,Guinea-Bissau,ギニアビサウ共和国,XOF
+95,328,GUY,Guyana,ガイアナ共和国,GYD
+96,332,HTI,Haiti,ハイチ共和国,HTG
+97,334,HMD,Heard Island and McDonald Islands,ハード島・マクドナルド諸島,AUD
+98,336,VAT,Holy See (Vatican City State),バチカン市国,EUR
+99,340,HND,Honduras,ホンジュラス共和国,HNL
+100,344,HKG,Hong Kong,ホンコン(香港)特別行政区,HKD
+101,348,HUN,Hungary,ハンガリー共和国,HUF
+102,352,ISL,Iceland	,イスランド共和国,ISK
+103,356,IND,India,インド,INR
+104,360,IDN,Indonesia,インドネシア共和国,IDR
+105,364,IRN,Iran Islamic Republic of,イラン・イスラム共和国,IRR
+106,368,IRQ,Iraq,イラク共和国,IQD
+107,372,IRL,Ireland,アイルランド,EUR
+108,833,IMN,Isle of Man,マン島,GBP
+109,376,ISR,Israel,イスラエル国,ILS
+110,380,ITA,Italy,イタリア共和国,EUR
+111,388,JAM,Jamaica,ジャマイカ,JMD
+112,392,JPN,Japan,日本国,JPY
+113,832,JEY,Jersey,ジャージー島,GBP
+114,400,JOR,Jordan,ヨルダン・ハシミテ王国,JOD
+115,398,KAZ,Kazakhstan,カザフスタン共和国,KZT
+116,404,KEN,Kenya,ケニア共和国,KES
+117,296,KIR,Kiribati,キリバス共和国,AUD
+118,408,PRK,Korea Democratic People's Republic of,朝鮮民主主義人民共和国,KPW
+119,410,KOR,Korea Republic of,大韓民国,KRW
+120,414,KWT,Kuwait,クウェート国,KWD
+121,417,KGZ,Kyrgyzstan,キルギス共和国,KGS
+122,418,LAO,Lao People's Democratic Republic,ラオス人民民主共和国,LAK
+123,428,LVA,Latvia,ラトビア共和国,EUR
+124,422,LBN,Lebanon,レバノン共和国,LBP
+125,426,LSO,Lesotho,レソト王国,LSL
+126,430,LBR,Liberia,リベリア共和国,LRD
+127,434,LBY,Libya,リビア,LYD
+128,438,LIE,Liechtenstein,リヒテンシュタイン公国,CHF
+129,440,LTU,Lithuania,リトアニア共和国,LTL
+130,442,LUX,Luxembourg,ルクセンブルク大公国,EUR
+131,446,MAC,Macao,マカオ(澳門)特別行政区,MOP
+132,807,MKD,Macedonia the former Yugoslav Republic of,マケドニア旧ユーゴスラビア共和国,MKD
+133,450,MDG,Madagascar,マダガスカル共和国,MGA
+134,454,MWI,Malawi,マラウイ共和国,MWK
+135,458,MYS,Malaysia,マレーシア,MYR
+136,462,MDV,Maldives,モルディブ共和国,MVR
+137,466,MLI,Mali,マリ共和国,XOF
+138,470,MLT,Malta,マルタ共和国,EUR
+139,584,MHL,Marshall Islands,マーシャル諸島共和国,USD
+140,474,MTQ,Martinique,マルチニーク島,EUR
+141,478,MRT,Mauritania,モーリタニア・イスラム共和国,MRO
+142,480,MUS,Mauritius,モーリシャス共和国,MUR
+143,175,MYT,Mayotte,マイヨット島,EUR
+144,484,MEX,Mexico,メキシコ合衆国,MXN
+145,583,FSM,Micronesia Federated States of,ミクロネシア連邦,USD
+146,498,MDA,Moldova Republic of,モルドバ共和国,MDL
+147,492,MCO,Monaco,モナコ公国,EUR
+148,496,MNG,Mongolia,モンゴル国,MNT
+149,499,MNE,Montenegro,モンテネグロ,EUR
+150,500,MSR,Montserrat,モントセラト,XCD
+151,504,MAR,Morocco,モロッコ王国,MAD
+152,508,MOZ,Mozambique,モザンビーク共和国,MZN
+153,104,MMR,Myanmar,ミャンマー連邦,MMK
+154,516,NAM,Namibia,ナミビア共和国,NAD
+155,520,NRU,Nauru,ナウル共和国,AUD
+156,524,NPL,Nepal,ネパール連邦民主共和国,NPR
+157,528,NLD,Netherlands,オランダ王国,EUR
+158,540,NCL,New Caledonia,ニューカレドニア,XPF
+159,554,NZL,New Zealand,ニュージーランド,NZD
+160,558,NIC,Nicaragua,ニカラグア共和国,NIO
+161,562,NER,Niger,ニジェール共和国,XOF
+162,566,NGA,Nigeria,ナイジェリア連邦共和国,NGN
+163,570,NIU,Niue,ニウエ,NZD
+164,574,NFK,Norfolk Island,ノーフォーク島,AUD
+165,580,MNP,Northern Mariana Islands,北マリアナ諸島,USD
+166,578,NOR,Norway,ノルウェー王国,NOK
+167,512,OMN,Oman,オマーン国,OMR
+168,586,PAK,Pakistan,パキスタン・イスラム共和国,PKR
+169,585,PLW,Palau,パラオ共和国,USD
+170,275,PSE,Palestinian Territory Occupied,西岸・ガザ(パレスチナ自治区),JOD
+171,591,PAN,Panama,パナマ共和国,PAB
+172,598,PNG,Papua New Guinea,パプアニューギニア独立国,PGK
+173,600,PRY,Paraguay,パラグアイ共和国,PYG
+174,604,PER,Peru,ペルー共和国,PEN
+175,608,PHL,Philippines,フィリピン共和国,PHP
+176,612,PCN,Pitcairn,ピトケアン諸島,NZD
+177,616,POL,Poland,ポーランド共和国,PLN
+178,620,PRT,Portugal,ポルトガル共和国,EUR
+179,630,PRI,Puerto Rico,プエルトリコ,USD
+180,634,QAT,Qatar,カタール国,QAR
+181,638,REU,Reunion,レユニオン,EUR
+182,642,ROU,Romania,ルーマニア,RON
+183,643,RUS,Russian Federation,ロシア連邦,RUB
+184,646,RWA,Rwanda,ルワンダ共和国,RWF
+185,652,BLM,Saint Barth?lemy,サンバルテルミー,EUR
+186,654,SHN,Saint Helena Ascension and Tristan da Cunha,セントヘレナ・アセンション・トリスタンダクーニャ,SHP
+187,659,KNA,Saint Kitts and Nevis,セントキッツ・ネービス,XCD
+188,662,LCA,Saint Lucia,セントルシア,XCD
+189,663,MAF,Saint Martin (French part),サンマルタン,EUR
+190,666,SPM,Saint Pierre and Miquelon,サンピエール島・ミクロン島,EUR
+191,670,VCT,Saint Vincent and the Grenadines,セントビンセント・グレナディーン諸島,XCD
+192,882,WSM,Samoa,サモア独立国,WST
+193,674,SMR,San Marino,サンマリノ共和国,EUR
+194,678,STP,Sao Tome and Principe,サントメ・プリンシペ民主共和国,STD
+195,682,SAU,Saudi Arabia,サウジアラビア王国,SAR
+196,686,SEN,Senegal,セネガル共和国,XOF
+197,688,SRB,Serbia,セルビア共和国,RSD
+198,690,SYC,Seychelles,セーシェル共和国,SCR
+199,694,SLE,Sierra Leone,シエラレオネ共和国,SLL
+200,702,SGP,Singapore,シンガポール共和国,SGD
+201,534,SXM,Sint Maarten (Dutch part),シント・マールテン(オランダ領),ANG
+202,703,SVK,Slovakia,スロバキア共和国,EUR
+203,705,SVN,Slovenia,スロベニア共和国,EUR
+204,90,SLB,Solomon Islands,ソロモン諸島,SBD
+205,706,SOM,Somalia,ソマリア民主共和国,SOS
+206,710,ZAF,South Africa,南アフリカ共和国,ZAR
+207,239,SGS,South Georgia and the South Sandwich Islands,南ジョージア島・南サンドイッチ諸島,GBP
+208,728,SSD,South Sudan,南スーダン,SSP
+209,724,ESP,Spain,スペイン,EUR
+210,144,LKA,Sri Lanka,スリランカ民主社会主義共和国,LKR
+211,736,SDN,Sudan,スーダン共和国,SDG
+212,740,SUR,Suriname,スリナム共和国,SRD
+213,744,SJM,Svalbard and Jan Mayen,スバールバル諸島・ヤンマイエン島,NOK
+214,748,SWZ,Swaziland,スワジランド王国,SZL
+215,752,SWE,Sweden,スウェーデン王国,SEK
+216,756,CHE,Switzerland,スイス連邦,CHF
+217,760,SYR,Syrian Arab Republic,シリア・アラブ共和国,SYP
+218,158,TWN,Taiwan Province of China,台湾,TWD
+219,762,TJK,Tajikistan,タジキスタン共和国,TJS
+220,834,TZA,Tanzania United Republic of,タンザニア連合共和国,TZS
+221,764,THA,Thailand,タイ王国,THB
+222,626,TLS,Timor-Leste,東ティモール民主共和国,USD
+223,768,TGO,Togo,トーゴ共和国,XOF
+224,772,TKL,Tokelau,トケラウ諸島,NZD
+225,776,TON,Tonga,トンガ王国,TOP
+226,780,TTO,Trinidad and Tobago,トリニダード・トバゴ共和国,TTD
+227,788,TUN,Tunisia,チュニジア共和国,TND
+228,792,TUR,Turkey,トルコ共和国,TRL
+229,795,TKM,Turkmenistan,トルクメニスタン,TMM
+230,796,TCA,Turks and Caicos Islands,タークス・カイコス諸島,USD
+231,798,TUV,Tuvalu,ツバル,なし
+232,800,UGA,Uganda,ウガンダ共和国	,GX
+233,804,UKR,Ukraine,ウクライナ,UAH
+234,784,ARE,United Arab Emirates,アラブ首長国連邦,AED
+235,826,GBR,United Kingdom,グレートブリテン・北アイルランド連合王国(英国),GBP
+236,840,USA,United States,アメリカ合衆国,USD
+237,581,UMI,United States Minor Outlying Islands,米領小離島,USD
+238,858,URY,Uruguay,ウルグアイ東方共和国,UYU
+239,860,UZB,Uzbekistan,ウズベキスタン共和国,UZS
+240,548,VUT,Vanuatu,バヌアツ共和国,VUV
+241,862,VEN,Venezuela Bolivarian Republic of,ベネズエラ・ボリバル共和国,VEF
+242,704,VNM,Viet Nam,ベトナム社会主義共和国,VND
+243,92,VGB,Virgin Islands British,英領バージン諸島,USD
+244,850,VIR,Virgin Islands U.S.,米領バージン諸島,USD
+245,876,WLF,Wallis and Futuna,ワリス・フテュナ諸島,XPF
+246,732,ESH,Western Sahara,西サハラ,MAD
+247,887,YEM,Yemen,イエメン共和国,YER
+248,894,ZMB,Zambia,ザンビア共和国,ZMW
+249,716,ZWE,Zimbabwe,ジンバブエ共和国,USD
+250,999,ZZZ,Others,その他,aaa

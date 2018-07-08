@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMBillingMethodTable extends Migration
+class CreateTDiscountIndividual1Table extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,13 @@ class CreateMBillingMethodTable extends Migration
      */
     public function up()
     {
-        Schema::create('m_billing_method', function (Blueprint $table) {
+        Schema::create('t_discount_individual', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name_jp', 50);
-            $table->string('name_en', 50);
-            $table->string('month_billing', 30);
-            $table->tinyInteger('month')->unsigned();
-            $table->tinyInteger('unit')->unsigned();
-            $table->tinyInteger('method')->unsigned();
+            $table->bigInteger('contract_id');
+            $table->date('setting_month');
             $table->bigInteger('currency_id');
-            $table->double('charge', 20, 2);
-            $table->string('link_template', 255)->nullable();
+            $table->double('money_discount', 20, 2);
+            $table->string('remark', 255)->nullable();
             $table->boolean('del_flag')->default(0);
             $table->string('created_by', 150)->nullable();
             $table->timestamps();
@@ -38,6 +34,6 @@ class CreateMBillingMethodTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('m_billing_method');
+        Schema::dropIfExists('t_discount_individual');
     }
 }

@@ -71,7 +71,9 @@
             <div class="row"></div>
 
             <div class="col-md-12">
-                <p>{{ trans('company.lbl_total_result', ['total' => $companies->total()]) }}</p>
+                <p id="total-result">
+                    {{ trans('company.lbl_total_result', ['total' => count(collect($companies->items())->groupBy('id'))]) }}
+                </p>
 
                 <div class="block-table">
                     @include('company.component.list.table-group-company')
@@ -82,18 +84,24 @@
             <div class="row"></div>
 
             <div class="col-md-12 block-button">
-                <a class="btn btn-green-dark btn-w150" href="{{ route('company.create') }}" tabindex="19">{{ trans('company.go_to_create_company') }}</a>
+                <a class="btn btn-green-dark btn-w150" href="{{ route('company.create') }}" tabindex="19">
+                    {{ trans('company.go_to_create_company') }}
+                </a>
                 <a class="btn btn-green-dark btn-w150"
                     data-url="{{ route('billing.history.billing') }}"
                     href="javascript:void(0)"
                     id="history-billing"
                     tabindex="18">
-                    {{ trans('company.go_to_history_billing') }}
+                        {{ trans('company.go_to_history_billing') }}
                 </a>
-                <a class="btn btn-green-dark btn-w150" href="{{ route('billing.create.billing.paper') }}" tabindex="17">
-                    {{ trans('company.go_to_create_billing_paper') }}
+                <a class="btn btn-green-dark btn-w150"
+                    href="{{ route('billing.create.billing.paper') }}"
+                    tabindex="17">
+                        {{ trans('company.go_to_create_billing_paper') }}
                 </a>
-                <a href="{{ route('ship.index') }}" class="btn btn-green-dark btn-w150" tabindex="16">{{ trans('company.go_to_list_ship') }}</a>
+                <a href="{{ route('ship.index') }}" class="btn btn-green-dark btn-w150" tabindex="16">
+                    {{ trans('company.go_to_list_ship') }}
+                </a>
             </div>
 
             <div class="row"></div>
