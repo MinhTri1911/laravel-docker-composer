@@ -1,4 +1,6 @@
-<table class="table table-blue table-result">
+@php $totalResult = count(collect($companies->items())->groupBy('service_id')); @endphp
+<table class="table table-blue table-result"
+    data-total="{{ trans('company.lbl_total_result', ['total' => $totalResult]) }}">
     <tbody>
 
         <!-- Init variable count and tracker for group -->

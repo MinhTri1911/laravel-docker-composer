@@ -192,6 +192,12 @@ function removeStateChecked () {
     $("input:checkbox[name='cb-get-id[]']:checked").prop('checked', false);
 }
 
+function changeTotalResultByGroup () {
+    // Replace total result grouping
+    $('#total-result').empty();
+    $('#total-result').append($('.table-content .table-result').attr('data-total'));
+}
+
 /**
  * @description click show popup detail company
  */
@@ -240,6 +246,9 @@ $(document).on('click', '.pagination li a', function (event) {
 
             // Mark checkbox checked
             checkedStateOfCheckbox();
+
+            // Replace total result
+            changeTotalResultByGroup();
         }
     });
 });
@@ -275,6 +284,9 @@ $(document).on('click', '#btn-filter', function (event) {
 
             // Reset url for sort action
             $('#sort-value').attr('data-url', url);
+
+            // Replace total result
+            changeTotalResultByGroup();
         }
     });
 });
@@ -308,6 +320,9 @@ $('#btn-search-company').on('click', function () {
 
             // Mark checkbox checked
             checkedStateOfCheckbox();
+
+            // Replace total result
+            changeTotalResultByGroup();
         }
     });
 });

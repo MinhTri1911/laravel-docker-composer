@@ -163,7 +163,7 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
-        
+
 
         /*
          * Package Service Providers...
@@ -187,7 +187,7 @@ return [
 
         // Generator models
         Reliese\Coders\CodersServiceProvider::class,
-        Barryvdh\Debugbar\ServiceProvider::class,
+        // Barryvdh\Debugbar\ServiceProvider::class,
 
     ],
 
@@ -242,7 +242,7 @@ return [
         // Helper
         'Str' => App\Helpers\Str::class,
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
-        
+
 
     ],
 
