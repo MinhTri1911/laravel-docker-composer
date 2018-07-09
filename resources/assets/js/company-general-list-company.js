@@ -15,6 +15,11 @@ function showPopup(url) {
         $('#modal-protector').empty();
         $('#modal-protector').append(res.view);
         $('#modal-protector').modal('show');
+
+        const table = document.querySelector('.detail-group-table');
+        const psWidth = new PerfectScrollbar(table, function () {
+            table.style.height = '300px'
+        });
     });
 }
 
@@ -193,6 +198,15 @@ function removeStateChecked () {
 }
 
 /**
+ * @description change label total result after do some action
+ */
+function changeTotalResultByGroup () {
+    // Replace total result grouping
+    $('#total-result').empty();
+    $('#total-result').append($('.table-content .table-result').attr('data-total'));
+}
+
+/**
  * @description click show popup detail company
  */
 $(document).on('click', '.open-popup-detail-company', function () {
@@ -240,6 +254,9 @@ $(document).on('click', '.pagination li a', function (event) {
 
             // Mark checkbox checked
             checkedStateOfCheckbox();
+
+            // Replace total result
+            changeTotalResultByGroup();
         }
     });
 });
@@ -275,6 +292,9 @@ $(document).on('click', '#btn-filter', function (event) {
 
             // Reset url for sort action
             $('#sort-value').attr('data-url', url);
+
+            // Replace total result
+            changeTotalResultByGroup();
         }
     });
 });
@@ -308,6 +328,9 @@ $('#btn-search-company').on('click', function () {
 
             // Mark checkbox checked
             checkedStateOfCheckbox();
+
+            // Replace total result
+            changeTotalResultByGroup();
         }
     });
 });
@@ -382,8 +405,14 @@ $(document).on('change', '#cb-all', function() {
  * @description uncheck checkbox select all if uncheck checkbox get id
  */
 $(document).on('change', '.checkbox-table', function (event) {
+    // Check if uncheck some checkbox in result then mark unchecked checkbox check all
     if (!$('#' + event.target.getAttribute('id')).prop('checked')) {
         $('#cb-all').prop('checked', false);
+    }
+
+    // Check if checked all checkbox in result then mark checked checkbox check all
+    if ($("input[name='cb-get-id[]']").serializeArray().length == $('.table-content .table-result').attr('data-total-checkbox')) {
+        $('#cb-all').prop('checked', true);
     }
 });
 

@@ -10,72 +10,77 @@
         </div>
         <div class="modal-body">
             <div class="table-detail-group">
-                <table class="table table-blue table-dropdown">
+                <table class="table table-blue table-dropdown table-result">
                     <thead>
                         <tr>
-                            <th>
+                            <th class="col-xs-3">
                                 {{ trans('company.header_company_name') }}
                             </th>
-                            <th>
+                            <th class="col-xs-3">
                                 {{ trans('company.header_system_name') }}
                             </th>
-                            <th>
+                            <th class="col-xs-3">
                                 {{ trans('company.header_ship_name') }}
                             </th>
-                            <th>
+                            <th class="col-xs-3">
                                 {{ trans('company.header_start_date') }}
                             </th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-
-                            <!-- Show first row detail -->
-                            <td rowspan="{{ $detailGroup->count() + 1 }}">{{ $detailGroup->first()->company_jp }}</td>
-                        </tr>
-
-                        <!-- Init variable for count row span and tracker row for group -->
-                        @php $count = 1; $tracker = []; @endphp
-
-                        <!-- Loop result -->
-                        @foreach ($detailGroup as $index => $company)
-
-                            <!-- Count rowspan and tracker for group -->
-                            @for ($i = $index + 1; $i < $detailGroup->count(); $i++)
-
-                                <!-- Check service id was tracked, if not count + 1 and mark service is tracked for group -->
-                                @if ($detailGroup[$i]->service_id === $detailGroup[$index]->service_id && !in_array($i, $tracker))
-                                    @php $count++; $tracker[] = $i; @endphp
-                                @else
-
-                                    <!-- Break loop if service[i] != service[index] -->
-                                    @break
-                                @endif
-                            @endfor
-
-                            <!-- Check service[index] was tracked, if not add rowspan -->
-                            @if (!in_array($index, $tracker))
-                                <tr>
-                                    <td rowspan="{{ $count }}">{{ $company->service_jp }}</td>
-                                    <td>{{ $company->ship_name }}</td>
-                                    <td>{{ $company->contract_start_date }}</td>
-                                </tr>
-
-                            <!-- Check service[index] was tracked -->
-                            @elseif (in_array($index, $tracker))
-                                <tr>
-                                    <td>{{ $company->ship_name }}</td>
-                                    <td>{{ $company->contract_start_date }}</td>
-                                </tr>
-
-                                <!-- Check id service[index] != id service[index + 1] and reset variabel count and tracker -->
-                                @if ($index == $detailGroup->count() - 1 || $company->service_id !== $detailGroup[$index + 1]->service_id)
-                                    @php $count = 1; $tracker = []; @endphp
-                                @endif
-                            @endif
-                        @endforeach
-                    </tbody>
                 </table>
+
+                <div class="detail-group-table">
+                    <table class="table table-blue table-result">
+                        <tbody>
+                            <tr>
+
+                                <!-- Show first row detail -->
+                                <td rowspan="{{ $detailGroup->count() + 1 }}" class="col-xs-3">{{ $detailGroup->first()->company_jp }}</td>
+                            </tr>
+
+                            <!-- Init variable for count row span and tracker row for group -->
+                            @php $count = 1; $tracker = []; @endphp
+
+                            <!-- Loop result -->
+                            @foreach ($detailGroup as $index => $company)
+
+                                <!-- Count rowspan and tracker for group -->
+                                @for ($i = $index + 1; $i < $detailGroup->count(); $i++)
+
+                                    <!-- Check service id was tracked, if not count + 1 and mark service is tracked for group -->
+                                    @if ($detailGroup[$i]->service_id === $detailGroup[$index]->service_id && !in_array($i, $tracker))
+                                        @php $count++; $tracker[] = $i; @endphp
+                                    @else
+
+                                        <!-- Break loop if service[i] != service[index] -->
+                                        @break
+                                    @endif
+                                @endfor
+
+                                <!-- Check service[index] was tracked, if not add rowspan -->
+                                @if (!in_array($index, $tracker))
+                                    <tr>
+                                        <td rowspan="{{ $count }}" class="col-xs-3">{{ $company->service_jp }}</td>
+                                        <td class="col-xs-3">{{ $company->ship_name }}</td>
+                                        <td class="col-xs-3">{{ $company->contract_start_date }}</td>
+                                    </tr>
+
+                                <!-- Check service[index] was tracked -->
+                                @elseif (in_array($index, $tracker))
+                                    <tr>
+                                        <td class="col-xs-3">{{ $company->ship_name }}</td>
+                                        <td class="col-xs-3">{{ $company->contract_start_date }}</td>
+                                    </tr>
+
+                                    <!-- Check id service[index] != id service[index + 1] and reset variabel count and tracker -->
+                                    @if ($index == $detailGroup->count() - 1 || $company->service_id !== $detailGroup[$index + 1]->service_id)
+                                        @php $count = 1; $tracker = []; @endphp
+                                    @endif
+                                @endif
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div class="modal-bottom">

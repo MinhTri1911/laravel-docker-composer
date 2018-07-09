@@ -124,7 +124,17 @@ and open the template in the editor.
   }
 
   .table-detail-group {
-    border-left: 1px solid #d8e3f3;
+
+    .detail-group-table {
+      height: 300px;
+      position: relative;
+      overflow-y: scroll;
+
+      .table-result {
+        border-left: 1px solid #d8e3f3;
+      }
+    }
+
     .table-dropdown {
       thead {
         tr {
