@@ -130,6 +130,7 @@ and open the template in the editor.
       .col-ship-name, .col-company-name, .col-classification, .col-ship-type, .col-imo-number,
       .col-ship-nation, .col-service, .col-action {
         width: 110px;
+        vertical-align: middle;
       }
 
       thead {
@@ -140,6 +141,9 @@ and open the template in the editor.
             .th-line-one {
               width: 100%;
               position: relative;
+              i {
+                cursor: pointer;
+              }
             }
 
             .th-line-two {

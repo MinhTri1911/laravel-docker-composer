@@ -74,4 +74,6 @@ return [
     'btn_detail' => '詳細',
     'btn_next' => '次>',
     'btn_prev' => '<前',
+    'contract_status' => '契約状態',
+
 ];

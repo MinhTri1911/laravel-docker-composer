@@ -13,7 +13,6 @@ return [
     |
     */
 
-
     'detail' => [
         'title_ship_contract' => '契約船舶管理',
         'header_ship_contract' => '契約船舶管理',
@@ -67,6 +66,7 @@ return [
         'lbl_spot_approve' => '承認',
         'lbl_spot_date_create' => '作成日',
         'lbl_spot_date_update' => '更新日',
+        'lbl_limit' => '表示件数',
        
         'btn_back' => '戻る',
         'btn_create' => '作成',
@@ -76,6 +76,30 @@ return [
         'btn_contract_restore' => '復活',
         'btn_cancel' => 'キャンセル',
         'btn_ok' => 'OK',
+        
+        'res_tit_restore_contract' => 'Xác nhận response contract',
+        'msg_restore_success' => 'Resstore thanhf coong',
+        'msg_restore_failed' => 'Restore khoong thnhaf công',
+        
+        'res_tit_disable_contract' => 'Xác nhận response contract',
+        'msg_disable_success' => 'Disable thành công các hợp đồng :contract',
+        'msg_disable_failed' => 'Disable không thành công',
+        
+        'res_tit_delete_contract' => 'Xác nhận response contract',
+        'msg_delete_success' => 'Delete thành công các hợp đồng :contract',
+        'msg_delete_failed' => 'Delete không thành công',
+        
+        'res_tit_delete_spot' => 'Xác nhận response spot',
+        'msg_delete_spot_success' => 'Delete thành công spot :spot',
+        'msg_delete_spot_failed' => 'Delete không thành công spot',
+        
+        'res_tit_delete_ship' => 'Xác nhận response ship',
+        'msg_delete_ship_success' => 'Delete thành công ship :ship',
+        'msg_delete_ship_failed' => 'Delete ship không thành công',
+        'msg_delete_ship_failed_auth' => 'Lỗi xác thực',
+        
+        'pop_auth_delete_ship' => 'Xác thực xóa tàu',
+        'lbl_input_pw' => 'Nhập mật khẩu xác thực',
 
         'lbl_popup_del_contract' => '契約を削除確認',
         'lbl_popup_del_contract_msg' => '選択した契約を削除してもよろしいですか?'

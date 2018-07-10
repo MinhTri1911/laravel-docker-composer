@@ -2,7 +2,7 @@
 
 /**
  * Router for function billing
- * 
+ *
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -16,4 +16,9 @@ Route::group(['middleware' => 'auth', 'prefix' => 'billing', 'as' => 'billing.']
     Route::get('/history', 'HistoryBillingController@index')->name('history.billing');
     Route::get('/statistic', 'StatisticBillingController@index')->name('statistic.billing');
     Route::get('/preview', 'BillingPaperController@previewBillingPaper')->name('preview.billing.paper');
+});
+
+Route::group(['middleware' => 'auth', 'prefix' => 'billing-method','as' => 'billing.method.'], function () {
+    Route::get('/{id}', 'BillingMethodCompanyController@show')->name('show');
+    Route::post('/update', 'BillingMethodCompanyController@update')->name('update');
 });

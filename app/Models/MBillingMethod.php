@@ -11,7 +11,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class MBillingMethod
- * 
+ *
  * @property int $id
  * @property string $name_jp
  * @property string $name_en
@@ -57,4 +57,13 @@ class MBillingMethod extends Eloquent
         'created_by',
         'updated_by'
     ];
+
+    /**
+     * Funtion make relationship 1-n with table m_company
+     * @return Eloquent
+     */
+    public function companies()
+    {
+        return $this->hasMany(MCompany::class);
+    }
 }

@@ -185,4 +185,63 @@ class CompanyBusiness
 
         return $this->companyRepository->getDetailByGroup($id, $type);
     }
+
+    /**
+     * Function get detail company by id
+     * @param int id
+     * @param array colums
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     * @return array
+     */
+    public function getDetailCompany($id, $columns = ['*'])
+    {
+        $company = $this->companyRepository->findOrFail($id, $columns = ['*']);
+        $nationOfCompany = $company->nation;
+        $companyOperation = $company->companyOperation;
+        $billingMethod = $company->billingMethod;
+        $currency = $company->currency;
+
+        return [
+            'company' => $company,
+            'nation' => $nationOfCompany,
+            'companyOperation' => $companyOperation,
+            'billingMethod' => $billingMethod,
+            'currency' => $currency,
+        ];
+    }
+
+    /**
+     * Function get currency of company
+     * @param string|int urlDetailCompany
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     * @return int
+     */
+    public function getCompanyCurrencyId($urlDetailCompany)
+    {
+
+        // Detech url to get company Id
+        $companyId = last(explode('/', $urlDetailCompany));
+        // dd($companyId);
+        // preg_match('/[0-9]/', $urlDetailCompany, $companyId);
+
+        // Find or fail company get currency id
+        $company = $this->companyRepository->findOrFail($companyId, ['currency_id'])->toArray();
+        dd($company, 'aaa', $companyId, $urlDetailCompany);
+
+        return $company['currency_id'];
+    }
+
+    /**
+     * Function update currency  company
+     * @param string|int urlDetailCompany
+     * @param int currencyId
+     * @return bool|mixed
+     */
+    public function updateBillingMethod($urlDetailCompany, $currencyId)
+    {
+        // Detech url to get company Id
+        preg_match('/[0-9]/', $urlDetailCompany, $companyId);
+
+        return $this->companyRepository->update($companyId, ['billing_method' => $currencyId]);
+    }
 }

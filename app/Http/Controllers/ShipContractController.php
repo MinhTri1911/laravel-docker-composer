@@ -4,66 +4,136 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Business\ShipContractBusiness;
+use Exception;
 
 class ShipContractController extends Controller
 {
+    // Business ship contract
     private $_shipContractBusiness;
     
+    // Set default number record per page
     const N_RECORD_PAGE = 10;
 
-
     /**
+     * Constructor dependency inject dependency to controller
      * 
-     * @param ShipContractBusiness $shipContractBusiness
+     * @access public
+     * @param App\Business\ShipContractBusiness $shipContractBusiness
+     * @return Object 
      */
     public function __construct(ShipContractBusiness $shipContractBusiness) {
         $this->_shipContractBusiness = $shipContractBusiness;
     }
     
     /**
+     * Show detail ship and anything  realted to ship, eg contract, spot, etc...
      * 
-     * @param type $id
-     * @return type
+     * @access public
+     * @param integer $id
+     * @param Illuminate\Support\Facades\Request $request
+     * @return Illuminate\Support\Facades\View
      */
-    public function detail($id = '') {
-        
-        $ship = $this->_shipContractBusiness->getShipContractById(1);
-        if(is_null($ship->detail_ship) || empty($ship->detail_ship))
-            return 'Not exists';
-        
-        return view('ship.contract.detail')->with('ship', $ship);
+    public function detail($id = '', Request $request) {
+        try {
+            // Ship detail get from business
+            $ship = $this->_shipContractBusiness->getShipContractById($id, $request);
+            
+            // If ship not exists, show not found page
+            if(is_null($ship->detail_ship) || empty($ship->detail_ship))
+                return 'Not exists';
+            return view('ship.contract.detail')->with('ship', $ship);
+        } catch (Exception $exc) {
+            echo $exc->getTraceAsString();
+        }
     }
     
     /**
+     * Restore contract of a ship
      * 
+     * @access public
      * @param Illuminate\Support\Facades\Request $request
+     * @return Illuminate\Support\Facades\Respons Response ajax
      */
     public function restoreContract(Request $request) {
-        
-        return response()->json($this->_shipContractBusiness->restoreContract($request));
+        try {
+            return response()->json($this->_shipContractBusiness->restoreContract($request));
+        } catch (Exception $exc) {
+            echo $exc->getTraceAsString();
+        }
     }
     
     /**
+     * Disable contract from ajax request
      * 
+     * @access public
      * @param Illuminate\Support\Facades\Request $request
+     * @return Illuminate\Support\Facades\Respons Response ajax
      */
     public function disableContract(Request $request) {
-        return response()->json($this->_shipContractBusiness->disableContract($request));
+        try {
+             return response()->json($this->_shipContractBusiness->disableContract($request));
+        } catch (Exception $exc) {
+            echo $exc->getTraceAsString();
+        }
     }
     
     /**
+     * Delete contract from request ajax.
      * 
+     * @access public
      * @param Illuminate\Support\Facades\Request $request
+     * @return Illuminate\Support\Facades\Response
      */
     public function deleteContract(Request $request) {
-        return response()->json($this->_shipContractBusiness->deleteContract($request));
+        try {
+            return response()->json($this->_shipContractBusiness->deleteContract($request));
+        } catch (Exception $exc) {
+            echo $exc->getTraceAsString();
+        }
     }
     
     /**
+     * Delete spot from ajax request
      * 
+     * @access public
      * @param Illuminate\Support\Facades\Request $request
+     * @return Illuminate\Support\Facades\Response
      */
     public function deleteSpot(Request $request) {
-        return response()->json($this->_shipContractBusiness->deleteSpot($request));
+        try {
+            return response()->json($this->_shipContractBusiness->deleteSpot($request));
+        } catch (Exception $exc) {
+            echo $exc->getTraceAsString();
+        }
+    }
+    
+    /**
+     * Show reason reject of request approved
+     * 
+     * @access public
+     * @param Illuminate\Support\Facades\Request $request
+     * @return Illuminate\Support\Facades\Response
+     */
+    public function getReasonReject(Request $request) {
+        try {
+            return response()->json($this->_shipContractBusiness->getReasonReject($request));
+        } catch (Exception $exc) {
+            echo $exc->getTraceAsString();
+        }
+    }
+    
+    /**
+     * Delete ship from request ajax
+     * 
+     * @access public
+     * @param Illuminate\Support\Facades\Request $request
+     * @return Illuminate\Support\Facades\Response
+     */
+    public function deleteShip(Request $request) {
+        try {
+            return response()->json($this->_shipContractBusiness->deleteShip($request));
+        } catch (Exception $exc) {
+            echo $exc->getTraceAsString();
+        }
     }
 }

@@ -388,4 +388,14 @@ abstract class EloquentRepository implements RepositoryInterface
 
         return $this;
     }
+
+    /**
+     * Debug function, print DB query
+     *
+     * @return string
+     */
+    public function toSql()
+    {
+        return $this->_model->toSql();
+    }
 }

@@ -11,7 +11,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class MCurrency
- * 
+ *
  * @property int $id
  * @property string $code
  * @property string $name_jp
@@ -43,4 +43,13 @@ class MCurrency extends Eloquent
         'created_by',
         'updated_by'
     ];
+
+    /**
+     * Funtion make relationship 1-n with table m_company
+     * @return Eloquent
+     */
+    public function currency()
+    {
+        return $this->hasMany(MCompany::class);
+    }
 }

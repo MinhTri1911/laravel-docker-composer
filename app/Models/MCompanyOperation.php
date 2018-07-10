@@ -11,7 +11,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class MCompanyOperation
- * 
+ *
  * @property int $id
  * @property string $name
  * @property string $short_name
@@ -46,4 +46,13 @@ class MCompanyOperation extends Eloquent
         'created_by',
         'updated_by'
     ];
+
+    /**
+     * Function make relationship 1-n with talbe m_company
+     * @return Eloquent
+     */
+    public function companies()
+    {
+        return $this->hasMany(MCompany::class);
+    }
 }

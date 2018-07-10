@@ -13,6 +13,7 @@
 // import Time Picker Jquery
 @import "option/timepicker";
 
+    .modal { overflow: auto !important; }
 #ship-contract{
     .detail-ship{
         .table-block{
@@ -89,9 +90,8 @@
         .ship-info-block{
             .block-handle{
                 .btn{
-                    display: table;
-                    margin-left: auto;
-                    margin-right: auto;
+                   margin-left: 5px;
+                   margin-right: 5px;
                 }
             }
         }
@@ -127,11 +127,44 @@
 
             .block-handle{
                 margin: 0;
+                &.block-page{
+                    margin-left: auto;
+                    margin-right: auto;
+                }
             }
             .pagination{
                 margin-top: 0;
                 margin-bottom: 0;
             }
+            
+            .extra-block{
+                display: table;
+                width: 100%;
+                
+                .pull-left{
+                    padding-top: 7px;
+                }
+            }
+        }
+        
+        .limit-block{
+            display: table;
+            margin-bottom: 10px;
+            .lbl_limit{
+                float: left;
+                padding-top: 7px;
+                padding-right: 5px;
+            }
+            
+            .custom-select{
+                float: right;
+            }
+        }
+        
+        .view-reason{
+            color: $color-blue-darker;
+            text-decoration: underline;
+            cursor: pointer;
         }
     }
 }

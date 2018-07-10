@@ -2,7 +2,9 @@ $(function(){
     // Handle check lisst    
     Handler.initial();
     
-    // Handle restore    
+    /**
+     * Show popup modal confirm restore contract
+     */   
     $(document).on("click",".restore-contract", function(){
         var service = $(this).data('service');
         var data = {
@@ -13,15 +15,16 @@ $(function(){
         Handler.typeModal = "restore";
         Handler.modalPopup.title = "契約を復活確認";
         Handler.modalPopup.message = service+"の契約を復活してもよろしいですか?";
-        Handler.showPopup(data);
+        Handler.showPopupRestore(data);
     });
      
     /**
-     * 
+     * Show popup modal confirm disable contract
      */
     $(document).on("click",".disable-contract", function(){
         var idContracts = '';
         
+        //When not select any contract, alert error else show popup
         if(Handler.checkList.length > 0){
             Handler.checkList.forEach(function(value){
                 idContracts += value+':';
@@ -33,22 +36,25 @@ $(function(){
             };
 
             Handler.typeModal = "disable";
-            Handler.modalPopup.title = "契約を無効確認";
-            Handler.modalPopup.message = "契約を無効にしてもよろしいですか?";
-            Handler.showPopup(data);
+            Handler.modalPopup.title = "船舶削除確認ポップアップ";
+            Handler.modalPopup.message = "船舶を承認してもよろしいですか?";
+            Handler.showPopupDisable(data);
         }else{
-            Handler.isOnlyPoupDone =  true;
             Handler.typeModal = "";
+            Handler.contract.isDisable = false;
             Handler.modalDone.title = "Lỗi";
             Handler.modalDone.message = "Vui lòng chọn một hợp đồng";
-            Handler.showPopupDone();
+            Handler.showPopupDoneDisableContract();
         }
     });
     
-    // Delete contract
+    /**
+     * Show popup modal confirm delete contract
+     */
     $(document).on("click",".delete-contract", function(){
         var idContracts = '';
         
+        //When not select any contract, alert error else show popup 
         if(Handler.checkList.length > 0){
             Handler.checkList.forEach(function(value){
                 idContracts += value+':';
@@ -62,17 +68,21 @@ $(function(){
             Handler.typeModal = "delete";
             Handler.modalPopup.title = "契約を削除確認";
             Handler.modalPopup.message = "選択した契約を削除してもよろしいですか?";
-            Handler.showPopup(data);
+            Handler.showPopupDelete(data);
         }else{
-            Handler.isOnlyPoupDone =  true;
             Handler.typeModal = "";
+            Handler.contract.isDelete = false;
             Handler.modalDone.title = "Lỗi";
             Handler.modalDone.message = "Vui lòng chọn một hợp đồng";
-            Handler.showPopupDone();
+            Handler.showPopupDoneDeleteContract();
         }
     });
     
-    // Handle restore    
+    /**
+     * Show popup modal confirm delete spot
+     * Click cancel button, hide popup
+     * Click OK, process delete spot and show popup alert success or fail
+     */  
     $(document).on("click",".delete-spot", function(){
         var data = {
             'ship': $(this).data('ship'),
@@ -82,12 +92,14 @@ $(function(){
         Handler.typeModal = "delete-spot";
         Handler.modalPopup.title = "スポット費用を削除確認";
         Handler.modalPopup.message = $(this).data('spot')+"を削除してもよろしいですか?";
-        Handler.showPopup(data);
+        Handler.showPopupDeleteSpot(data);
     });
     
-    // Handle button click OK inside modal
+    /**
+     * Click button OK, handle process flow base on type modal
+     * If is modal auth, the show input password
+     */
     $(document).on('click', '#modalBtnOK', function(e){
-        Handler.modalPopup.isClickOk = true;
         if(Handler.typeModal != "" && Handler.typeModal == "restore"){
             Handler.ajaxRestoreContract($(this));
         }else if(Handler.typeModal != "" && Handler.typeModal == "disable"){
@@ -96,51 +108,117 @@ $(function(){
             Handler.ajaxDeleteContract($(this));
         }else if(Handler.typeModal != "" && Handler.typeModal == "delete-spot"){
             Handler.ajaxDeleteSpot($(this));
+        }else if(Handler.typeModal != "" && Handler.typeModal == "delete-ship"){
+            Handler.showModalAuth();
         }
     });
+    
+    /**
+     * Show popup view reason reject approve
+     */
+    $(document).on("click",".view-reason", function(){
+        Handler.showPopupReject($(this));
+    });
+    
+    /**
+     * Show popup modal confirm delete ship
+     * Click OK, show popup contain input password
+     * Click cancel, hide popup
+     */
+    $(document).on("click",".delete-ship", function(){
+        var data = {
+            'ship': $(this).data('ship')
+        };
+
+        Handler.typeModal = "delete-ship";
+        Handler.modalPopup.title = "船舶削除確認ポップアップ";
+        Handler.modalPopup.message = "船舶を承認してもよろしいですか?";
+        Handler.showPopup(data);
+        
+    });
+    
+    /**
+     * Show popup allow user input password to author before delete ship
+     * Click OK, handle delete ship and show message success or failed
+     */
+    $(document).on('click', '#modalBtnOKAuth', function(e){
+        Handler.ajaxDeleteShip($(this));
+    });
+    
 });
 
 /**
  * Object handler processing funtion or follow processing
- * 
- * @type type
+ * Show popup contract and spot
  */
 var Handler = {
     /**
-     * 
-     * @returns {undefined}
+     * Initialize controls and lib need to use for script file
+     * Reset lib and initial lib
      */
     initial: function(){
         this.handleCheckList("#chk_ct_full", "input[name='contract']");
+        var vThis = this;
+        
         // Remove attribute after append to
         $("#modal-confirm").on('hide.bs.modal', function(){
             $("#modal-confirm").find('#modalBtnOK').removeAttr('data-ship data-contract');
+            vThis.contract.isDisable = false;
+            vThis.contract.isDelete = false;
         });
+        
+        $("#modal-auth").on('hide.bs.modal', function(){
+            vThis.ship.isDelete = false;
+            vThis.isNext = false;
+            $('#ship-del-error').text('');
+            $('#pw-user').val('');
+        });
+        
+        // Pjax when click paginate of spot
+        $(document).pjax('ul.pagination li a', '.content-load');
+        
+        // Config pjax for system
+        if ($.support.pjax) {
+            $.pjax.defaults.timeout = 60000; // time in milliseconds
+            $.pjax.defaults.scrollTo = false;
+        }
+        
+        // Reset lib
+        $(document).on('ready pjax:end', function() {
+            vThis.initialPlugin();
+        });
+        
+        $(document).on('pjax:popstate', function() {
+            $.pjax.reload('.content-load');
+        });
+        
+        // Handle pjax when click limit page
+        vThis.limitPage();
     },
     
     /**
-     * 
+     * Check type modal to handle event each to
      * @type String
      */
     typeModal: '',
     
     /**
-     * Text status message
-     * @type type
+     * Text status config for contract and spot
+     * @type Object
      */
     typo: {
-        stt_active: "Đang hoạt động",
-        stt_pending: "Đang tạm dừng",
-        stt_finish: "Đã ngừng hoạt động",
+        stt_active: "有効",
+        stt_pending: "中断",
+        stt_finish: "完了",
         
-        apv_done: "Đã approve",
-        apv_pending: "Đang chờ approve",
-        apv_reject: "Đã từ chối",
+        apv_done: "承認済",
+        apv_pending: "承認待ち",
+        apv_reject: "拒絶"
     },
     
     /**
-     * 
-     * @type type
+     * Control button restore
+     * @type element
      */
     control: {
         btn_restore: '<button class="btn btn-orange btn-custom-sm restore-contract restore-contract-1" data-service="service1" data-ship="1" data-contract="1">復活</button>'
@@ -165,6 +243,40 @@ var Handler = {
     },
     
     /**
+     * Info modal popup when click delete
+     * @type Object
+     */
+    modalAuth: {
+        isAuth: false,
+        error_emp: "Vui lòng nhập mật khẩu",
+        redirectAfterDone: '/ship'
+    },
+    
+    /**
+     * Info modal popup when click delete
+     * @type Object
+     */
+    contract: {
+        isRestore: false,
+        isDisable: true,
+        isDelete: true
+    },
+    
+    /**
+     * Info modal popup when click delete
+     * @type Object
+     */
+    spot: {
+        isDelete: false
+    },
+    
+    // Config ship
+    ship:{
+        isDelete: true
+    },
+    
+    
+    /**
      * Check list
      * @type Array
      */
@@ -179,36 +291,35 @@ var Handler = {
     /**
      * Handle checked for each item check and global check all
      * 
-     * @param {type} elementAllCheck
-     * @param {type} elementItemCheck
-     * @returns {undefined}
+     * @param element elementAllCheck
+     * @param element elementItemCheck
      */
-    handleCheckList: function(elementAllCheck, elementItemCheck){
+    handleCheckList: function(elementAllCheck, elementItemCheck) {
         // Check all checkbox
         var vThis = this;
-        $(document).on('change', elementAllCheck, function(e){
-           if($(this).is(':checked')){
+        $(document).on('change', elementAllCheck, function(e) {
+           if ($(this).is(':checked')){
                $(elementItemCheck).prop('checked', true).trigger('change');
-           }else{
+           } else {
                vThis.checkList = [];
                $(elementItemCheck).prop('checked', false);
            }
         });
         
         // When check item with status checked and check all
-        $(elementItemCheck).on('change', function(e){
-           if(!$(this).is(':checked')){
+        $(elementItemCheck).on('change', function(e) {
+           if (!$(this).is(':checked')) {
                $(elementAllCheck).prop('checked', false);
-               if(vThis.checkList.length > 0){
+               if (vThis.checkList.length > 0) {
                    var i = vThis.checkList.indexOf($(this).attr('id').replace(/[^0-9]+/, ""));
                     if(i != -1) {
                         vThis.checkList.splice(i, 1);
                     }
                }
-           }else{
+           } else {
                var checked_ch = $(elementItemCheck+":checked");
                vThis.checkList.push($(this).attr('id').replace(/[^0-9]+/, ""));
-               if(checked_ch.length == $(elementItemCheck).length){
+               if (checked_ch.length == $(elementItemCheck).length) {
                    $(elementAllCheck).prop('checked', true);
                }
            }
@@ -221,9 +332,9 @@ var Handler = {
      * @param {type} el
      * @returns {Array|Handler.itemChecking.els}
      */
-    itemChecking: function(el){
+    itemChecking: function(el) {
         var els = [];
-        if(el != null && typeof el != typeof undefined){
+        if (el != null && typeof el != typeof undefined) {
             var checkingEl = $(el+":checked");
             checkingEl.each(function(index, el){
                 els.push(el);
@@ -238,7 +349,7 @@ var Handler = {
      * @param {type} el
      * @returns {Array|Handler.itemChecking.els}
      */
-    clearChecking: function(elementItemCheck){
+    clearChecking: function(elementItemCheck) {
         $(elementItemCheck).prop('checked', false).trigger('change');
     },
     
@@ -248,14 +359,19 @@ var Handler = {
      * @param {type} data
      * @returns {undefined}
      */
-    showPopup: function(data){
+    showPopup: function(data) {
         $('#modalTitle').text(this.modalPopup.title);
         $('#modalMessage').text(this.modalPopup.message);
         $("#modal-confirm").modal("show");
+        $("#modal-confirm").on("shown.bs.modal", function(){
+            if (!$("body").hasClass('modal-open')) {
+                $("body").addClass("modal-open").attr('style', $("body").attr('style')+" padding-right: 17px;");
+            }
+        });
         
         // Set data for btn ok
-        if(typeof data != typeof undefined){
-            for(var key in data){
+        if (typeof data != typeof undefined) {
+            for (var key in data) {
                 $("#modal-confirm").find('#modalBtnOK').attr('data-'+key, data[key]);
             }
         }
@@ -265,33 +381,9 @@ var Handler = {
      * Hide popup confirm
      * @returns {undefined}
      */
-    hidePopup: function(){
+    hidePopup: function() {
         $("#modal-confirm").modal("hide");
-    },
-    
-    /**
-     * Display poup done to alert success, or error.
-     * @returns {undefined}
-     */
-    showPopupDone: function(){
-        this.hidePopup();
-        var vThis = this;
-        if(!this.isOnlyPoupDone){
-            $("#modal-confirm").on('hidden.bs.modal', function(){
-                if(vThis.modalPopup.isClickOk && vThis.modalPopup.afterShowPopup){
-                   $('#modalTitleDone').text(vThis.modalDone.title);
-                   $('#modalMessageDone').text(vThis.modalDone.message);
-                   $("#modal-done").modal("show");
-                   vThis.modalPopup.isClickOk = false;
-                }
-            });
-        }else{
-            $('#modalTitleDone').text(vThis.modalDone.title);
-            $('#modalMessageDone').text(vThis.modalDone.message);
-            $("#modal-done").modal("show");
-            vThis.modalPopup.isClickOk = false;
-            vThis.isOnlyPoupDone = false;
-        }
+        $('body').removeClass('modal-open').attr('style', $('body').attr('style').replace('padding-right: 17px;', ''));
     },
     
     /**
@@ -301,14 +393,49 @@ var Handler = {
      * @returns {undefined}
      */
     errorHandler: function(error){
-        
+        console.log(error);
+        $('#modalTitleDone').text("Error");
+        $('#modalMessageDone').text(error.responseText);
+        $("#modal-done").modal("show");
+        $("#modal-done").on('shown.bs.modal', function() {
+            if (!$("body").hasClass('modal-open')) {
+                $("body").addClass("modal-open").attr('style', $("body").attr('style')+" padding-right: 17px;");
+            }
+        });
     },
     
     /**
+     * Show modal confirm restore contract
+     * 
+     * @param data [Pass param into button]
+     * @returns Modal
+     */
+    showPopupRestore: function(data){
+        var vThis = this;
+        vThis.showPopup(data);
+    },
+    
+    /**
+     * Show alert after handle restore
+     * @returns Modal
+     */
+    showPopupDoneRestoreContract: function(){
+        var vThis = this;
+        $('#modalTitleDone').text(vThis.modalDone.title);
+        $('#modalMessageDone').text(vThis.modalDone.message);
+        $("#modal-done").modal("show");
+        $("#modal-done").on("shown.bs.modal", function(){
+            if(!$("body").hasClass('modal-open')){
+                $("body").addClass("modal-open").attr('style', $("body").attr('style')+" padding-right: 17px;");
+            }
+        });
+    },
+        
+    /**
      * Ajax handle restore contracts
      * 
-     * @param {type} el
-     * @returns {undefined}
+     * @param Element el
+     * @returns Response
      */
     ajaxRestoreContract: function(el){
         var vThis = this;
@@ -318,7 +445,7 @@ var Handler = {
             type: "POST",
             data: {"contract_id": contract_id, "ship_id": ship_id},
             url: '/ship/contract/restore-contract',
-            success: function(data){
+            success: function(){
                 vThis.hidePopup();
             },
             error: function(error){
@@ -326,28 +453,25 @@ var Handler = {
             }
          }).done(function(data){
              if(typeof data.redirectTo != typeof undefined){
-                 vThis.modalPopup.afterShowPopup = false;
-                 vThis.location.href = data.redirectTo;
+                 window.location.href = data.redirectTo;
              }else{
                  if(typeof data.status != typeof undefined && data.status == true){
-                     vThis.modalDone.title = "Thanhf coong";
-                     vThis.modalDone.message = "Xoas thanhf coong";
-                     vThis.modalPopup.afterShowPopup = true;
-                     vThis.showPopupDone();
+                     vThis.modalDone.title = data.title;
+                     vThis.modalDone.message = data.message;
+                     vThis.showPopupDoneRestoreContract();
                      vThis.uiAfterRestoreContract(data);
                      vThis.clearChecking("input[name='contract']");
                  }else{
-                     vThis.modalDone.title = "That bai";
-                     vThis.modalDone.message = "Xoas that bai";
-                     vThis.modalPopup.afterShowPopup = true;
-                     vThis.showPopupDone();
+                     vThis.modalDone.title = data.title;
+                     vThis.modalDone.message = data.message;
+                     vThis.showPopupDoneRestoreContract();
                  }
              }
          }); 
     },
     
     /**
-     * 
+     * Change text status and approve after restore
      * @param {type} res
      * @returns {undefined}
      */
@@ -355,6 +479,39 @@ var Handler = {
         $('.restore-contract-'+res.contract).remove();
         $('.status-contract-'+res.contract).text(this.typo.stt_active);
         $('.approve-contract-'+res.contract).text(this.typo.apv_pending);
+    },
+    
+    /**
+     * Show modal confirm disable
+     * 
+     * @param {type} data
+     * @returns {undefined}
+     */
+    showPopupDisable: function(data){
+        var vThis = this;
+        vThis.showPopup(data);
+    },
+    
+    /**
+     * 
+     * @param {type} data
+     * @returns {undefined}
+     */
+    showPopupErrorDisable: function(data){
+        var vThis = this;
+        vThis.showPopup(data);
+    },
+    
+    showPopupDoneDisableContract: function(){
+        var vThis = this;
+        $('#modalTitleDone').text(vThis.modalDone.title);
+        $('#modalMessageDone').text(vThis.modalDone.message);
+        $("#modal-done").modal("show");
+        $("#modal-done").on('shown.bs.modal', function() {
+            if (!$("body").hasClass('modal-open')) {
+                $("body").addClass("modal-open").attr('style', $("body").attr('style')+" padding-right: 17px;");
+            }
+        });
     },
     
     /**
@@ -371,25 +528,26 @@ var Handler = {
             type: "POST",
             data: {"contract_id": contract_id, "ship_id": ship_id},
             url: '/ship/contract/disable-contract',
-            success: function(data){
+            success: function(){
                 vThis.hidePopup();
             },
             error: function(error){
                 vThis.errorHandler(error);
             }
          }).done(function(data){
-            if(typeof data.status != typeof undefined && data.status == true){
-                vThis.modalDone.title = "Thanhf coong";
-                vThis.modalDone.message = "disable thanhf coong cac hop dong "+ data.contracts;
-                vThis.modalPopup.afterShowPopup = true;
-                vThis.showPopupDone();
+             vThis.isNext = true;
+             vThis.contract.isDisable = true;
+             
+            if (typeof data.status != typeof undefined && data.status == true) {
+                vThis.modalDone.title = data.title;
+                vThis.modalDone.message = data.message;
+                vThis.showPopupDoneDisableContract();
                 vThis.uiAfterDisableContract(data);
                 vThis.clearChecking("input[name='contract']");
-            }else{
-                vThis.modalDone.title = "That bai";
-                vThis.modalDone.message = "disable that bai";
-                vThis.modalPopup.afterShowPopup = true;
-                vThis.showPopupDone();
+            } else {
+                vThis.modalDone.title = data.title;
+                vThis.modalDone.message = data.message;
+                vThis.showPopupDoneDisableContract();
             }
         }); 
     },
@@ -401,7 +559,6 @@ var Handler = {
      */
     uiAfterDisableContract: function(res){
         if(typeof res.contracts != typeof undefined){
-            console.log(res.contracts);
             for(var i = 0; i < res.contracts.length; i++){
                 $('.status-contract-'+res.contracts[i]).text(this.typo.stt_pending);
                 $('.approve-contract-'+res.contracts[i]).text(this.typo.apv_pending);
@@ -409,13 +566,40 @@ var Handler = {
         }
     },
     
+    showPopupDelete: function(data) {
+        var vThis = this;
+        vThis.showPopup(data);
+    },
+    
+    showPopupErrorDelete: function(data) {
+        var vThis = this;
+        vThis.showPopup(data);
+    },
+    
+    /**
+     * Show popup aelrt message after delete contract
+     * 
+     * @return Modal
+     */
+    showPopupDoneDeleteContract: function() {
+        var vThis = this;
+        $('#modalTitleDone').text(vThis.modalDone.title);
+        $('#modalMessageDone').text(vThis.modalDone.message);
+        $("#modal-done").modal("show");
+        $("#modal-done").on("shown.bs.modal", function() {
+            if (!$("body").hasClass('modal-open')) {
+                $("body").addClass("modal-open").attr('style', $("body").attr('style')+" padding-right: 17px;");
+            }
+        });
+    },
+    
     /**
      * Ajax handle delete contract
      * 
-     * @param {type} el
-     * @returns {undefined}
+     * @param Element el
+     * @return Modal
      */
-    ajaxDeleteContract: function(el){
+    ajaxDeleteContract: function(el) {
         var vThis = this;
         var ship_id = el.attr('data-ship');
         var contract_id = el.attr('data-contract');
@@ -423,37 +607,35 @@ var Handler = {
             type: "POST",
             data: {"contract_id": contract_id, "ship_id": ship_id},
             url: '/ship/contract/delete-contract',
-            success: function(data){
+            success: function(data) {
                 vThis.hidePopup();
             },
-            error: function(error){
+            error: function(error) {
                 vThis.errorHandler(error);
             }
-         }).done(function(data){
-            if(typeof data.status != typeof undefined && data.status == true){
-                vThis.modalDone.title = "Thanhf coong";
-                vThis.modalDone.message = "Xoa thanhf coong cac hop dong "+ data.contracts;
-                vThis.modalPopup.afterShowPopup = true;
-                vThis.showPopupDone();
+         }).done(function(data) {
+            if (typeof data.status != typeof undefined && data.status == true) {
+                vThis.modalDone.title = data.title;
+                vThis.modalDone.message = data.message;
+                vThis.showPopupDoneDeleteContract();
                 vThis.uiAfterDeleteContract(data);
                 vThis.clearChecking("input[name='contract']");
-            }else{
-                vThis.modalDone.title = "That bai";
-                vThis.modalDone.message = "xoas that bai";
-                vThis.modalPopup.afterShowPopup = true;
-                vThis.showPopupDone();
+            } else {
+                vThis.modalDone.title = data.title;
+                vThis.modalDone.message = data.message;
+                vThis.showPopupDoneDeleteContract();
             }
         }); 
     },
     
     /**
-     * 
-     * @param {type} res
-     * @returns {undefined}
+     * Chang UI after delete contract
+     * @param Response res
+     * @return void
      */
-    uiAfterDeleteContract: function(res){
-        if(typeof res.contracts != typeof undefined){
-            for(var i = 0; i < res.contracts.length; i++){
+    uiAfterDeleteContract: function(res) {
+        if (typeof res.contracts != typeof undefined){
+            for (var i = 0; i < res.contracts.length; i++) {
                 $('.status-contract-'+res.contracts[i]).text(this.typo.stt_finish);
                 $('.approve-contract-'+res.contracts[i]).text(this.typo.apv_pending);
             }
@@ -461,10 +643,36 @@ var Handler = {
     },
     
     /**
+     * Show popup confirm delete spot
+     * @param Object data
+     * @return Modal
+     */
+    showPopupDeleteSpot: function(data) {
+        var vThis = this;
+        vThis.showPopup(data);
+    },
+    
+    /**
+     * Show popup alert message after delete spot
+     * @return Modal
+     */
+    showPopupDoneDeleteSpot: function() {
+        var vThis = this;
+        $('#modalTitleDone').text(vThis.modalDone.title);
+        $('#modalMessageDone').text(vThis.modalDone.message);
+        $("#modal-done").modal("show");
+        $("#modal-done").on("shown.bs.modal", function() {
+            if (!$("body").hasClass('modal-open')){
+                $("body").addClass("modal-open").attr('style', $("body").attr('style')+" padding-right: 17px;");
+            }
+        });
+    },
+    
+    /**
      * Ajax handle delete spot
      * 
-     * @param {type} el
-     * @returns {undefined}
+     * @param Element el
+     * @returns Modal
      */
     ajaxDeleteSpot: function(el){
         var vThis = this;
@@ -474,38 +682,188 @@ var Handler = {
             type: "POST",
             data: {"spot_id": spot_id, "ship_id": ship_id},
             url: '/ship/contract/delete-spot',
-            success: function(data){
+            success: function() {
                 vThis.hidePopup();
             },
-            error: function(error){
+            error: function(error) {
                 vThis.errorHandler(error);
             }
-         }).done(function(data){
-            if(typeof data.status != typeof undefined && data.status == true){
-                vThis.modalDone.title = "Thanhf coong";
-                vThis.modalDone.message = "Xoa thanhf coong spot "+ data.spot;
-                vThis.modalPopup.afterShowPopup = true;
-                vThis.showPopupDone();
+         }).done(function(data) {
+            if (typeof data.status != typeof undefined && data.status == true) {
+                vThis.modalDone.title = data.title;
+                vThis.modalDone.message = data.message;
+                vThis.showPopupDoneDeleteSpot();
                 vThis.uiAfterDeleteSpot(data);
-            }else{
-                vThis.modalDone.title = "That bai";
-                vThis.modalDone.message = "xoas that bai";
-                vThis.modalPopup.afterShowPopup = true;
-                vThis.showPopupDone();
+            } else {
+                vThis.modalDone.title = data.title;
+                vThis.modalDone.message = data.message;
+                vThis.showPopupDoneDeleteSpot();
             }
         }); 
     },
     
     /**
+     * Change UI after delete spot
      * 
-     * @param {type} res
-     * @returns {undefined}
+     * @param Response res
+     * @return void
      */
-    uiAfterDeleteSpot: function(res){
-        if(typeof res.spot != typeof undefined){
+    uiAfterDeleteSpot: function(res) {
+        if (typeof res.spot != typeof undefined) {
             $('.approve-spot-'+res.spot).text(this.typo.apv_pending);
         }
     },
+    
+    /**
+     * Show popup display reason reject
+     * 
+     * @param Element
+     * @returns Modal
+     */
+    showPopupReject: function(el) {
+        var vThis = this;
+        var type = el.attr('data-type');
+        var id = el.attr('data-id');
+        $.ajax({
+            type: "GET",
+            data: {"type": type, "id": id},
+            url: '/ship/contract/view-reason',
+            error: function(error) {
+                vThis.errorHandler(error);
+            }
+         }).done(function(data) {
+            if (typeof data.status != typeof undefined && data.status == true) {
+                $('#modalTitleDone').text("Nguyên nhân reject");
+                $('#modalMessageDone').text(data.reason);
+                $("#modal-done").modal("show");
+                $("#modal-done").on("shown.bs.modal", function() {
+                    if (!$("body").hasClass('modal-open')) {
+                        $("body").addClass("modal-open").attr('style', $("body").attr('style')+" padding-right: 17px;");
+                    }
+                });
+            }
+        }); 
+    },
+    
+    /**
+     * Show popup confirm delete ship
+     * 
+     * @param Object [Pass data into butotn btnOK]
+     * @return Modal
+     */
+    showPopupDeleteShip: function(data) {
+        var vThis = this;
+        vThis.showPopup(data);
+    },
+    
+    /**
+     * Display poup done to alert success, or error.
+     * @returns {undefined}
+     */
+    showModalAuth: function() {
+        var vThis = this;
+        vThis.hidePopup();
+            
+        $("#modal-auth").modal("show");
+        $("#modal-auth").on("shown.bs.modal", function(){
+            if(!$("body").hasClass('modal-open')){
+                $("body").addClass("modal-open").attr('style', $("body").attr('style')+" padding-right: 17px;");
+            }
+        });
+
+    },
+    
+    /**
+     * Show popup alert message after delete ship
+     */
+    showPopupDoneDeleteShip: function() {
+        var vThis = this;
+        $('#modalTitleDone').text(vThis.modalDone.title);
+        $('#modalMessageDone').text(vThis.modalDone.message);
+        $("#modal-done").modal("show");
+        $("#modal-done").on("shown.bs.modal", function() {
+            if (!$("body").hasClass('modal-open')) {
+                $("body").addClass("modal-open").attr('style', $("body").attr('style')+" padding-right: 17px;");
+            }
+        });
+    },
+    
+    /**
+     * Ajax handle delete spot
+     * 
+     * @param Element el
+     * @return Modal
+     */
+    ajaxDeleteShip: function(el) {
+        var vThis = this;
+        if($('#pw-user').val() == ""){
+            $('#ship-del-error').text(vThis.modalAuth.error_emp);
+            return false;
+        }
+        
+        $.ajax({
+            type: "POST",
+            data: {"ship_id": $('#ship-id').val(), 'pw': $('#pw-user').val()},
+            url: '/ship/contract/delete-ship',
+            success: function(){
+                vThis.hidePopup();
+                $('#modal-auth').modal('hide');
+                $('body').removeClass('modal-open').attr('style',  $('body').attr('style').replace('padding-right: 17px;', ''));
+            },
+            error: function(error){
+                vThis.errorHandler(error);
+            }
+         }).done(function(data) {
+             console.log(data);
+            vThis.modalDone.title = data.title;
+            vThis.modalDone.message = data.message || "";
+ 
+            $('#modalTitleDone').text(vThis.modalDone.title);
+            $('#modalMessageDone').text(vThis.modalDone.message);
+            $("#modal-done").modal("show");
+            $("#modal-done").on("shown.bs.modal", function() {
+                if (!$("body").hasClass('modal-open')) {
+                    $("body").addClass("modal-open").attr('style', $("body").attr('style')+" padding-right: 17px;");
+                }
+            });
+            
+            // Redirect after delete ship
+            if (data.status) {
+                setTimeout(function(e){
+                    window.location.href = vThis.modalAuth.redirectAfterDone;
+                }, 2000);
+            }
+        }); 
+    },
+    
+    /**
+     * Initial plugin after done ajax
+     */
+    initialPlugin: function(){
+       $( ".custom-select select" ).select2({
+            theme: "bootstrap",
+            width: '100%',
+            minimumResultsForSearch: Infinity,
+            allowClear: true
+        });
+   }, 
+   
+   /**
+    * Set limit page when change select box
+    */
+   limitPage: function() {
+        // Handle ajax for limit page
+        $(document).on('change', '.limit-page', function() {
+             var targetUrl = decodeURIComponent(window.location.protocol + "//" + window.location.host  + window.location.pathname);
+             var limit = $(this).val();
+            
+            targetUrl = targetUrl+'?limit='+limit;
+              $.pjax({
+                 url: targetUrl,
+                 container: '.content-load'
+             });
+        });
+   }
 }
 
 

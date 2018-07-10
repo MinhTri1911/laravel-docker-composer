@@ -11,7 +11,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class MCompany
- * 
+ *
  * @property int $id
  * @property string $name_jp
  * @property string $name_en
@@ -71,6 +71,7 @@ class MCompany extends Eloquent
     ];
 
     protected $fillable = [
+        'id',
         'name_jp',
         'name_en',
         'nation_id',
@@ -108,4 +109,40 @@ class MCompany extends Eloquent
         'created_by',
         'updated_by'
     ];
+
+    /**
+     * Function make relationship 1-n with table m_nation
+     * @return Eloquent
+     */
+    public function nation()
+    {
+        return $this->belongsTo(MNation::class);
+    }
+
+    /**
+     * Function make relationship 1-n with talbe m_company_operation
+     * @return Eloquent
+     */
+    public function companyOperation()
+    {
+        return $this->belongsTo(MCompanyOperation::class, 'ope_company_id');
+    }
+
+    /**
+     * Funtion make relationship 1-n with table m_billing_method
+     * @return Eloquent
+     */
+    public function billingMethod()
+    {
+        return $this->belongsTo(MBillingMethod::class, 'billing_method_id');
+    }
+
+    /**
+     * Funtion make relationship 1-n with table m_currency
+     * @return Eloquent
+     */
+    public function currency()
+    {
+        return $this->belongsTo(MCurrency::class, 'currency_id');
+    }
 }

@@ -170,4 +170,16 @@ class CompanyRepository extends EloquentRepository implements CompanyInterface
             ])
             ->get();
     }
+
+    // /**
+    //  * Function get detail company by id
+    //  * @param int id
+    //  * @param array colums
+    //  * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+    //  * @return \App\Models\MCompany
+    //  */
+    // public function getCompany($id, $columns = ['*'])
+    // {
+    //     return $this->findOrFail($id, $columns);
+    // }
 }

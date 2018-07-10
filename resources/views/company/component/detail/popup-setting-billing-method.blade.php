@@ -19,7 +19,15 @@
 
                     <div class="col-md-6">
                         <div class="custom-select">
-                            {{ Form::select('billing-method-id', [1 => 'ALL', 2 => 'ABC'], 1, ['class' => 'form-control']) }}
+
+                            {{-- Load all billing methd to array and set selected if billing method id == $id ($id is current billing method id)  --}}
+                            @php
+                                $dataBilings = [];
+                                foreach ($billings as $billing) {
+                                    $dataBilings[$billing->id] = $billing->name_jp . ' ' . $billing->id;
+                                }
+                            @endphp
+                            {{ Form::select('billing-method-id', $dataBilings, $id, ['class' => 'form-control', 'id' => 'slb-billing-method']) }}
                         </div>
                     </div>
                 </div>
@@ -31,7 +39,11 @@
                         'data-dismiss' => 'modal'
                     ])
                 }}
-                {{ Form::button(trans('company.btn_save_setting_billing'), ['class' => 'center-block btn btn-blue-dark btn-w150']) }}
+                {{ Form::button(trans('company.btn_save_setting_billing'), [
+                    'class' => 'center-block btn btn-blue-dark btn-w150',
+                    'id' => 'btn-save-setting-billing',
+                    'data-url' => route('billing.method.update', $id),
+                ]) }}
             </div>
         </div>
     </div>

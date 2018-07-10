@@ -37,4 +37,13 @@ interface CompanyInterface
      * @return Collection
      */
     public function getDetailByGroup($id, $type = 0);
+
+    // /**
+    //  * Function get detail company by id
+    //  * @param int id
+    //  * @param array colums
+    //  * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+    //  * @return \App\Models\MCompany
+    //  */
+    // public function getCompany($id, $columns = ['*']);
 }

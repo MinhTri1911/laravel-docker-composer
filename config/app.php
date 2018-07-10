@@ -241,7 +241,8 @@ return [
         'Html' => Collective\Html\HtmlFacade::class,
         // Helper
         'Str' => App\Helpers\Str::class,
-        'Debugbar' => Barryvdh\Debugbar\Facade::class,
+        //'Debugbar' => Barryvdh\Debugbar\Facade::class,
+        
 
 
     ],

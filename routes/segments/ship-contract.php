@@ -7,4 +7,8 @@ Route::group(['middleware' => 'auth', 'prefix' => 'ship/contract', 'as' => 'ship
    Route::post('/delete-contract', 'ShipContractController@deleteContract')->name('.delete');
    
    Route::post('/delete-spot', 'ShipContractController@deleteSpot')->name('.spot.delete');
+   
+   Route::get('/view-reason', 'ShipContractController@getReasonReject')->name('.item.reason');
+   
+   Route::post('/delete-ship', 'ShipContractController@deleteShip')->name('.delete-ship');
 });

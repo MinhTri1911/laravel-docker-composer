@@ -11,7 +11,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class MNation
- * 
+ *
  * @property int $id
  * @property string $code
  * @property int $iso_number
@@ -47,4 +47,13 @@ class MNation extends Eloquent
         'created_by',
         'updated_by'
     ];
+
+    /**
+     * Function make relation ship 1-n with table m_company
+     * @return Eloquent
+     */
+    public function companies()
+    {
+        return $this->hasMany(MCompany::class);
+    }
 }

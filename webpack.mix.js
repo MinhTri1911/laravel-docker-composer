@@ -72,6 +72,7 @@ mix.babel([
     ], 'public/js/statistic-billing.js')
     .babel([
         'node_modules/mustache/mustache.min.js',
+        'node_modules/jquery-pjax/jquery.pjax.js',
         'resources/assets/js/ship-contract.js'
     ], 'public/js/ship-contract.js')
     .sass('resources/assets/sass/vendor.scss', 'public/css')

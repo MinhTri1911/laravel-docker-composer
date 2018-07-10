@@ -27,7 +27,7 @@
                             <label>{{ trans('company.lbl_title_company_id') }}</label>
                         </div>
                         <div class="label-content">
-                            <label>1</label>
+                            <label>{{ $company->id }}</label>
                         </div>
                     </div>
 
@@ -36,7 +36,7 @@
                             <label>{{ trans('company.lbl_title_company_name_jp') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>ABC123</label>
+                            <label>{{ $company->name_jp }}</label>
                         </div>
                     </div>
 
@@ -45,7 +45,7 @@
                             <label>{{ trans('company.lbl_title_company_name_en') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>ABC123 EN</label>
+                            <label>{{ $company->name_en }}</label>
                         </div>
                     </div>
 
@@ -54,7 +54,7 @@
                             <label>{{ trans('company.lbl_title_company_nation') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>VIETNAM</label>
+                            <label>{{ $nation->name_jp }}</label>
                         </div>
                     </div>
 
@@ -63,7 +63,7 @@
                             <label>{{ trans('company.lbl_title_company_postal_code') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>0123354567</label>
+                            <label>{{ $company->postal_code }}</label>
                         </div>
                     </div>
 
@@ -72,7 +72,7 @@
                             <label>{{ trans('company.lbl_title_company_address') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>02 Nguyen Gia Thieu</label>
+                            <label>{{ $company->head_office_address }}</label>
                         </div>
                     </div>
 
@@ -81,7 +81,7 @@
                             <label>{{ trans('company.lbl_title_company_represent_person') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>Mr.A</label>
+                            <label>{{ $company->represent_person }}</label>
                         </div>
                     </div>
 
@@ -90,52 +90,7 @@
                             <label>{{ trans('company.lbl_title_company_fund') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>5.000.000 {{ trans('company.lbl_currency_value') . ' :' }}</label>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="label-title">
-                            <label>{{ trans('company.lbl_title_company_employee_number') . ' :' }}</label>
-                        </div>
-                        <div class="label-content">
-                            <label>5000</label>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="label-title">
-                            <label>{{ trans('company.lbl_title_company_year_research') . ' :' }}</label>
-                        </div>
-                        <div class="label-content">
-                            <label>2018</label>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="label-title">
-                            <label>{{ trans('company.lbl_title_company_billing_id') . ' :' }}</label>
-                        </div>
-                        <div class="label-content">
-                            <label>ALL</label>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="label-title">
-                            <label>{{ trans('company.lbl_title_company_payment_deadline_no') . ' :' }}</label>
-                        </div>
-                        <div class="label-content">
-                            <label>2</label>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="label-title">
-                            <label>{{ trans('company.lbl_title_company_site') . ' :' }}</label>
-                        </div>
-                        <div class="label-content">
-                            <label>20</label>
+                            <label>{{ $company->fund }}</label>
                         </div>
                     </div>
 
@@ -144,7 +99,70 @@
                             <label>{{ trans('company.lbl_title_company_currency') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>USD</label>
+                            <label>{{ $currency->code }}</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="label-title">
+                            <label>{{ trans('company.lbl_title_company_employee_number') . ' :' }}</label>
+                        </div>
+                        <div class="label-content">
+                            <label>{{ $nation->employees_number }}</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="label-title">
+                            <label>{{ trans('company.lbl_title_company_year_research') . ' :' }}</label>
+                        </div>
+                        <div class="label-content">
+                            <label>{{ $nation->year_research }}</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="label-title">
+                            <label>{{ trans('company.lbl_title_company_billing_id') . ' :' }}</label>
+                        </div>
+                        <div class="label-content">
+                            <label>{{ $billingMethod->name_jp . ' ' . $billingMethod->id }}</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="label-title">
+                            <label>{{ trans('company.lbl_title_company_month_billing') . ' :' }}</label>
+                        </div>
+                        <div class="label-content">
+                            <label>{{ $company->month_billing }}</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="label-title">
+                            <label>{{ trans('company.lbl_title_company_payment_deadline_no') . ' :' }}</label>
+                        </div>
+                        <div class="label-content">
+                            <label>{{ $company->payment_deadline_no }}</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="label-title">
+                            <label>{{ trans('company.lbl_title_company_site') . ' :' }}</label>
+                        </div>
+                        <div class="label-content">
+                            <label>{{ $company->billing_day_no }}</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="label-title">
+                            <label>{{ trans('company.lbl_title_company_currency_code') . ' :' }}</label>
+                        </div>
+                        <div class="label-content">
+                            <label>{{ $company->currency_code }}</label>
                         </div>
                     </div>
 
@@ -153,7 +171,7 @@
                             <label>{{ trans('company.lbl_title_ope_name') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>IMC</label>
+                            <label>{{ $companyOperation->name }}</label>
                         </div>
                     </div>
 
@@ -162,7 +180,7 @@
                             <label>{{ trans('company.lbl_title_company_url') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label><a href="#">http://google.com</a></label>
+                            <label><a href="{{ $company->url }}">{{ $company->url }}</a></label>
                         </div>
                     </div>
                 </div>
@@ -181,7 +199,7 @@
                             <label>{{ trans('company.lbl_title_ope_name') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>中尾</label>
+                            <label>{{ $company->ope_person_name_1 }}</label>
                         </div>
                     </div>
 
@@ -190,7 +208,7 @@
                             <label>{{ trans('company.lbl_title_ope_position') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>営業員</label>
+                            <label>{{ $company->ope_position_1 }}</label>
                         </div>
                     </div>
 
@@ -199,7 +217,7 @@
                             <label>{{ trans('company.lbl_title_ope_department') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>兵庫県神戸市７－１</label>
+                            <label>{{ $company->ope_department_1 }}</label>
                         </div>
                     </div>
 
@@ -208,7 +226,7 @@
                             <label>{{ trans('company.lbl_title_ope_postal_code') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>659-0041</label>
+                            <label>{{ $company->ope_postal_code_1 }}</label>
                         </div>
                     </div>
 
@@ -217,7 +235,7 @@
                             <label>{{ trans('company.lbl_title_ope_address') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>兵庫県高浜町</label>
+                            <label>{{ $company->ope_address_1 }}</label>
                         </div>
                     </div>
 
@@ -226,7 +244,7 @@
                             <label>{{ trans('company.lbl_title_ope_phone') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>087837424</label>
+                            <label>{{ $company->ope_phone_1 }}</label>
                         </div>
                     </div>
 
@@ -235,7 +253,7 @@
                             <label>{{ trans('company.lbl_title_ope_fax') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>087837424</label>
+                            <label>{{ $company->ope_fax_1 }}</label>
                         </div>
                     </div>
 
@@ -244,7 +262,7 @@
                             <label>{{ trans('company.lbl_title_ope_email') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>nakao@xxx.com</label>
+                            <label>{{ $company->ope_email_1 }}</label>
                         </div>
                     </div>
                 </div>
@@ -263,7 +281,7 @@
                             <label>{{ trans('company.lbl_title_ope_name') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>中尾</label>
+                            <label>{{ $company->ope_person_name_2 }}</label>
                         </div>
                     </div>
 
@@ -272,7 +290,7 @@
                             <label>{{ trans('company.lbl_title_ope_position') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>営業員</label>
+                            <label>{{ $company->ope_position_2 }}</label>
                         </div>
                     </div>
 
@@ -281,7 +299,7 @@
                             <label>{{ trans('company.lbl_title_ope_department') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>兵庫県神戸市７－１</label>
+                            <label>{{ $company->ope_department_2 }}</label>
                         </div>
                     </div>
 
@@ -290,7 +308,7 @@
                             <label>{{ trans('company.lbl_title_ope_postal_code') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>659-0041</label>
+                            <label>{{ $company->ope_postal_code_2 }}</label>
                         </div>
                     </div>
 
@@ -299,7 +317,7 @@
                             <label>{{ trans('company.lbl_title_ope_address') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>兵庫県高浜町</label>
+                            <label>{{ $company->ope_address_2 }}</label>
                         </div>
                     </div>
 
@@ -308,7 +326,7 @@
                             <label>{{ trans('company.lbl_title_ope_phone') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>087837424</label>
+                            <label>{{ $company->ope_phone_2 }}</label>
                         </div>
                     </div>
 
@@ -317,7 +335,7 @@
                             <label>{{ trans('company.lbl_title_ope_fax') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>087837424</label>
+                            <label>{{ $company->ope_fax_2 }}</label>
                         </div>
                     </div>
 
@@ -326,7 +344,7 @@
                             <label>{{ trans('company.lbl_title_ope_email') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>nakao@xxx.com</label>
+                            <label>{{ $company->ope_email_2 }}</label>
                         </div>
                     </div>
                 </div>
@@ -340,13 +358,17 @@
                                     <div class="label-title-button">
                                         <label>{{ trans('company.lbl_title_setting_billing_method') }}</label>
                                     </div>
-
+                                    <!-- route('company.settingBillingMethod', [
+                                                        'id' => $billingMethod->id,
+                                                    ]), -->
                                     <div class="col-md-12">
                                         <div class="col-md-6">
                                             {{ Form::button(trans('company.btn_setting_billing_method'), [
                                                     'class' => 'btn btn-green-dark btn-w150',
                                                     'id' => 'btn-setting-billing',
-                                                    'data-url' => route('company.settingBillingMethod', ['id' => 1]),
+                                                    'data-url' => route('billing.method.show', [
+                                                        'billing-method' => $billingMethod->id
+                                                    ]),
                                                 ])
                                             }}
                                         </div>

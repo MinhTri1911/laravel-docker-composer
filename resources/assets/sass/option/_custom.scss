@@ -169,6 +169,7 @@
                 background-color: $color-blue-darker;
                 border: 1px solid $color-blue-darker;
                 color: #fff;
+                cursor: pointer;
             }
         }
         &.active{
@@ -177,6 +178,7 @@
                     background-color: $color-blue-darker;
                     border: 1px solid $color-blue-darker;
                     color: #fff;
+                    cursor: pointer;
                 }
             }
         }

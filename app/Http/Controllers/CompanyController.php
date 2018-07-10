@@ -12,12 +12,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Business\CompanyBusiness;
+use App\Business\BillingMethodBusiness;
+use App\Common\Constant;
 
 class CompanyController extends Controller
 {
     private $_companyBusiness;
-    private const _CODE_SUCCESS = 200;
-    private const _CODE_ERROR = 500;
 
     /**
      * Function construct
@@ -49,7 +49,7 @@ class CompanyController extends Controller
         // Paginate list company ajax
         if ($request->ajax()) {
             return response()->json([
-                'code' => self::_CODE_SUCCESS,
+                'code' => Constant::HTTP_CODE_SUCCESS,
                 'table' => view('company.component.list.table-tbody-company', ['companies' => $companies])->render(),
                 'paginate' => view('company.component.paginate.default', [
                     'paginator' => $companies,
@@ -71,7 +71,7 @@ class CompanyController extends Controller
     public function searchCompany(Request $request)
     {
         if (!$request->ajax()) {
-            return response()->json(['code' => self::_CODE_ERROR]);
+            return response()->json(['code' => Constant::HTTP_CODE_ERROR_500]);
         }
 
         // Set data group by, load result, order by, filed column to order by
@@ -107,7 +107,7 @@ class CompanyController extends Controller
         ])->render();
 
         return response()->json([
-            'code' => self::_CODE_SUCCESS,
+            'code' => Constant::HTTP_CODE_SUCCESS,
             'table' => $tableview,
             'paginate' => $paginationView,
             'typeRender' => 'search',
@@ -123,7 +123,7 @@ class CompanyController extends Controller
     public function filterCompany(Request $request)
     {
         if (!$request->ajax()) {
-            return response()->json(['code' => self::_CODE_ERROR]);
+            return response()->json(['code' => Constant::HTTP_CODE_ERROR_500]);
         }
 
         // Get data for filter
@@ -181,7 +181,7 @@ class CompanyController extends Controller
         ])->render();
 
         return response()->json([
-            'code' => self::_CODE_SUCCESS,
+            'code' => Constant::HTTP_CODE_SUCCESS,
             'table' => $tableview,
             'paginate' => $paginationView,
             'typeRender' => 'filter',
@@ -216,7 +216,7 @@ class CompanyController extends Controller
     public function detail(Request $request)
     {
         if (!$request->ajax()) {
-            return response()->json(['code' => self::_CODE_ERROR]);
+            return response()->json(['code' => Constant::HTTP_CODE_ERROR_500]);
         }
 
         // Get all parameter
@@ -232,7 +232,7 @@ class CompanyController extends Controller
             $view = view('company.component.list.popup-detail-service', compact('detailGroup'))->render();
         }
 
-        return response()->json(['view' => $view, 'code' => self::_CODE_SUCCESS]);
+        return response()->json(['view' => $view, 'code' => Constant::HTTP_CODE_SUCCESS]);
     }
 
     /**
@@ -243,26 +243,14 @@ class CompanyController extends Controller
 
     public function show(Request $request, $id)
     {
-        return view('company.detail');
-    }
+        $data = $this->_companyBusiness->getDetailCompany($id);
 
-    /**
-     * Show popup setting billing method
-     * @param Illuminate\Http\Request request
-     * @param Type number id
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function showPopupSettingBillingMethod(Request $request, $id)
-    {
-        if (!$request->ajax()) {
-            return response()->json(['code' => 500]);
-        }
-
-        $view = view('company.component.detail.popup-setting-billing-method')->render();
-
-        return response()->json([
-            'code' => 200,
-            'view' => $view,
+        return view('company.detail', [
+                'company' => $data['company'],
+                'nation' => $data['nation'],
+                'companyOperation' => $data['companyOperation'],
+                'billingMethod' => $data['billingMethod'],
+                'currency' => $data['currency'],
         ]);
     }
 

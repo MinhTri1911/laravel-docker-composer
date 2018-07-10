@@ -12,7 +12,8 @@
         "laravelcollective/html": "^5.4.0",
         "monolog/monolog": "^1.23",
         "mpdf/mpdf": "^7.0",
-        "reliese/laravel": "^0.0.13"
+        "reliese/laravel": "^0.0.13",
+        "jacobbennett/pjax": "~1.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.1",

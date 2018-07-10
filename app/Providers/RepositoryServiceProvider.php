@@ -35,6 +35,10 @@ class RepositoryServiceProvider extends ServiceProvider
             'ship' => [
                 'interface' => \App\Repositories\Ship\ShipInterface::class,
                 'repository' => \App\Repositories\Ship\ShipRepository::class
+            ],
+            'billingMethod' => [
+                'interface' => \App\Repositories\BillingMethod\BillingMethodInterface::class,
+                'repository' => \App\Repositories\BillingMethod\BillingMethodRepository::class
             ]
         ];
 
