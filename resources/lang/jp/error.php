@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -24,5 +24,7 @@ return [
         'content_error' => 'CGIもしくはSSIが正しく動作していません。',
     ],
     'button_error'=> 'トップページへ',
-    'footer_content' => 'Powered by NTT ラーニングシステムズ'
+    'footer_content' => 'Powered by NTT ラーニングシステムズ',
+
+    'e009_not_exists_master' => ':field は存在しません。',
 ];

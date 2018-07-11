@@ -144,6 +144,11 @@ return [
         // Login attributes
         'login_id' => __('auth.lbl_login_id'),
         'password' => __('auth.lbl_password'),
+
+        // Detail company, popup add service for all ship
+        'service-id' => __('company.lbl_service_name'),
+        'start-date' => __('company.lbl_contract_start_date'),
+        'end-date' => __('company.lbl_contract_end_date'),
     ],
 
 ];

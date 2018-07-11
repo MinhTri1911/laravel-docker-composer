@@ -86,7 +86,38 @@
             overflow-y: auto;
         }
     }
+    
+    .modal-ship {
+        .modal-row{
+            padding-bottom: 10px;
+            &::after{
+                content: '';
+                display: table;
+                clear: both;
+            }
+            .modal-left{
+                float: left;
+                width: 60%;
+            }
+            .modal-right{
+                float: right;
+                width: 40%;
+            }
+        }
 
+        .table-popup{
+            tr, th, td{
+                text-align: center;
+            }
+        }
+
+        .tbody-popup{
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    }
+    
+    
     .table-fixed {
         thead {
             display: block;

@@ -75,6 +75,12 @@ mix.babel([
         'node_modules/jquery-pjax/jquery.pjax.js',
         'resources/assets/js/ship-contract.js'
     ], 'public/js/ship-contract.js')
+   .babel([
+        'resources/assets/js/search-service-master.js'
+    ], 'public/js/search-service-master.js')
+    .babel([
+        'resources/assets/js/search-ship-master.js'
+    ], 'public/js/search-ship-master.js')
     .sass('resources/assets/sass/vendor.scss', 'public/css')
     .sass('resources/assets/sass/auth.scss', 'public/css')
     .sass('resources/assets/sass/user-general.scss', 'public/css')

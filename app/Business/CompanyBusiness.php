@@ -218,15 +218,11 @@ class CompanyBusiness
      */
     public function getCompanyCurrencyId($urlDetailCompany)
     {
-
-        // Detech url to get company Id
-        $companyId = last(explode('/', $urlDetailCompany));
-        // dd($companyId);
-        // preg_match('/[0-9]/', $urlDetailCompany, $companyId);
+        // Detech url to get company id return array and get first element of array
+        preg_match('/([0-9]+)/', $urlDetailCompany, $companyId);
 
         // Find or fail company get currency id
-        $company = $this->companyRepository->findOrFail($companyId, ['currency_id'])->toArray();
-        dd($company, 'aaa', $companyId, $urlDetailCompany);
+        $company = $this->companyRepository->findOrFail(head($companyId), ['currency_id'])->toArray();
 
         return $company['currency_id'];
     }
@@ -239,9 +235,9 @@ class CompanyBusiness
      */
     public function updateBillingMethod($urlDetailCompany, $currencyId)
     {
-        // Detech url to get company Id
-        preg_match('/[0-9]/', $urlDetailCompany, $companyId);
+        // Detech url to get company id return array and get first element of array
+        preg_match('/([0-9]+)/', $urlDetailCompany, $companyId);
 
-        return $this->companyRepository->update($companyId, ['billing_method' => $currencyId]);
+        return $this->companyRepository->update(head($companyId), ['billing_method_id' => $currencyId]);
     }
 }

@@ -133,7 +133,7 @@
                                 </td>
                                 <td class="tbl-row-no">1</td>
                                 <td class="tbl-row-company-name">Company 1</td>
-                                <td class="tbl-row-date">2018/09/29</td>
+                                <td class="tbl-row-date">2018/09</td>
                                 <td class="tbl-row-method">四半期（船毎/個別押印）</td>
                                 <td class="tbl-row-ope-name">Full name 1</td>
                                 <td class="tbl-row-ope-phone">0944584584</td>

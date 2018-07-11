@@ -3,11 +3,11 @@
 @section('title',__('contract.create.header'))
 
 @section('style')
-    <link rel="stylesheet" href="{{asset("/css/contract.css")}}">
+<link rel="stylesheet" href="{{asset("/css/contract.css")}}">
 @endsection
 
 @section('menu_header')
-    @include('elements.service_menu')
+@include('elements.service_menu')
 @endsection
 
 @section('body-class', 'contract')
@@ -70,8 +70,20 @@
                     </div>
                     <div class="item-value">
                         <div class="input-group">
-                            {!! Form::text('Txt', "サービス", ['class' => 'form-control', 'placeholder' => __('contract.lbl_service')]) !!}
+                            {!! Form::text('idService', "", ['class' => 'form-control', 'placeholder' => __('contract.lbl_service')]) !!}
                             <div class="input-group-addon show-modal-service"><i class="fa fa-search"></i></div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="item-row">
+                    <div class="item-label">
+                        Search ship
+                        <span class="require">*</span>
+                    </div>
+                    <div class="item-value">
+                        <div class="input-group">
+                            {!! Form::text('idShip', "", ['class' => 'form-control', 'placeholder' => '']) !!}
+                            <div class="input-group-addon show-modal-ship"><i class="fa fa-search"></i></div>
                         </div>
                     </div>
                 </div>
@@ -136,151 +148,30 @@
         {{-- End List contract --}}
     </div>
 </div>
-{{-- Popup --}}
+{{-- Popup Search Service --}}
+{{ Form::hidden('currencyId',1) }}
+{{ Form::hidden('shipId', 1) }}
+{{ Form::hidden('companyId', null) }}
 <div class="modal fade modal-service" id="modal-service">
-    <div class="modal-close">
-        <button class="btn-close-modal" style="background-image: url({{url('images/common/modals_close.png')}})" data-dismiss="modal"></button>
-        <label>閉じる</label>
-    </div>
-    <div class="modal-dialog">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">{{__('contract.header_pop_service')}}</h4>
-            </div>
-            <div class="modal-body">
-                <div class="modal-row">
-                    <div class="modal-left">
-                        <div class="table-block">
-                            <div class="item-row">
-                                <div class="item-label">
-                                    {{__('contract.lbl_pop_service_id')}}
-                                </div>
-                                <div class="item-value">
-                                    {!! Form::text('Txt', null, ['class' => 'form-control', 'placeholder' => __('contract.lbl_pop_service_id')]) !!}
-                                </div>
-                            </div>
-                            <div class="item-row">
-                                <div class="item-label">
-                                    {{__('contract.lbl_pop_service_name')}}
-                                </div>
-                                <div class="item-value">
-                                        {!! Form::text('Txt', null, ['class' => 'form-control', 'placeholder' => __('contract.lbl_pop_service_name')]) !!}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-right">
-                        <div class="block-handle align-center">
-                            <button class="btn btn-blue-light btn-w150">{{__('contract.btn_pop_search')}}</button>
-                        </div>
-                    </div>
-                </div>
-                <table class="table table-blue table-service table-popup table-fixed">
-                    <thead>
-                        <tr>
-                            <th style="width: 20%">{{__('contract.lbl_pop_service_id')}}</th>
-                            <th style="width: 70%">{{__('contract.lbl_pop_service_name')}}</th>
-                            <th style="width: 10%"></th>
-                        </tr>
-                    </thead>
-                    <tbody class="tbody-popup">
-                        <tr>
-                            <td style="width: 20%">1</td>
-                            <td style="width: 70%">{{__('contract.lbl_spot_regist')}}</td>
-                            <td style="width: 10%">
-                                <div class="custom-radio">
-                                    <input class="hidden" id="mail_test_result_module1" name="mail_test_result_modules" type="radio">
-                                    <label for="mail_test_result_module1"></label>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="width: 20%">1</td>
-                            <td style="width: 70%">{{__('contract.lbl_spot_regist')}}</td>
-                            <td style="width: 10%">
-                                <div class="custom-radio">
-                                    <input class="hidden" id="mail_test_result_module1" name="mail_test_result_modules" type="radio">
-                                    <label for="mail_test_result_module1"></label>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="width: 20%">1</td>
-                            <td style="width: 70%">{{__('contract.lbl_spot_regist')}}</td>
-                            <td style="width: 10%">
-                                <div class="custom-radio">
-                                    <input class="hidden" id="mail_test_result_module1" name="mail_test_result_modules" type="radio">
-                                    <label for="mail_test_result_module1"></label>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="width: 20%">1</td>
-                            <td style="width: 70%">{{__('contract.lbl_spot_regist')}}</td>
-                            <td style="width: 10%">
-                                <div class="custom-radio">
-                                    <input class="hidden" id="mail_test_result_module1" name="mail_test_result_modules" type="radio">
-                                    <label for="mail_test_result_module1"></label>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="width: 20%">1</td>
-                            <td style="width: 70%">{{__('contract.lbl_spot_regist')}}</td>
-                            <td style="width: 10%">
-                                <div class="custom-radio">
-                                    <input class="hidden" id="mail_test_result_module1" name="mail_test_result_modules" type="radio">
-                                    <label for="mail_test_result_module1"></label>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="width: 20%">1</td>
-                            <td style="width: 70%">{{__('contract.lbl_spot_regist')}}</td>
-                            <td style="width: 10%">
-                                <div class="custom-radio">
-                                    <input class="hidden" id="mail_test_result_module1" name="mail_test_result_modules" type="radio">
-                                    <label for="mail_test_result_module1"></label>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="width: 20%">1</td>
-                            <td style="width: 70%">{{__('contract.lbl_spot_regist')}}</td>
-                            <td style="width: 10%">
-                                <div class="custom-radio">
-                                    <input class="hidden" id="mail_test_result_module1" name="mail_test_result_modules" type="radio">
-                                    <label for="mail_test_result_module1"></label>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="width: 20%">1</td>
-                            <td style="width: 70%">{{__('contract.lbl_spot_regist')}}</td>
-                            <td style="width: 10%">
-                                <div class="custom-radio">
-                                    <input class="hidden" id="mail_test_result_module1" name="mail_test_result_modules" type="radio">
-                                    <label for="mail_test_result_module1"></label>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>          
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-blue-light btn-w150" data-dismiss="modal">{{__('contract.btn_pop_cancel')}}</button>
-                <button type="button" class="btn btn-blue-dark btn-w190">{{__('contract.btn_pop_ok')}}</button>
-            </div>
-        </div>
-    </div>
+    @include('search-service-master.index')
+</div>
+<div class="modal fade modal-ship" id="modal-ship">
+    @include('search-ship-master.index')
 </div>
 {{-- End Popup --}}
+
 @endsection
 
 @section('javascript')
 <script type="text/javascript" src="{{ asset('js/contract.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/search-service-master.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/search-ship-master.js') }}"></script>
 <script>
-   $(document).on("click",".show-modal-service",function(){$("#modal-service").modal("show")});
+$(document).on("click", ".show-modal-service", function () {
+    $("#modal-service").modal("show")
+});
+$(document).on("click", ".show-modal-ship", function () {
+    $("#modal-ship").modal("show")
+});
 </script>
 @endsection

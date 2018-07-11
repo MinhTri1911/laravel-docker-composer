@@ -59,6 +59,7 @@ class MCompany extends Eloquent
     protected $table = 'm_company';
 
     protected $casts = [
+        'id' => 'int',
         'nation_id' => 'int',
         'fund' => 'float',
         'employees_number' => 'int',
@@ -71,7 +72,6 @@ class MCompany extends Eloquent
     ];
 
     protected $fillable = [
-        'id',
         'name_jp',
         'name_en',
         'nation_id',

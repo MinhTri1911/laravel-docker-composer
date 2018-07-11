@@ -4,15 +4,14 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
-class RepositoryServiceProvider extends ServiceProvider
-{
+class RepositoryServiceProvider extends ServiceProvider {
+
     /**
      * Bootstrap the application services.
      *
      * @return void
      */
-    public function boot()
-    {
+    public function boot() {
         //
     }
 
@@ -21,8 +20,7 @@ class RepositoryServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
-    {
+    public function register() {
         $paths = [
             'user' => [
                 'interface' => \App\Repositories\User\UserRepositoryInterface::class,
@@ -36,14 +34,23 @@ class RepositoryServiceProvider extends ServiceProvider
                 'interface' => \App\Repositories\Ship\ShipInterface::class,
                 'repository' => \App\Repositories\Ship\ShipRepository::class
             ],
+            'service' => [
+                'interface' => \App\Repositories\Service\ServiceInterface::class,
+                'repository' => \App\Repositories\Service\ServiceRepository::class
+            ],
             'billingMethod' => [
                 'interface' => \App\Repositories\BillingMethod\BillingMethodInterface::class,
                 'repository' => \App\Repositories\BillingMethod\BillingMethodRepository::class
+            ],
+            'contract' => [
+                'interface' => \App\Repositories\Contract\ContractInterface::class,
+                'repository' => \App\Repositories\Contract\ContractRepository::class
             ]
         ];
 
         foreach ($paths as $value) {
-            $this->app->singleton($value['interface'], $value['repository'] );
+            $this->app->singleton($value['interface'], $value['repository']);
         }
     }
+
 }

@@ -10,8 +10,8 @@
 
 namespace App\Repositories\Ship;
 
-interface ShipInterface
-{
+interface ShipInterface {
+
     /**
      * Get detail ship by id
      *
@@ -66,4 +66,22 @@ interface ShipInterface
      * @return mixed Illuminate\Support\Collection
      */
     public function conditionSearchShip($param);
+
+ /**
+     * Function get list ship by companyId
+     * @access public
+     * @param int companyId
+     * @return mixed
+     */
+    public function getListShip($companyId);
+    
+    /**
+     * Function search list ship
+     * @access public
+     * @param int currencyId
+     * @param int shipId
+     * @param int shipName
+     * @return mixed
+    */
+    public function searchListShip($companyId, $shipId , $shipName);
 }

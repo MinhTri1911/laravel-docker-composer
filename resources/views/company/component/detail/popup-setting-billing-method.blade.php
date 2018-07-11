@@ -13,6 +13,17 @@
                 <h2>{{ trans('company.lbl_setting_billing_method') }}</h2>
 
                 <div class="setting-content">
+                    <div class="col-md-12">
+                        <div class="alert alert-danger" style="display: none;">
+                            <div class="block-error">
+                                <i class="fa fa-exclamation" aria-hidden="true"></i>
+                                <label class="control-label lbl-error-message"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-content">
                     <div class="col-md-3">
                         <label class="label-control">{{ trans('company.lbl_billing_method_name') }}</label>
                     </div>
@@ -22,9 +33,14 @@
 
                             {{-- Load all billing methd to array and set selected if billing method id == $id ($id is current billing method id)  --}}
                             @php
+                                $dataAppend = [];
                                 $dataBilings = [];
                                 foreach ($billings as $billing) {
                                     $dataBilings[$billing->id] = $billing->name_jp . ' ' . $billing->id;
+                                    $dataAppend[$billing->id] = [
+                                        'jp' => $billing->name_jp,
+                                        'en' => $billing->name_en,
+                                    ];
                                 }
                             @endphp
                             {{ Form::select('billing-method-id', $dataBilings, $id, ['class' => 'form-control', 'id' => 'slb-billing-method']) }}
@@ -36,13 +52,13 @@
             <div class="modal-bottom">
                 {{ Form::button(trans('company.btn_cancel_setting_billing'), [
                         'class' => 'center-block btn btn-gray-dark btn-w150 btn-csv',
-                        'data-dismiss' => 'modal'
+                        'data-dismiss' => 'modal',
                     ])
                 }}
                 {{ Form::button(trans('company.btn_save_setting_billing'), [
                     'class' => 'center-block btn btn-blue-dark btn-w150',
                     'id' => 'btn-save-setting-billing',
-                    'data-url' => route('billing.method.update', $id),
+                    'data-for-append' => json_encode($dataAppend),
                 ]) }}
             </div>
         </div>

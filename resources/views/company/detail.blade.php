@@ -126,7 +126,7 @@
                             <label>{{ trans('company.lbl_title_company_billing_id') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>{{ $billingMethod->name_jp . ' ' . $billingMethod->id }}</label>
+                            <label id="lbl-billing-method-id">{{ $billingMethod->name_jp . ' ' . $billingMethod->id }}</label>
                         </div>
                     </div>
 
@@ -358,17 +358,12 @@
                                     <div class="label-title-button">
                                         <label>{{ trans('company.lbl_title_setting_billing_method') }}</label>
                                     </div>
-                                    <!-- route('company.settingBillingMethod', [
-                                                        'id' => $billingMethod->id,
-                                                    ]), -->
                                     <div class="col-md-12">
                                         <div class="col-md-6">
                                             {{ Form::button(trans('company.btn_setting_billing_method'), [
                                                     'class' => 'btn btn-green-dark btn-w150',
                                                     'id' => 'btn-setting-billing',
-                                                    'data-url' => route('billing.method.show', [
-                                                        'billing-method' => $billingMethod->id
-                                                    ]),
+                                                    'data-url' => route('billing.method.show', ['billing-method' => $billingMethod->id]),
                                                 ])
                                             }}
                                         </div>
@@ -387,8 +382,8 @@
                                         <div class="col-md-6 block">
                                             {{ Form::button(trans('company.btn_create'), [
                                                     'class' => 'btn btn-green-dark btn-w150',
-                                                    'id' => 'btn-add-contract-for-all-ship',
-                                                    'data-url' => route('company.addServiceForAllShip', ['id' => 1]),
+                                                    'id' => 'btn-add-service-for-all-ship',
+                                                    'data-url' => route('company.service.create'),
                                                 ])
                                             }}
                                         </div>
@@ -511,5 +506,11 @@
 @endsection
 
 @section('javascript')
+    <script>
+        window.Laravel = {!! json_encode([
+            'urlUpdateBillingMethod' => route('billing.method.update'),
+            'urlAddService' => route('company.service.store'),
+        ]) !!};
+    </script>
     <script type="text/javascript" src="{{ asset('js/company-general.js') }}"></script>
 @endsection

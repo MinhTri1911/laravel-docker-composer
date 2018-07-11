@@ -19,13 +19,15 @@ Route::group(['middleware' => 'auth'], function() {
         Route::get('/filter', 'CompanyController@filterCompany')->name('filter');
         Route::get('/show/{id}', 'CompanyController@show')->name('show');
         Route::get('/show-popup', 'CompanyController@detail')->name('detail');
-        Route::get('/setting-billing-method/{id}', 'CompanyController@showPopupSettingBillingMethod')
-            ->name('settingBillingMethod');
-        Route::get('/add-service-for-all-ship/{id}', 'CompanyController@showPopupAddServiceForAllShip')
-            ->name('addServiceForAllShip');
+
         Route::get('/delete-service-for-all-ship/{id}', 'CompanyController@showPopupDeleteServiceInAllShip')
             ->name('deleteServiceInAllShip');
         Route::get('/confirm-delete-service-in-all-ship/{name}', 'CompanyController@showPopupConfirmDeleteServiceInAllShip')
             ->name('confirmDeleteServiceInAllShip');
+    });
+
+    Route::group(['prefix' => 'company-service', 'as' => 'company.service.'], function () {
+        Route::get('/show-popup', 'CompanyServiceController@create')->name('create');
+        Route::post('/add-service', 'CompanyServiceController@store')->name('store');
     });
 });

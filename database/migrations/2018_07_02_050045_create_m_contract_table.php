@@ -15,7 +15,7 @@ class CreateMContractTable extends Migration
     {
         Schema::create('m_contract', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->double('revision_number', 3, 1)->nullable();
+            $table->double('revision_number', 3, 1);
             $table->bigInteger('ship_id');
             $table->bigInteger('service_id');
             $table->bigInteger('currency_id');

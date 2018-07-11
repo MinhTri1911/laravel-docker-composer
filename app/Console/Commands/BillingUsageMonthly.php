@@ -58,13 +58,13 @@ class BillingUsageMonthly extends Command
 
         // Set month usage batch
         $now = date('Y-m-d');
-        $now = strtotime(date('Y-m-d', strtotime($now)) . ' -1 month');
-        $now = date('Y-m', $now);
-        $this->_monthUsage = $now . '-01';
+        $monthBefore = strtotime(date('Y-m-d', strtotime($now)) . ' -1 month');
+        $monthUsage = date('Y-m', $monthBefore);
+        $this->_monthUsage = $monthUsage . '-01';
 
         // Set currency time
-        $now = date('Y-m');
-        $this->_now = $now . '-01 00:00:00';
+        $monthNow = date('Y-m');
+        $this->_now = $monthNow . '-01 00:00:00';
 
         // Set variable ID company for Process loop company
         $companyIdTempl = -1;
@@ -150,9 +150,9 @@ class BillingUsageMonthly extends Command
             }
 
             // Insert price service into table t_detail_history_usage
-            $result = $this->_registerPriceService($historyUsageId, $contract);
+            $resultRegisterPriceService = $this->_registerPriceService($historyUsageId, $contract);
             $totalMoneyBilling += $contract->price_service;
-            if ($result === null) {
+            if ($resultRegisterPriceService === null) {
                 $isException = 1;
                 break;
             }
@@ -270,9 +270,21 @@ class BillingUsageMonthly extends Command
     private function _getInforContract()
     {
         try {
+            // Get month usage
             $date = strtotime($this->_monthUsage);
             $month = (integer)date('m', $date);
             $year = (integer)date('Y', $date);
+
+            // Deleted flag
+            $deleted = constant::DELETE_FLAG_FALSE;
+
+            // Status approve
+            $approveDone = constant::STATUS_APPROVED;
+            $approvePending = constant::STATUS_WAITING_APPROVE;
+            $approveReject = constant::STATUS_REJECT_APPROVE;
+
+            // Status contract
+            $contractActive = constant::STATUS_CONTRACT_ACTIVE;
 
             return DB::select("SELECT DISTINCT
                                 CO.id AS company_id
@@ -291,15 +303,15 @@ class BillingUsageMonthly extends Command
                             INNER JOIN m_company AS CO ON CO.id = SH.company_id AND CO.currency_id = C.currency_id
                             INNER JOIN m_service AS S ON S.id = C.service_id
                             INNER JOIN t_price_service AS PS ON PS.service_id = C.service_id
-                               AND PS.currency_id = C.currency_id AND PS.del_flag = 0
-                            INNER JOIN m_currency AS CR ON CR.id = PS.currency_id AND CR.del_flag = 0
+                               AND PS.currency_id = C.currency_id AND PS.del_flag = $deleted
+                            INNER JOIN m_currency AS CR ON CR.id = PS.currency_id AND CR.del_flag = $deleted
                             INNER JOIN (SELECT SC.service_id, SCO.id AS company_id
                                             , COUNT(SC.service_id) AS license_count
                                             FROM m_contract AS SC
                                             INNER JOIN m_ship AS SSH ON SSH.id = SC.ship_id
                                             INNER JOIN m_company AS SCO ON SCO.id = SSH.company_id
-                                            WHERE (SC.status = 0 OR (MONTH(SC.end_date) = $month AND YEAR(SC.end_date) = $year))
-                                                  AND (SC.approved_flag = 1 OR ((SC.approved_flag = 2 OR SC.approved_flag = 3) 
+                                            WHERE (SC.status = $contractActive OR (MONTH(SC.end_date) = $month AND YEAR(SC.end_date) = $year))
+                                                  AND (SC.approved_flag = $approveDone OR ((SC.approved_flag = $approvePending OR SC.approved_flag = $approveReject) 
                                                                                   AND SC.updated_at IS NOT NULL))
                                             GROUP BY SCO.id, SC.service_id
                                             ) AS licenseTbl ON C.service_id = licenseTbl.service_id
@@ -307,9 +319,9 @@ class BillingUsageMonthly extends Command
                         LEFT JOIN t_discount_individual AS DI ON DI.contract_id = C.id
                            AND DI.setting_month = '$this->_monthUsage'
                            AND DI.currency_id = C.currency_id
-                           AND DI.del_flag = 0
-                        WHERE (C.status = 0 OR (MONTH(C.end_date) = $month AND YEAR(C.end_date) = $year))
-                            AND (C.approved_flag = 1 OR ((C.approved_flag = 2 OR C.approved_flag = 3) AND C.updated_at IS NOT NULL))
+                           AND DI.del_flag = $deleted
+                        WHERE (C.status = $contractActive OR (MONTH(C.end_date) = $month AND YEAR(C.end_date) = $year))
+                            AND (C.approved_flag = $approveDone OR ((C.approved_flag = $approvePending OR C.approved_flag = $approveReject) AND C.updated_at IS NOT NULL))
                             AND C.start_date < '$this->_now'
                         ORDER BY CO.id ASC
                                 ,C.ship_id ASC
@@ -581,10 +593,10 @@ class BillingUsageMonthly extends Command
      * Register money discount into table t_detail_history_usage
      * 
      * @access private
-     * @param type $historyUsageId History usage ID
-     * @param type $contract object contract
-     * @param type $moneyDiscount Money discount
-     * @param type $discountId Detail charge type ID
+     * @param int $historyUsageId History usage ID
+     * @param object $contract object contract
+     * @param float $moneyDiscount Money discount
+     * @param int $discountId Detail charge type ID
      * @return null|int
      */
     private function _registerMoneyDiscount($historyUsageId, $contract, $moneyDiscount, $discountId)
@@ -616,8 +628,8 @@ class BillingUsageMonthly extends Command
      *  Update total money of table t_history_usage
      * 
      * @access private
-     * @param type $historyUsageId History usage ID
-     * @param type $totalMoneyBilling Total money billing
+     * @param int $historyUsageId History usage ID
+     * @param float $totalMoneyBilling Total money billing
      * @return null|int
      */
     private function _updateTotalMoneyHistoryUsage($historyUsageId, $totalMoneyBilling)

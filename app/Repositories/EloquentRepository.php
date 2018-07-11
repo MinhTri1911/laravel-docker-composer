@@ -255,6 +255,34 @@ abstract class EloquentRepository implements RepositoryInterface
     }
 
     /**
+     * Where null
+     *
+     * @param string column
+     * @param string boolean
+     * @param bool not
+     * @return mixed
+     */
+    public function whereNull($column, $boolean = 'and', $not = false)
+    {
+        $this->_model = $this->_model->whereNull($column, $boolean, $not);
+
+        return $this;
+    }
+
+    /**
+     * Or where null
+     *
+     * @param string column
+     * @return mixed
+     */
+    public function orWhereNull($column)
+    {
+        $this->_model = $this->_model->orWhereNull($column);
+
+        return $this;
+    }
+
+    /**
      * Check result is exists
      *
      * @return boolean
@@ -397,5 +425,15 @@ abstract class EloquentRepository implements RepositoryInterface
     public function toSql()
     {
         return $this->_model->toSql();
+    }
+
+    /**
+     * Insert multi record
+     * @param array data
+     * @return bool
+     */
+    public function insert($data)
+    {
+        return $this->_model->insert($data);
     }
 }

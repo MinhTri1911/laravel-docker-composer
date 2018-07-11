@@ -187,7 +187,7 @@ return [
 
         // Generator models
         Reliese\Coders\CodersServiceProvider::class,
-        // Barryvdh\Debugbar\ServiceProvider::class,
+        //Barryvdh\Debugbar\ServiceProvider::class,
 
     ],
 

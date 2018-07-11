@@ -26,7 +26,7 @@ return [
     'lbl_pop_service_name' => 'サービス名',
 
     'header_pop_ship' => '船舶検索',
-    'lbl_pop_ship_id' => '船舶ID',
+    'lbl_pop_ship_id' => '船舶ID ',
     'lbl_pop_ship_name' => '船名',
 
     // Own

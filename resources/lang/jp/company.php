@@ -72,8 +72,8 @@ return [
     'title_popup_add_service' => 'システム利用契約の全船',
     'lbl_add_service' => 'システム利用契約の全船',
     'lbl_service_name' => 'システム',
-    'lbl_contract_start_date' => '契約開始：',
-    'lbl_contract_end_date' => '契約終了：',
+    'lbl_contract_start_date' => '契約開始',
+    'lbl_contract_end_date' => '契約終了',
     'btn_add_service' => '追加',
     'btn_cancel_add_service' => 'キャンセル',
 
