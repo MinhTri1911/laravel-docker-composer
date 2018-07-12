@@ -234,13 +234,4 @@ class CompanyBusiness
     {
         return $this->companyRepository->update($companyId, ['billing_method_id' => $billingMethodId]);
     }
-
-    /**
-     * Function get all ship in company
-     * @param int companyId
-     * @return array
-     */
-    public function getAllShipIdInCompany($companyId)
-    {
-    }
 }

@@ -12,6 +12,7 @@ var company = new function () {
         companyId: $('#company-id').val(),
         selectModal: '#modal-protector',
         popupShowAllService: '#delete-service-in-all-ship',
+        popupConfirmDeleteService: '#popup-confirm-delete-service',
         btnSaveSettingBilling: '#btn-save-setting-billing',
         lableNameBillingMethod: '#lbl-billing-method-id',
         labelError: '.alert-danger',
@@ -23,7 +24,9 @@ var company = new function () {
         contractEndDate: '#contract-end-date',
         btnCreateContract: '#btn-create-contract',
         btnShowPopupDeleteServiceInAllShip: '#btn-show-popup-delete-service-in-all-ship',
-        btnDeleteService: '#btn-delete-service'
+        btnDeleteService: '#btn-delete-service',
+        lblDeleteService: '.delete-service-label',
+
     }
 
     this.url = {
@@ -49,14 +52,11 @@ var company = new function () {
                 'company-id' : company.model.companyId,
             }
 
-            $.get(url, param,function (res) {
-                if (res.code !== 200) {
-                    alert('Error');
-                    return;
+            $.get(url, function (res) {
+                if (res.code === HTTP_SUCCESS) {
+                    event.data.companyObject.appendData(res.view);
+                    event.data.companyObject.initSelect2();
                 }
-
-                event.data.companyObject.appendData(res.view);
-                event.data.companyObject.initSelect2();
             })
         })
     };
@@ -246,13 +246,13 @@ var company = new function () {
 
             $.get(url, param, function (res) {
                 if (res.code === HTTP_SUCCESS) {
-
                     $(company.model.popupShowAllService).empty();
                     $(company.model.popupShowAllService).append(res.data.view);
                     $(company.model.popupShowAllService).modal('show');
 
                     // setting css for modal display block
                     $(company.model.popupShowAllService).attr('style', 'display: block !important');
+
                     // add perfect scroll for tbody
                     const table = document.querySelector('.tbody-scroll');
                     const ps = new PerfectScrollbar(table, function () {
@@ -268,20 +268,25 @@ var company = new function () {
      * @return void
      */
     this.confirmDeleteServiceInAllShip = function () {
-        $(document).on('click', '.delete-service-label', function (event) {
-            let url = $('#' + event.target.getAttribute('id')).attr('data-url');
-            console.log(url, event.target.getAttribute('id'));
-            $.get(url, function (res) {
-                if (res.code === HTTP_SUCCESS) {
-                    $('#popup-confirm-delete-service').empty();
-                    $('#popup-confirm-delete-service').append(res.data.view);
-                    $('#popup-confirm-delete-service').attr('style', 'display: block !important'); // setting css for modal display block
-                    $('#popup-stack-delete-service').attr('style', 'opacity: 0.5');
-                }
-            })
-            .fail(function (res) {
-                return;
-            });
+        let companyObject = this;
+        $(document).bind('click', {companyObject: companyObject}, function (event) {
+            if (('.' + event.target.getAttribute('class')) === company.model.lblDeleteService) {
+                let company = event.data.companyObject;
+                let url = $('#' + event.target.getAttribute('id')).attr('data-url');
+
+                $.get(url, function (res) {
+                    if (res.code === HTTP_SUCCESS) {
+                        $(company.model.popupConfirmDeleteService).empty();
+                        $(company.model.popupConfirmDeleteService).append(res.data.view);
+                        // setting css for modal display block
+                        $(company.model.popupConfirmDeleteService).attr('style', 'display: block !important');
+                        $('#popup-stack-delete-service').attr('style', 'opacity: 0.5');
+                    }
+                })
+                .fail(function (res) {
+                    return;
+                });
+            }
         });
     }
 

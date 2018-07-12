@@ -121,10 +121,11 @@ class CompanyServiceController extends Controller
         try {
 
             $this->_companyServiceBusiness->deleteService($request->get('service-ids'), $request->get('company-id'));
-            \DB::commit();
+            // \DB::commit();
+            \DB::rollback();
         } catch (\Exception $e) {
             \DB::rollback();
-
+            dd($e);
             return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('common.validate_error_exists'));
         }
 

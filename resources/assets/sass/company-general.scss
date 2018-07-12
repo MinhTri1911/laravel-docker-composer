@@ -124,6 +124,9 @@ and open the template in the editor.
   }
 
   .table-detail-group {
+    .table-popup {
+      width: 100% !important;
+    }
 
     .detail-group-table {
       height: 300px;
@@ -181,6 +184,11 @@ and open the template in the editor.
 
       .label-content {
         width: auto;
+
+        label {
+          word-break: break-all;
+          width: 170px;
+        }
       }
     }
   }

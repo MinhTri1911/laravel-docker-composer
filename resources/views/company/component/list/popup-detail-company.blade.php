@@ -10,7 +10,7 @@
         </div>
         <div class="modal-body">
             <div class="table-detail-group">
-                <table class="table table-blue table-dropdown table-result">
+                <table class="table table-blue table-dropdown table-result table-popup">
                     <thead>
                         <tr>
                             <th class="col-xs-3">
@@ -30,7 +30,7 @@
                 </table>
 
                 <div class="detail-group-table">
-                    <table class="table table-blue table-result">
+                    <table class="table table-blue table-result table-popup">
                         <tbody>
                             <tr>
 
