@@ -33,7 +33,7 @@
                 <div class="col-md-12">
                     <div class="col-md-12 block-list-ship">
                         <label id="total-result">
-                            {{ trans('ship.lbl_total_result', ['total' => count(collect($ships->items())->groupBy('id'))]) }}
+                            {{ trans('ship.lbl_total_result', ['total' => $ships->total()]) }}
                         </label>
 
                         <div class="block-right">
@@ -45,18 +45,21 @@
                             <div class="load-result custom-select">
                                 {{ Form::select(
                                     'paginate-record',
-                                    $aryPerPage,
-                                    $perPage,
+                                    \App\Common\Constant::ARY_PAGINATION_PER_PAGE,
+                                    \App\Common\Constant::PAGINATION_PER_PAGE,
                                     [
                                         'class' => 'form-control',
                                         'id' => 'load-result',
-                                        'data-url' => route('ship.index')
+                                        'data-url' => route('ship.index') . '?company-id=' . $companyId
                                     ])
                                 }}
                             </div>
                             {{ Form::hidden(
                                 'value-after-search',
-                                '{"load": "' . $perPage . '"}',
+                                '{
+                                    "load": "' . \App\Common\Constant::PAGINATION_PER_PAGE . '",
+                                    "companyId": "' . $companyId . '"
+                                }',
                                 ['id' => 'value-after-search']
                             ) }}
                             {{ Form::hidden('sort-value', '{
@@ -96,7 +99,7 @@
                             <a href="{{ route('ship.create') }}" class="btn btn-blue-dark btn-w150" tabindex="12">
                                 {{ trans('ship.btn_create_ship') }}
                             </a>
-                            {{ Form::button(trans('ship.btn_back'), ['class' => 'btn btn-gray btn-w150', 'tabindex' => 11]) }}
+                            <a href="{{ $backButton }}" class="btn btn-gray btn-w150" tabindex="11">{{ trans('ship.btn_back') }}</a>
                         </div>
                     </div>
                 </div>

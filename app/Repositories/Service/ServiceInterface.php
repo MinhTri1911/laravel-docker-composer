@@ -42,4 +42,12 @@ interface ServiceInterface
     */
     public function searchListService($currencyId, $shipId , $idServiceSearch , $nameServiceSearch);
     
+    /**
+     * Function check exits service by idService
+     * @access public
+     * @param int $idService
+     * @return boolen
+    */
+    public function checkExits($idService);
+    
 }

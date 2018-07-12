@@ -3,18 +3,36 @@
  * Create billing paper controller
  *
  * @package App\Http\Controllers
- * @author quangpm
+ * @author Rikkei.quangpm
  * @date 2018/06/19
 */
 
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Business\BillingPaperBusiness;
+
 use App\Common\RenderPDF as PDFRender;
 
 class BillingPaperController extends Controller
 {
+    // ID Screen
     const screenID = 'SBA0001';
+
+    // Object handle business
+    private $_billingPaperBusiness = null;
+
+    /**
+     * Function construct
+     * 
+     * @access public
+     * @param BillingPaperBusiness $billingPaperBusiness
+     * @return void
+     */
+    public function __construct(BillingPaperBusiness $billingPaperBusiness)
+    {
+        $this->_billingPaperBusiness =  $billingPaperBusiness;
+    }
 
     /**
      * Show page index - create billing paper
@@ -24,33 +42,12 @@ class BillingPaperController extends Controller
      */
     public function index()
     {
-        $model = [];
+        $models = null;
 
-        //Set data selectbox status
-        $model['statusSelector'] = [ 0 => 'すべて',
-                                     1 => '請求書未作成',
-                                     2 => '請求書発行待ち',
-                                     3 => '請求書発行済'
-                                ];
+        $models = $this->_billingPaperBusiness->initScreen();
 
-        //Set data selectbox status approve
-        $model['statusApproveSelector'] = [ 0 => 'すべて',
-                                            1 => '承認待ち',
-                                            2 => '承認済み',
-                                            3 => '却下'
-                                       ];
 
-        //Set data number of record to display
-        $model['numberRecord'] = [ 15 => '15',
-                                   25 => '25',
-                                   50 => '50'
-                                ];
-
-        $model['year'] = [ 'start' => 1990,
-                           'end' => (date('Y') + 10)
-                        ];
-
-        return view('billing.create-billing-paper', ['model' => $model]);
+        return view('billing.create-billing-paper', ['model' => $models]);
     }
 
     /**

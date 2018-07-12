@@ -15,6 +15,7 @@ use App\Business\CompanyServiceBusiness;
 use App\Business\CompanyBusiness;
 use App\Common\Constant;
 use Validator;
+use App\Http\Requests\CompanyServiceRequest;
 
 class CompanyServiceController extends Controller
 {
@@ -28,6 +29,25 @@ class CompanyServiceController extends Controller
     }
 
     /**
+     * Function get all service of company
+     * @param Illuminate\Http\Request request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function index(Request $request)
+    {
+        if (!$request->ajax()) {
+            return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('error.500'));
+        }
+
+        $services = $this->_companyServiceBusiness->getAllServiceOfCompany($request->get('company-id'));
+        $view = view('company.component.detail.popup-delete-service-in-all-ship', ['services' => $services])->render();
+
+        return $this->returnJson(Constant::HTTP_CODE_SUCCESS, '', [
+            'view' => $view,
+        ]);
+    }
+
+    /**
      * Show popup add service for all ship
      * @param Illuminate\Http\Request request
      * @return \Symfony\Component\HttpFoundation\Response
@@ -38,7 +58,7 @@ class CompanyServiceController extends Controller
             return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('error.500'));
         }
 
-        $currencyId = $this->_companyBusiness->getCompanyCurrencyId($request->get('current-url'));
+        $currencyId = $this->_companyBusiness->getCompanyCurrencyId($request->get('company-id'));
         $services = $this->_companyServiceBusiness->showAllService($currencyId);
 
         $view = view('company.component.detail.popup-add-service-for-all-ship', ['services' => $services])->render();
@@ -46,25 +66,20 @@ class CompanyServiceController extends Controller
         return $this->returnJson(Constant::HTTP_CODE_SUCCESS, '', ['view' => $view]);
     }
 
-    public function store(Request $request)
+    /**
+     * Function add service for all ship
+     * @param Illuminate\Http\Request request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function store(CompanyServiceRequest $request)
     {
         if (!$request->ajax()) {
             return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('error.500'));
         }
 
-        $validator = Validator::make($request->all(), [
-            'service-id' => 'required|numeric',
-            'start-date' => 'required|date_format:Y/m/d|after_or_equal:now',
-            'end-date' => 'required|date_format:Y/m/d|after:start-date',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->returnJson(Constant::HTTP_CODE_ERROR_500, $validator->errors());
-        }
-
         \DB::beginTransaction();
         try {
-            $currencyId = $this->_companyBusiness->getCompanyCurrencyId($request->get('current-url'));
+            $currencyId = $this->_companyBusiness->getCompanyCurrencyId($request->get('company-id'));
             $checkExists = $this->_companyServiceBusiness->checkServiceId($request->get('service-id'), $currencyId);
 
             if (!$checkExists) {
@@ -74,28 +89,64 @@ class CompanyServiceController extends Controller
             }
 
             $this->_companyServiceBusiness->createContractCompany(
-                1,
+                $request->get('company-id'),
                 $request->get('service-id'),
                 $request->get('start-date'),
                 $request->get('end-date'),
                 $currencyId
             );
 
-            // return response()->json([
-            //     'aa' => $this->_companyServiceBusiness->createContractCompany(
-            //         1,
-            //         $request->get('service-id'),
-            //         $request->get('start-date'),
-            //         $request->get('end-date'),
-            //         $currencyId
-            //     )
-            // ]);
-
             \DB::commit();
-       } catch (\Exception $e) {
-           \DB::rollback();
-            dd($e);
-       }
+        } catch (\Exception $e) {
+            \DB::rollback();
 
+            return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('error.500'));
+        }
+
+        return $this->returnJson(Constant::HTTP_CODE_SUCCESS);
+    }
+
+    /**
+     * Function delete service
+     * @param Illuminate\Http\Request request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function delete(Request $request)
+    {
+        if (!$request->ajax()) {
+            return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('error.500'));
+        }
+
+        \DB::beginTransaction();
+        try {
+
+            $this->_companyServiceBusiness->deleteService($request->get('service-ids'), $request->get('company-id'));
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+
+            return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('common.validate_error_exists'));
+        }
+
+        return $this->returnJson(Constant::HTTP_CODE_SUCCESS);
+    }
+
+    /**
+     * Show popup confirm delete service in all ship
+     * @param Illuminate\Http\Request request
+     * @param string serviceName
+     * @param int serviceId
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function confirmDeleteServiceInAllShip(Request $request, $serviceName, $serviceId)
+    {
+        if (!$request->ajax()) {
+            return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('error.500'));
+        }
+
+        $view = view('company.component.detail.popup-confirm-delete-service-in-all-ship', compact('serviceName', 'serviceId'))
+            ->render();
+
+        return $this->returnJson(Constant::HTTP_CODE_SUCCESS, '', ['view' => $view]);
     }
 }

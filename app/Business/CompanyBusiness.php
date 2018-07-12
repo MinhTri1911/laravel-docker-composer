@@ -212,32 +212,35 @@ class CompanyBusiness
 
     /**
      * Function get currency of company
-     * @param string|int urlDetailCompany
+     * @param int companyId
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      * @return int
      */
-    public function getCompanyCurrencyId($urlDetailCompany)
+    public function getCompanyCurrencyId($companyId)
     {
-        // Detech url to get company id return array and get first element of array
-        preg_match('/([0-9]+)/', $urlDetailCompany, $companyId);
-
         // Find or fail company get currency id
-        $company = $this->companyRepository->findOrFail(head($companyId), ['currency_id'])->toArray();
+        $company = $this->companyRepository->findOrFail($companyId, ['currency_id'])->toArray();
 
         return $company['currency_id'];
     }
 
     /**
      * Function update currency  company
-     * @param string|int urlDetailCompany
+     * @param int companyId
      * @param int currencyId
      * @return bool|mixed
      */
-    public function updateBillingMethod($urlDetailCompany, $currencyId)
+    public function updateBillingMethod($companyId, $billingMethodId)
     {
-        // Detech url to get company id return array and get first element of array
-        preg_match('/([0-9]+)/', $urlDetailCompany, $companyId);
+        return $this->companyRepository->update($companyId, ['billing_method_id' => $billingMethodId]);
+    }
 
-        return $this->companyRepository->update(head($companyId), ['billing_method_id' => $currencyId]);
+    /**
+     * Function get all ship in company
+     * @param int companyId
+     * @return array
+     */
+    public function getAllShipIdInCompany($companyId)
+    {
     }
 }

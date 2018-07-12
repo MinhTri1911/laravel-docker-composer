@@ -11,8 +11,10 @@ return [
     'header_spot' => 'スポット費用',
     'lbl_type_spot' => '課金種別',
     'lbl_cost_spot' => '請求金額',
-    'lbl_spot_regist' => '初期登録費',
+    'lbl_remarks' => '備考',
     'lbl_spot_data' => 'データ作成費',
+    'lbl_spot_regist' => '初期登録費',
+    
     'btn_back' => '戻る',
     'btn_create' => ' 作成',
     'btn_update' => '更新',
@@ -40,7 +42,16 @@ return [
 
     'restore' => [
         'header' => 'サービス利用契約復活',
-    ]
+    ],
     
+    'error' => [
+        'E003' => ':itemを入力してください。',
+        'E004' => ':item は:value文字以内で入力してください。',
+        'E005' => ':itemのフォーマットはYYYY/MM/dd形式にしてください。',
+        'E020' => ':itemは:valueより大きくしてください。',
+        'E006' => ':startDateは:startEndより大きくしてください。',
+        'E008' => ':valueは数字で入力してください。',
+        'service_not_exist' => 'サービスは存在しません。',
+    ],
 ];
 

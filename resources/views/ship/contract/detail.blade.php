@@ -1,6 +1,6 @@
 @extends('layouts.white')
 
-@section('title', $ship->detail_ship->ship_name)
+@section('title', __('ship-contract.detail.header_ship_contract'))
 
 @section('style')
     <link rel="stylesheet" href="{{asset("/css/ship-contract.css")}}">
@@ -179,7 +179,7 @@
             </div>
         </div>
         {{-- End of ship block --}}
-        @if(property_exists($ship, 'contracts') && !is_null($ship->contracts) && $ship->contracts->count() > 0)
+        @if(property_exists($ship, 'contracts') && !is_null($ship->contracts) )
         {{-- List contract --}}
         <div class="contract-block">
             <h4>{{__('ship-contract.detail.lbl_ship_contract')}}</h4>
@@ -188,9 +188,12 @@
                 <table class="table table-blue table-ship">
                     <thead>
                         <tr>
+                            
                             <th style="width:3%" class="custom-checkbox">
+                                @if( $ship->contracts->count() > 0)
                                 <input class="hidden" id="chk_ct_full" type="checkbox">
                                 <label for="chk_ct_full"></label>
+                                @endif
                             </th>
                             <th style="width:5%">{{__('ship-contract.detail.lbl_contract_id')}}</th>
                             <th style="width:5%">{{__('ship-contract.detail.lbl_contract_version')}}</th>
@@ -205,67 +208,80 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($ship->contracts as $contract)
+                        @if( $ship->contracts->count() > 0)
+                            @foreach($ship->contracts as $contract)
+                            <tr>
+                                <td class="custom-checkbox">
+                                    <input class="hidden" id="chk_contract_{{$contract->contract_id}}" name="contract" type="checkbox">
+                                    <label for="chk_contract_{{$contract->contract_id}}"></label>
+                                </td>
+                                <td style="word-wrap: break-word;">{{$contract->contract_id}}</td>
+                                <td style="word-wrap: break-word;">{{(float)$contract->contract_revision_number}}</td>
+                                <td style="word-wrap: break-word;">{{$contract->service_name}}</td>
+                                <td style="">{{!is_null($contract->contract_date_start)&&!empty($contract->contract_date_start)?\Carbon\Carbon::parse($contract->contract_date_start)->format(\App\Common\Constant::FORMAT_DATE_TIME['d']):$contract->contract_date_start}}</td>
+                                <td style="">{{!is_null($contract->contract_date_end)&&!empty($contract->contract_date_end)?\Carbon\Carbon::parse($contract->contract_date_end)->format(\App\Common\Constant::FORMAT_DATE_TIME['d']):$contract->contract_date_end}}</td>
+                                <td>
+                                    <span class="status-contract-{{$contract->contract_id}}">
+                                        @if($contract->contract_status == 0)
+                                            {{\App\Common\Constant::CONTRACT_O[0]}}
+                                        @elseif($contract->contract_status == 1)
+                                            {{\App\Common\Constant::CONTRACT_O[1]}}
+                                        @else
+                                            {{\App\Common\Constant::CONTRACT_O[2]}}
+                                        @endif
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="approve-contract-{{$contract->contract_id}}">
+                                        @if($contract->contract_approved_flag == 1)
+                                            {{\App\Common\Constant::APPROVED_O[1]}}
+                                        @elseif($contract->contract_approved_flag == 2)
+                                            {{\App\Common\Constant::APPROVED_O[2]}}
+                                        @else
+                                        <text class="view-reason" data-type="contract" data-id="{{$contract->contract_id}}">
+                                            {{\App\Common\Constant::APPROVED_O[3]}}
+                                        </text>
+                                        @endif
+                                    </span>
+                                </td>
+                                <td style="">{{!is_null($contract->contract_created_at)&&!empty($contract->contract_created_at)?\Carbon\Carbon::parse($contract->contract_created_at)->format(\App\Common\Constant::FORMAT_DATE_TIME['dt']):$contract->contract_created_at}}</td>
+                                <td style="">{{!is_null($contract->contract_updated_at)&&!empty($contract->contract_updated_at)?\Carbon\Carbon::parse($contract->contract_updated_at)->format(\App\Common\Constant::FORMAT_DATE_TIME['dt']):$contract->contract_updated_at}}</td>
+                                <td class="group-btn-contract-{{$contract->contract_id}}">
+                                    @if(($contract->contract_approved_flag == \App\Common\Constant::STATUS_APPROVED && $contract->contract_status != \App\Common\Constant::STATUS_CONTRACT_ACTIVE)
+                                        || ($contract->contract_approved_flag == \App\Common\Constant::STATUS_WAITING_APPROVE && !is_null($contract->contract_updated_at))
+                                        || ($contract->contract_approved_flag == \App\Common\Constant::STATUS_REJECT_APPROVE && !is_null($contract->contract_updated_at)))
+                                        <button class="btn btn-blue-dark btn-custom-sm restore-contract restore-contract-{{$contract->contract_id}}" data-service="{{$contract->service_name}}" data-ship="{{$ship->detail_ship->ship_id}}" data-contract="{{$contract->contract_id}}">{{__('ship-contract.detail.btn_contract_restore')}}</button>
+                                    @endif
+                                    @if($contract->contract_approved_flag == \App\Common\Constant::STATUS_APPROVED
+                                        || ($contract->contract_approved_flag == \App\Common\Constant::STATUS_WAITING_APPROVE && !is_null($contract->contract_updated_at))
+                                        || $contract->contract_approved_flag == \App\Common\Constant::STATUS_REJECT_APPROVE)
+                                            <a href="{{route('contract.edit', $contract->contract_id)}}" class="btn btn-orange btn-custom-sm">{{__('ship-contract.detail.btn_contract_edit')}}</a>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        @else
                         <tr>
-                            <td class="custom-checkbox">
-                                <input class="hidden" id="chk_contract_{{$contract->contract_id}}" name="contract" type="checkbox">
-                                <label for="chk_contract_{{$contract->contract_id}}"></label>
-                            </td>
-                            <td style="word-wrap: break-word;">{{$contract->contract_id}}</td>
-                            <td style="word-wrap: break-word;">{{(float)$contract->contract_revision_number}}</td>
-                            <td style="word-wrap: break-word;">{{$contract->service_name}}</td>
-                            <td style="">{{$contract->contract_date_start}}</td>
-                            <td style="">{{$contract->contract_date_end}}</td>
-                            <td>
-                                <span class="status-contract-{{$contract->contract_id}}">
-                                    @if($contract->contract_status == 0)
-                                        {{\App\Common\Constant::CONTRACT_O[0]}}
-                                    @elseif($contract->contract_status == 1)
-                                        {{\App\Common\Constant::CONTRACT_O[1]}}
-                                    @else
-                                        {{\App\Common\Constant::CONTRACT_O[2]}}
-                                    @endif
-                                </span>
-                            </td>
-                            <td>
-                                <span class="approve-contract-{{$contract->contract_id}}">
-                                    @if($contract->contract_approved_flag == 1)
-                                        {{\App\Common\Constant::APPROVED_O[1]}}
-                                    @elseif($contract->contract_approved_flag == 2)
-                                        {{\App\Common\Constant::APPROVED_O[2]}}
-                                    @else
-                                    <text class="view-reason" data-type="contract" data-id="{{$contract->contract_id}}">
-                                        {{\App\Common\Constant::APPROVED_O[3]}}
-                                    </text>
-                                    @endif
-                                </span>
-                            </td>
-                            <td style="">{{$contract->contract_created_at}}</td>
-                            <td style="">{{!empty($contract->contract_updated_at)?$contract->contract_updated_at:"-"}}</td>
-                            <td class="group-btn-contract-{{$contract->contract_id}}">
-                                @if(($contract->contract_approved_flag == \App\Common\Constant::STATUS_APPROVED && $contract->contract_status != \App\Common\Constant::STATUS_CONTRACT_ACTIVE)
-                                    || ($contract->contract_approved_flag != \App\Common\Constant::STATUS_WAITING_APPROVE)
-                                    || ($contract->contract_approved_flag == \App\Common\Constant::STATUS_REJECT_APPROVE && !is_null($contract->contract_updated_at)))
-                                    <button class="btn btn-blue-dark btn-custom-sm restore-contract restore-contract-{{$contract->contract_id}}" data-service="{{$contract->service_name}}" data-ship="{{$ship->detail_ship->ship_id}}" data-contract="{{$contract->contract_id}}">{{__('ship-contract.detail.btn_contract_restore')}}</button>
-                                @endif
-                                <a href="{{route('contract.edit', $contract->contract_id)}}" class="btn btn-orange btn-custom-sm">{{__('ship-contract.detail.btn_contract_edit')}}</a>
-                            </td>
+                            <td colspan="11">Chưa có hợp đồng được tạo</td>
                         </tr>
-                        @endforeach
+                        @endif
                     </tbody>
                 </table>
                 <div class="block-handle align-right">
                     <a href="/contract/create" class="btn btn-green-dark btn-w190 pull-left">{{__('ship-contract.detail.btn_create')}}</a>
-                    <button class="btn btn-gray-dark btn-w190 pull-left disable-contract" data-ship="{{$ship->detail_ship->ship_id}}">{{__('ship-contract.detail.btn_disable')}}</button>
-                    <button class="btn btn-red btn-w150 pull-left delete-contract" data-ship="{{$ship->detail_ship->ship_id}}">{{__('ship-contract.detail.btn_delete')}}</button>
+                    @if( $ship->contracts->count() > 0)
+                        <button class="btn btn-gray-dark btn-w190 pull-left disable-contract" data-ship="{{$ship->detail_ship->ship_id}}">{{__('ship-contract.detail.btn_disable')}}</button>
+                        <button class="btn btn-red btn-w150 pull-left delete-contract" data-ship="{{$ship->detail_ship->ship_id}}">{{__('ship-contract.detail.btn_delete')}}</button>
+                    @endif
                 </div>
             </div>
         </div>
         {{-- End List contract --}}
         @endif
+        
         {{-- List Spot --}}
         <div class="spot-block">
-            @if(property_exists($ship, 'spots') && !is_null($ship->spots) && $ship->spots->count() > 0)
+            @if(property_exists($ship, 'spots') && !is_null($ship->spots))
             <h4>{{__('ship-contract.detail.lbl_ship_spot')}}</h4>
             <div class="content-block table-block spot-block">
                 <div class="extra-block">
@@ -273,7 +289,7 @@
                     <div class="limit-block pull-right">
                         <span class="lbl_limit">{{__('ship-contract.detail.lbl_limit')}}</span>
                         <div class="custom-select" style="min-width:100px">
-                            {{ Form::select('limit_page', [15 => '15', 25 => '25', 50 => '50'], request()->filled('limit')?request()->get('limit'):null, ['class' => 'form-control limit-page', 'tabindex' => 5]) }}
+                            {{ Form::select('limit_page', \App\Common\Constant::ARY_PAGINATION_PER_PAGE, request()->filled('limit')?request()->get('limit'):null, ['class' => $ship->spots->count() > 0?'form-control limit-page':'form-control', 'tabindex' => 5]) }}
                         </div>
                     </div>
                 </div>
@@ -292,39 +308,45 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($ship->spots as $spot)
-                            <tr>
-                                <td style="word-wrap: break-word;">{{$spot->spot_id}}</td>
-                                <td style="word-wrap: break-word;">{{$spot->spot_name}}</td>
-                                <td style="word-wrap: break-word;">{{$spot->spot_month_usage}}</td>
-                                <td>{{$spot->spot_amount_charge}}</td>
-                                <td style="">
-                                    <span class="approve-spot-{{$spot->spot_id}}">
-                                        @if($spot->spot_approved_flag == 1)
-                                            {{\App\Common\Constant::APPROVED_O[1]}}
-                                        @elseif($spot->spot_approved_flag == 2)
-                                            {{\App\Common\Constant::APPROVED_O[2]}}
-                                        @else
-                                        <text class="view-reason" data-type="spot" data-id="{{$spot->spot_id}}">
-                                            {{\App\Common\Constant::APPROVED_O[3]}}
-                                        </text>
+                            @if($ship->spots->count() > 0)
+                                @foreach($ship->spots as $spot)
+                                <tr>
+                                    <td style="word-wrap: break-word;">{{$spot->spot_id}}</td>
+                                    <td style="word-wrap: break-word;">{{$spot->spot_name}}</td>
+                                    <td style="word-wrap: break-word;">{{!is_null($spot->spot_month_usage)&&!empty($spot->spot_month_usage)?\Carbon\Carbon::parse($spot->spot_month_usage)->format(\App\Common\Constant::FORMAT_DATE_TIME['d']):$spot->spot_month_usage}}</td>
+                                    <td>{{$spot->spot_amount_charge}}</td>
+                                    <td style="">
+                                        <span class="approve-spot-{{$spot->spot_id}}">
+                                            @if($spot->spot_approved_flag == 1)
+                                                {{\App\Common\Constant::APPROVED_O[1]}}
+                                            @elseif($spot->spot_approved_flag == 2)
+                                                {{\App\Common\Constant::APPROVED_O[2]}}
+                                            @else
+                                            <text class="view-reason" data-type="spot" data-id="{{$spot->spot_id}}">
+                                                {{\App\Common\Constant::APPROVED_O[3]}}
+                                            </text>
+                                            @endif
+                                        </span>
+                                    </td>
+                                    <td style="">{{!is_null($spot->spot_created_at)&&!empty($spot->spot_created_at)?\Carbon\Carbon::parse($spot->spot_created_at)->format(\App\Common\Constant::FORMAT_DATE_TIME['dt']):$spot->spot_created_at}}</td>
+                                    <td style="">{{!is_null($spot->spot_updated_at)&&!empty($spot->spot_updated_at)?\Carbon\Carbon::parse($spot->spot_updated_at)->format(\App\Common\Constant::FORMAT_DATE_TIME['dt']):$spot->spot_updated_at}}</td>
+                                    <td>
+                                        @if((!empty($spot->spot_month_usage) && Str::checkValidMonthFromStr($spot->spot_month_usage))
+                                            && (
+                                                $spot->spot_approved_flag == \App\Common\Constant::STATUS_APPROVED
+                                                    || ($spot->spot_approved_flag == \App\Common\Constant::STATUS_WAITING_APPROVE && !is_null($spot->spot_updated_at))
+                                                    || $spot->spot_approved_flag == \App\Common\Constant::STATUS_REJECT_APPROVE))
+                                            <a href="{{route('spot.edit', $spot->spot_id)}}" class="btn btn-orange btn-custom-sm">{{__('ship-contract.detail.btn_edit')}}</a>
+                                            <button class="btn btn-red btn-custom-sm delete-spot" data-ship="{{$ship->detail_ship->ship_id}}" data-spot="{{$spot->spot_id}}">{{__('ship-contract.detail.btn_delete')}}</button>
                                         @endif
-                                    </span>
-                                </td>
-                                <td style="">{{$spot->spot_created_at}}</td>
-                                <td style="">{{$spot->spot_updated_at}}</td>
-                                <td>
-                                    @if((!empty($spot->spot_month_usage) && Str::checkValidMonthFromStr($spot->spot_month_usage))
-                                        && (
-                                            $spot->spot_approved_flag == \App\Common\Constant::STATUS_APPROVED
-                                                || ($spot->spot_approved_flag == \App\Common\Constant::STATUS_WAITING_APPROVE && !is_null($spot->spot_updated_at))
-                                                || $spot->spot_approved_flag == \App\Common\Constant::STATUS_REJECT_APPROVE))
-                                        <a href="{{route('spot.edit', $spot->spot_id)}}" class="btn btn-orange btn-custom-sm">{{__('ship-contract.detail.btn_edit')}}</a>
-                                        <button class="btn btn-red btn-custom-sm delete-spot" data-ship="{{$ship->detail_ship->ship_id}}" data-spot="{{$spot->spot_id}}">{{__('ship-contract.detail.btn_delete')}}</button>
-                                    @endif
-                                </td>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            @else
+                            <tr>
+                                <td colspan="8">Chưa có phí spot nào được tạo</td>
                             </tr>
-                            @endforeach
+                            @endif
                         </tbody>
                     </table>
                     <div class="fl-block">
@@ -381,7 +403,7 @@
                 <text id="modalMessageDone">{{__('ship-contract.detail.lbl_popup_del_contract_msg')}}</text>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-blue-light btn-w150" data-dismiss="modal">{{__('ship-contract.detail.btn_cancel')}}</button>
+                <button type="button" class="btn btn-blue-light btn-w150" data-dismiss="modal">{{__('ship-contract.detail.btn_ok')}}</button>
             </div>
         </div>
     </div>
@@ -415,5 +437,48 @@
 @endsection
 
 @section('javascript')
+<script type="text/javascript">
+    var ShipModal = {
+        modalContractRestore: {
+            title: "{{__('ship-contract.detail.pop_title_contract_re')}}",
+            message: "{{__('ship-contract.detail.pop_message_contract_re')}}"
+        },
+        modalContractDelete: {
+            title: "{{__('ship-contract.detail.pop_title_contract_del')}}",
+            message: "{{__('ship-contract.detail.pop_message_contract_del')}}",
+            title_error: "{{__('ship-contract.detail.pop_title_contract_error')}}",
+            message_error: "{{__('ship-contract.detail.pop_message_contract_unselect')}}"
+        },
+        modalContractDisable: {
+            title: "{{__('ship-contract.detail.pop_title_contract_dis')}}",
+            message: "{{__('ship-contract.detail.pop_message_contract_dis')}}",
+            title_error: "{{__('ship-contract.detail.pop_title_contract_error')}}",
+            message_error: "{{__('ship-contract.detail.pop_message_contract_unselect')}}"
+        },
+        modalSpotDelete: {
+            title: "{{__('ship-contract.detail.pop_title_spot_del')}}",
+            message: "{{__('ship-contract.detail.pop_message_spot_del')}}"
+        },
+        modalShipDelete: {
+            title: "{{__('ship-contract.detail.pop_title_ship_del')}}",
+            message: "{{__('ship-contract.detail.pop_message_ship_del')}}"
+        },
+        modalAuth: {
+            message_error_pw: "{{__('ship-contract.detail.pop_message_auth_pw')}}"
+        },
+        modalReject: {
+            title: "{{__('ship-contract.detail.pop_title_reject')}}"
+        },
+        typo: {
+            stt_active: "{{\App\Common\Constant::CONTRACT_O[0]}}",
+            stt_pending: "{{\App\Common\Constant::CONTRACT_O[1]}}",
+            stt_finish: "{{\App\Common\Constant::CONTRACT_O[2]}}",
+
+            apv_done: "{{\App\Common\Constant::APPROVED_O[1]}}",
+            apv_pending: "{{\App\Common\Constant::APPROVED_O[2]}}",
+            apv_reject: "{{\App\Common\Constant::APPROVED_O[3]}}"
+        }
+    };
+</script>
 <script type="text/javascript" src="{{ asset('js/ship-contract.js') }}"></script>
 @endsection

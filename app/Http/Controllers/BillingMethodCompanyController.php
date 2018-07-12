@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use App\Business\CompanyBusiness;
 use App\Business\BillingMethodBusiness;
 use App\Common\Constant;
+use App\Http\Requests\BillingMethodRequest;
 
 class BillingMethodCompanyController extends Controller
 {
@@ -35,11 +36,11 @@ class BillingMethodCompanyController extends Controller
     public function show(Request $request, $id)
     {
         if (!$request->ajax()) {
-            return $this->_errorJson(trans('error.500'));
+            return $this->returnJson(trans('error.500'));
         }
 
         // Get currency id of company
-        $currencyId = $this->_companyBusiness->getCompanyCurrencyId($request->get('current-url'));
+        $currencyId = $this->_companyBusiness->getCompanyCurrencyId($request->get('company-id'));
 
         // Get billing method have same currency id of company
         $billings = $this->_billingMethodBusiness->getAllBillingMethodForCompany($currencyId);
@@ -60,49 +61,27 @@ class BillingMethodCompanyController extends Controller
      * @return \Symfony\Component\HttpFoundation\Response
      *
      */
-    public function update(Request $request)
+    public function update(BillingMethodRequest $request)
     {
         if (!$request->ajax()) {
-            return $this->_errorJson(trans('error.500'));
-        }
-
-        // Check the billing method id is exists in database
-        $validationExists = $this->_billingMethodBusiness->checkBillingMethodExists($request->get('billing-method-id'));
-
-        // Get currency id of company
-        $currencyId = $this->_companyBusiness->getCompanyCurrencyId($request->get('current-url'));
-
-        // Check currency id of billing method is match with currency id of company
-        $validationMatch = $this->_billingMethodBusiness->compareCurrencyId($request->get('billing-method-id'), $currencyId);
-
-        // Return error if validation fail
-        if (!$validationExists || !$validationMatch) {
-            $this->_errorJson(trans('error.e009_not_exists_master', ['field' => trans('company.lbl_billing_method_name')]));
+            return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('error.500'));
         }
 
         \DB::beginTransaction();
         try {
             // Update billing method for company
-            $this->_companyBusiness->updateBillingMethod($request->get('current-url'), $request->get('billing-method-id'));
+            $this->_companyBusiness->updateBillingMethod($request->get('company-id'), $request->get('billing-method-id'));
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
 
-            return $this->_errorJson(trans('error.500'));
+            return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('error.500'));
         }
 
-        return response()->json([
+        return $this->returnJson(Constant::HTTP_CODE_SUCCESS, '', [
             'code' => Constant::HTTP_CODE_SUCCESS,
             'billingId' => $request->get('billing-method-id'),
             'newShowUrl' => route('billing.method.show', $request->get('billing-method-id')),
-        ]);
-    }
-
-    private function _errorJson($message)
-    {
-        return response()->json([
-            'code' => Constant::HTTP_CODE_ERROR_500,
-            'message' => $message,
         ]);
     }
 }

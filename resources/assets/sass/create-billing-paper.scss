@@ -91,46 +91,43 @@
     position: relative;
 
     table.table-list-company {
-      min-width: 1800px;
+      min-width: 1550px;
 
       .tbl-row-pick {
-        width: 2%;
+        width: 40px;
       }
       .tbl-row-no {
-         width: 45px;
+         width: 3%;
       }
       .tbl-row-company-name {
         width: 12%;
       }
       .tbl-row-date {
-        width: 6%;
+        width: 8%;
       }
       .tbl-row-method {
-         width: 11%;
+         width: 11.5%;
       }
       .tbl-row-ope-name {
-        width: 12%;
+        width: 13%;
       }
       .tbl-row-ope-phone {
-        width: 8%;
+        width: 9%;
       }
       .tbl-row-ope-email {
         width: 12%;
       }
       .tbl-row-money {
-        width: 7%;
+        width: 8.5%;
       }
       .tbl-row-status {
-         width: 6%;
+         width: 7%;
       }
       .tbl-row-approve {
-        width: 6%;
-      }
-      .tbl-row-reason {
-        width: 10%;
+        width: 7%;
       }
       .tbl-row-process {
-        width: 6%;
+        width: 7%;
       }
 
       thead {
@@ -185,6 +182,9 @@
             }
             &.tbl-row-approve {
               text-align: center;
+              a {
+                color: blue;
+              }
             }
             &.tbl-row-process {
               text-align: center;

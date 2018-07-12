@@ -15,14 +15,15 @@ use App\Models\MShip;
 use Illuminate\Support\Facades\DB;
 use App\Common\Constant;
 
-class ShipRepository extends EloquentRepository implements ShipInterface {
-
+class ShipRepository extends EloquentRepository implements ShipInterface
+{
     /**
      * Set model ship for interface
      *
      * @return string \App\Models\MShip
      */
-    public function getModel() {
+    public function getModel()
+    {
         return MShip::class;
     }
 
@@ -33,29 +34,29 @@ class ShipRepository extends EloquentRepository implements ShipInterface {
      * @param int $idShip
      * @return mixed Illuminate\Support\Collection
      */
-    public function getShip($idShip = null) {
+    public function getShip($idShip = null)
+    {
         // Check exists param id ship
-
         $queryShip = DB::table('m_ship')
                 ->join('m_company', function($join) {
                     $join->on('m_ship.company_id', '=', 'm_company.id')
-                    ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE);
+                         ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE);
                 })
                 ->join('m_nation', function($join) {
                     $join->on('m_ship.nation_id', '=', 'm_nation.id')
-                    ->where('m_nation.del_flag', Constant::DELETE_FLAG_FALSE);
+                            ->where('m_nation.del_flag', Constant::DELETE_FLAG_FALSE);
                 })
                 ->join('m_currency', function($join) {
                     $join->on('m_company.currency_id', '=', 'm_currency.id')
-                    ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE);
+                            ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE);
                 })
                 ->join('m_ship_classification', function($join) {
                     $join->on('m_ship.classification_id', '=', 'm_ship_classification.id')
-                    ->where('m_ship_classification.del_flag', Constant::DELETE_FLAG_FALSE);
+                            ->where('m_ship_classification.del_flag', Constant::DELETE_FLAG_FALSE);
                 })
                 ->join('m_ship_type', function($join) {
                     $join->on('m_ship.type_id', '=', 'm_ship_type.id')
-                    ->where('m_ship_type.del_flag', Constant::DELETE_FLAG_FALSE);
+                            ->where('m_ship_type.del_flag', Constant::DELETE_FLAG_FALSE);
                 })
                 ->select([
                     "m_ship.id as ship_id",
@@ -98,7 +99,8 @@ class ShipRepository extends EloquentRepository implements ShipInterface {
      * @param int|array $idContract
      * @return mixed Illuminate\Support\Collection
      */
-    public function getContract($idShip = null, $idContract = '') {
+    public function getContract($idShip = null, $idContract = '')
+    {
         // Query get contract
         $contract = DB::table('m_contract')
                 ->join('m_ship', function($join) {
@@ -123,7 +125,10 @@ class ShipRepository extends EloquentRepository implements ShipInterface {
                     "m_service.id as service_id",
                     "m_service.name_jp as service_name",
                 ])
-                ->whereIn('approved_flag', [Constant::STATUS_APPROVED, Constant::STATUS_WAITING_APPROVE, Constant::STATUS_REJECT_APPROVE]);
+                ->whereIn('approved_flag', [
+                    Constant::STATUS_APPROVED, 
+                    Constant::STATUS_WAITING_APPROVE, 
+                    Constant::STATUS_REJECT_APPROVE]);
 
         // Check if get all contract inside all ship
         if (empty($idShip) || is_null($idShip)) {
@@ -166,7 +171,8 @@ class ShipRepository extends EloquentRepository implements ShipInterface {
      * @param array $idContract
      * @return mixed Illuminate\Support\Collection
      */
-    public function getContractActive($idShip = null, $idContract = []) {
+    public function getContractActive($idShip = null, $idContract = [])
+    {
         // Query get contract
         $contract = DB::table('m_contract')
                 ->join('m_ship', function($join) {
@@ -237,6 +243,7 @@ class ShipRepository extends EloquentRepository implements ShipInterface {
                 ->select([
                     "t_ship_spot.id as spot_id",
                     "m_spot.name_jp as spot_name",
+                    "m_spot.charge as spot_master_charge",
                     "t_ship_spot.month_usage as spot_month_usage",
                     "t_ship_spot.amount_charge as spot_amount_charge",
                     "t_ship_spot.approved_flag as spot_approved_flag",
@@ -275,47 +282,48 @@ class ShipRepository extends EloquentRepository implements ShipInterface {
      * @param int $companyId default null
      * @return mixed Illuminate\Support\Collection
      */
-    public function getCommonListShipQuery($companyId = null) {
+    public function getCommonListShipQuery($companyId = null)
+    {
         $query = $this->select([
-                    'm_ship.id',
-                    'm_ship.name',
-                    'm_ship_type.type',
-                    'm_ship.imo_number',
-                    'm_nation.name_jp AS nation_name_jp',
-                    'm_nation.name_en AS nation_name_en',
-                    'm_service.name_jp AS service_name_jp',
-                    'm_service.name_en AS service_name_en',
-                    'm_ship_classification.name_jp AS ship_classification_name_jp',
-                    'm_ship_classification.name_en AS ship_classification_name_en',
-                    'm_company.name_jp AS company_name_jp',
-                    'm_company.name_en AS company_name_en',
-                    'm_contract.status'
-                ])
-                // Left join with m_contract
-                ->leftJoin('m_contract', 'm_contract.ship_id', '=', 'm_ship.id')
+            'm_ship.id',
+            'm_ship.name',
+            'm_ship_type.type',
+            'm_ship.imo_number',
+            'm_nation.name_jp AS nation_name_jp',
+            'm_nation.name_en AS nation_name_en',
+            'm_service.name_jp AS service_name_jp',
+            'm_service.name_en AS service_name_en',
+            'm_ship_classification.name_jp AS ship_classification_name_jp',
+            'm_ship_classification.name_en AS ship_classification_name_en',
+            'm_company.name_jp AS company_name_jp',
+            'm_company.name_en AS company_name_en',
+            'm_contract.status'
+        ])
+            // Left join with m_contract
+            ->leftJoin('m_contract', 'm_contract.ship_id', '=', 'm_ship.id')
 
-                // Left join with m_service
-                ->leftJoin('m_service', 'm_contract.service_id', '=', 'm_service.id')
+            // Left join with m_service
+            ->leftJoin('m_service', 'm_contract.service_id', '=', 'm_service.id')
 
-                // Inner join with m_ship_type
-                ->join('m_ship_type', 'm_ship.type_id', '=', 'm_ship_type.id')
+            // Inner join with m_ship_type
+            ->join('m_ship_type', 'm_ship.type_id', '=', 'm_ship_type.id')
 
-                // Inner join with m_company
-                ->join('m_company', 'm_ship.company_id', '=', 'm_company.id')
+            // Inner join with m_company
+            ->join('m_company', 'm_ship.company_id', '=', 'm_company.id')
 
-                // Inner join with m_ship_classification
-                ->join('m_ship_classification', 'm_ship.classification_id', '=', 'm_ship_classification.id')
+            // Inner join with m_ship_classification
+            ->join('m_ship_classification', 'm_ship.classification_id', '=', 'm_ship_classification.id')
 
-                // Inner join with m_nation
-                ->join('m_nation', 'm_nation.id', '=', 'm_ship.nation_id')
+            // Inner join with m_nation
+            ->join('m_nation', 'm_nation.id', '=', 'm_ship.nation_id')
 
-                // Conditions
-                ->where('m_ship.del_flag', 0)
-                ->where('m_company.del_flag', 0)
-                ->where(function ($query) {
-            $query->where('m_service.del_flag', 0)
-            ->orWhereNull('m_contract.id');
-        });
+            // Conditions
+            ->where('m_ship.del_flag', 0)
+            ->where('m_company.del_flag', 0)
+            ->where(function ($query) {
+                $query->where('m_service.del_flag', 0)
+                    ->orWhereNull('m_contract.id');
+            });
 
         // 1.4 Initial list ship when access from detail company
         if (!empty($companyId)) {
@@ -331,40 +339,41 @@ class ShipRepository extends EloquentRepository implements ShipInterface {
      * @param array $param filter keyword conditions
      * @return mixed Illuminate\Support\Collection
      */
-    public function conditionSearchShip($param) {
+    public function conditionSearchShip($param)
+    {
         return $this->where(function ($query) use ($param) {
-                            // Filer by ship name
-                            return $query->where('m_ship.name', 'LIKE', '%' . $param['filter-ship-name'] . '%');
-                        })
-                        // Filter by company name JP or company name ENG
-                        ->where(function ($query) use ($param) {
-                            return $query->where('m_company.name_jp', 'LIKE', '%' . $param['filter-company'] . '%')
-                                    ->orWhere('m_company.name_en', 'LIKE', '%' . $param['filter-company'] . '%');
-                        })
+            // Filer by ship name
+            return $query->where('m_ship.name', 'LIKE', '%' . $param['filter-ship-name'] . '%');
+        })
+            // Filter by company name JP or company name ENG
+            ->where(function ($query) use ($param) {
+                return $query->where('m_company.name_jp', 'LIKE', '%' . $param['filter-company'] . '%')
+                    ->orWhere('m_company.name_en', 'LIKE', '%' . $param['filter-company'] . '%');
+            })
 
-                        // Filter by ship classification name
-                        ->where(function ($query) use ($param) {
-                            return $query->where('m_ship_classification.name_jp', 'LIKE', '%' . $param['filter-classification'] . '%')
-                                    ->orWhere('m_ship_classification.name_en', 'LIKE', '%' . $param['filter-classification'] . '%');
-                        })
+            // Filter by ship classification name
+            ->where(function ($query) use ($param) {
+                return $query->where('m_ship_classification.name_jp', 'LIKE', '%' . $param['filter-classification'] . '%')
+                    ->orWhere('m_ship_classification.name_en', 'LIKE', '%' . $param['filter-classification'] . '%');
+            })
 
-                        // Filter by type of ship
-                        ->where('m_ship_type.type', 'LIKE', '%' . $param['filter-ship-type'] . '%')
+            // Filter by type of ship
+            ->where('m_ship_type.type', 'LIKE', '%' . $param['filter-ship-type'] . '%')
 
-                        // Filter by type of ship
-                        ->where('m_ship.imo_number', 'LIKE', '%' . $param['filter-imo-number'] . '%')
+            // Filter by type of ship
+            ->where('m_ship.imo_number', 'LIKE', '%' . $param['filter-imo-number'] . '%')
 
-                        // Filter by ship nation name
-                        ->where(function ($query) use ($param) {
-                            return $query->where('m_nation.name_jp', 'LIKE', '%' . $param['filter-ship-nation'] . '%')
-                                    ->orWhere('m_nation.name_en', 'LIKE', '%' . $param['filter-ship-nation'] . '%');
-                        })
+            // Filter by ship nation name
+            ->where(function ($query) use ($param) {
+                return $query->where('m_nation.name_jp', 'LIKE', '%' . $param['filter-ship-nation'] . '%')
+                    ->orWhere('m_nation.name_en', 'LIKE', '%' . $param['filter-ship-nation'] . '%');
+            })
 
-                        // Filter by service name
-                        ->where(function ($query) use ($param) {
-                            return $query->where('m_service.name_jp', 'LIKE', '%' . $param['filter-service-name'] . '%')
-                                    ->orWhere('m_service.name_en', 'LIKE', '%' . $param['filter-service-name'] . '%');
-                        });
+            // Filter by service name
+            ->where(function ($query) use ($param) {
+                return $query->where('m_service.name_jp', 'LIKE', '%' . $param['filter-service-name'] . '%')
+                    ->orWhere('m_service.name_en', 'LIKE', '%' . $param['filter-service-name'] . '%');
+            });
     }
 
     /**
@@ -427,11 +436,11 @@ class ShipRepository extends EloquentRepository implements ShipInterface {
             }
 
             if ($shipName != null) {
-                 $query = $query->whereRaw('m_ship.name LIKE ?', $shipName);
+                $query = $query->whereRaw('m_ship.name LIKE ?', $shipName);
             }
         } else {
             $query = $query->where('m_ship.del_flag', 0);
-            
+
             if ($shipId != null) {
                 $query = $query->where('m_ship.id', $shipId);
             }
@@ -444,4 +453,27 @@ class ShipRepository extends EloquentRepository implements ShipInterface {
         return $query->get();
     }
 
+    /**
+     * Get detail ship by id
+     *
+     * @access public
+     * @param int $idShip
+     * @return mixed Illuminate\Support\Collection
+    */
+    public function getIdShip($idShip = null)
+    {
+        return DB::table('m_ship')->select([
+                   'm_ship.id',
+                   'm_ship.name',
+                   'm_company.currency_id',
+                   'm_currency.code'
+                ])
+                ->join('m_company', 'm_company.id','m_ship.company_id')
+                ->join('m_currency', 'm_currency.id','m_company.currency_id')
+                ->where('m_company.del_flag', 0)
+                ->where('m_currency.del_flag', 0)
+                ->where('m_ship.del_flag', 0)
+                ->where('m_ship.id', $idShip)
+                ->first();
+    }
 }

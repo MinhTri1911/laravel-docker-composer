@@ -34,7 +34,7 @@ class ServiceRepository extends EloquentRepository implements ServiceInterface {
      */
     public function getListService($currencyId) {
 
-        return $this->select([
+        return DB::table('m_service')->select([
                             'm_service.id',
                             'm_service.name_jp',
                             't_price_service.charge_register',
@@ -110,8 +110,17 @@ class ServiceRepository extends EloquentRepository implements ServiceInterface {
         if ($shipId != null || $shipId != '') {
             $query = $query->whereRaw("m_service.id NOT IN (SELECT id FROM m_contract WHERE m_contract.ship_id =  ? )", [$shipId]);
         }
-        
+
         return $query->get();
     }
 
+    /**
+     * Function check exits service by idService
+     * @access public
+     * @param int $idService
+     * @return boolen
+     */
+    public function checkExits($idService) {
+        return $this->_model->where('id', $idService)->exists();
+    }
 }

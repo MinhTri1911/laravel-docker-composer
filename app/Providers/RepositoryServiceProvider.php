@@ -45,6 +45,14 @@ class RepositoryServiceProvider extends ServiceProvider {
             'contract' => [
                 'interface' => \App\Repositories\Contract\ContractInterface::class,
                 'repository' => \App\Repositories\Contract\ContractRepository::class
+            ],
+            'billingPaper' => [
+                'interface' => \App\Repositories\Billing\BillingPaperInterface::class,
+                'repository' => \App\Repositories\Billing\BillingPaperRepository::class
+            ],
+            'tshipspot' => [
+                'interface' => \App\Repositories\TShipSpot\TShipSpotInterface::class,
+                'repository' => \App\Repositories\TShipSpot\TShipSpotRepository::class
             ]
         ];
 

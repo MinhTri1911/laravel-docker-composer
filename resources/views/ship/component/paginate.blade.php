@@ -26,13 +26,13 @@
         {{-- Previous page --}}
         @if ($current > 1)
             <li class="previous-20">
-                <a id="paginate-prev" data-url="{{ $url . ($current - 1) }}" >
+                <a id="paginate-prev" data-url="{{ $url . ($current - 1) . '&company-id=' .$companyId }}" >
                     <span>{{ trans('company.btn_prev') }}</span>
                 </a>
             </li>
             @if ($total > 5 && $current > $interval + 1)
                 <li class="first-page">
-                    <a id="paginate-first-page" data-url="{{ $url . 1 }}">
+                    <a id="paginate-first-page" data-url="{{ $url . 1 .'&company-id=' .$companyId }}">
                         <span>1</span>
                     </a>
                 </li>
@@ -53,7 +53,7 @@
                 @if ($isCurrentPage)
                     <a id="current-page" data-page="{{ $current }}">{{ $i }}</a>
                 @else
-                    <a id="paginate-{{ $i }}" data-url="{{ $url . $i }}">{{$i}}</a>
+                    <a id="paginate-{{ $i }}" data-url="{{ $url . $i .'&company-id=' .$companyId }}">{{$i}}</a>
                 @endif
             </li>
         @endfor
@@ -67,13 +67,13 @@
                     </a>
                 </li>
                 <li class="last-page">
-                    <a id="paginate-{{ $total }}" data-url="{{ $url . $total }}">
+                    <a id="paginate-{{ $total }}" data-url="{{ $url . $total .'&company-id=' .$companyId }}">
                         <span>{{ $total }}</span>
                     </a>
                 </li>
             @endif
             <li class="next-20">
-                <a id="paignate-last-page" data-url="{{ $url . ($current + 1) }}">
+                <a id="paignate-last-page" data-url="{{ $url . ($current + 1) .'&company-id=' .$companyId }}">
                     <span>{{ trans('company.btn_next') }}</span>
                 </a>
             </li>

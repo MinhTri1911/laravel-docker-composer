@@ -6,9 +6,18 @@ class Constant
 {
     // Status delete is activating
     const DELETE_FLAG_FALSE     = 0;
-    
     // Status delete was deleted
     const DELETE_FLAG_TRUE      = 1;
+
+    // Status no create bill
+    const BILLED_FLAG_FALSE     = 0;
+    // Status billed
+    const BILLED_FLAG_TRUE      = 1;
+
+    // Status no delivery
+    const DELIVERY_FLAG_FALSE     = 0;
+    // Status delivered
+    const DELIVERY_FLAG_TRUE      = 1;
 
     // Approved status text
     const APPROVED_O = [
@@ -69,4 +78,11 @@ class Constant
 
     // Status code error 500 Internal Server Error
     const HTTP_CODE_ERROR_500 = 500;
+    
+    // Format datetime
+    const FORMAT_DATE_TIME = [
+        'd' => 'Y/m/d',
+        'dt' => 'Y/m/d H:i:s',
+        't' => 'H:i:s'
+    ];
 }

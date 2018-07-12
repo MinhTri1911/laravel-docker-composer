@@ -55,6 +55,7 @@ class MContract extends Eloquent
         'start_date',
         'end_date',
         'status',
+        'remark',
         'approved_flag',
         'reason_reject',
         'created_by',

@@ -25,4 +25,35 @@ class ContractRepository extends EloquentRepository implements ContractInterface
     {
         return MContract::class;
     }
+    
+    /**
+     * Function create
+     * @access public
+     * @param arr data
+     * @return mixed
+     */
+    public function createContract($data) {
+        
+        $contact = new $this->_model;
+        $contact->ship_id = $data['ship_id'];
+        $contact->currency_id = $data['currency_id'];
+        $contact->service_id = $data['service_id'];
+        $contact->start_date = $data['start_date'];
+        $contact->end_date = $data['end_date'];
+        $contact->remark = $data['remark'];
+        $contact->approved_flag = 2;
+        $contact->save();
+
+        return $contact->id;
+    }
+
+    /**
+     * Function edit
+     * @access public
+     * @param arr data
+     * @return mixed
+     */
+    public function editContract($data) {
+        
+    }
 }

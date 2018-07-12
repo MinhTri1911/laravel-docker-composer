@@ -77,6 +77,9 @@ class BillingUsageMonthly extends Command
 
         // Get information of contract, charge service, total license, discount individual
         $listContract = $this->_getInforContract();
+        if ($listContract === null ) {
+            return 0;
+        }
 
         // Total money billing
         $totalMoneyBilling = 0;
@@ -310,7 +313,9 @@ class BillingUsageMonthly extends Command
                                             FROM m_contract AS SC
                                             INNER JOIN m_ship AS SSH ON SSH.id = SC.ship_id
                                             INNER JOIN m_company AS SCO ON SCO.id = SSH.company_id
-                                            WHERE (SC.status = $contractActive OR (MONTH(SC.end_date) = $month AND YEAR(SC.end_date) = $year))
+                                            WHERE (SC.status = $contractActive 
+                                                       OR (MONTH(SC.pending_at) = $month AND YEAR(SC.pending_at) = $year)
+                                                       OR (MONTH(SC.deleted_at) = $month AND YEAR(SC.deleted_at) = $year))
                                                   AND (SC.approved_flag = $approveDone OR ((SC.approved_flag = $approvePending OR SC.approved_flag = $approveReject) 
                                                                                   AND SC.updated_at IS NOT NULL))
                                             GROUP BY SCO.id, SC.service_id
@@ -320,7 +325,9 @@ class BillingUsageMonthly extends Command
                            AND DI.setting_month = '$this->_monthUsage'
                            AND DI.currency_id = C.currency_id
                            AND DI.del_flag = $deleted
-                        WHERE (C.status = $contractActive OR (MONTH(C.end_date) = $month AND YEAR(C.end_date) = $year))
+                        WHERE (C.status = $contractActive 
+                                OR (MONTH(C.pending_at) = $month AND YEAR(C.pending_at) = $year)
+                                OR (MONTH(C.deleted_at) = $month AND YEAR(C.deleted_at) = $year))
                             AND (C.approved_flag = $approveDone OR ((C.approved_flag = $approvePending OR C.approved_flag = $approveReject) AND C.updated_at IS NOT NULL))
                             AND C.start_date < '$this->_now'
                         ORDER BY CO.id ASC

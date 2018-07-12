@@ -35,7 +35,7 @@ return [
     'title_popup_detail_system' => 'システムの詳細',
     'head_list_company' => '顧客会社一覧',
     'btn_detail' => '詳細',
-    'go_to_list_ship' => '契約船舶一覧',
+    'go_to_list_ship' => '船舶一覧',
     'btn_filter' => 'フィルター',
     'btn_prev' => '<前',
     'btn_next' => '次>',
@@ -54,7 +54,7 @@ return [
     'lbl_title_delete_contract_of_company' => '契約削除',
     'btn_edit_company' => '編集',
     'btn_back_to_list_company' => '一覧に戻る',
-    'btn_go_to_list_ship' => '契約船舶一覧へ',
+    'btn_go_to_list_ship' => '船舶一覧へ',
 
     'btn_delete' => '削除',
     'btn_cancel_delete' => 'キャンセル',

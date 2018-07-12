@@ -24,6 +24,8 @@ class CreateMContractTable extends Migration
             $table->tinyInteger('status')->default(0);
             $table->tinyInteger('approved_flag')->default(2);
             $table->text('reason_reject')->nullable();
+            $table->dateTime('pending_at')->nullable();
+            $table->dateTime('deleted_at')->nullable();
             $table->string('created_by', 150)->nullable();
             $table->timestamps();
             $table->string('updated_by', 150)->nullable();

@@ -50,6 +50,7 @@ class TShipSpot extends Eloquent
         'currency_id',
         'amount_charge',
         'remark',
+        'approved_flag',
         'del_flag',
         'created_by',
         'updated_by'

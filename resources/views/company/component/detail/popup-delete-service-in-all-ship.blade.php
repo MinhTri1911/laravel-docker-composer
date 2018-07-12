@@ -21,25 +21,29 @@
                             </tr>
                         </thead>
                         <tbody class="tbody-scroll">
-                            @for ($i = 1; $i <= 20; $i++)
+                            @foreach ($services as $service)
                                 <tr>
                                     <td class="col-xs-1">
-                                        {{ $i }}
+                                        {{ $service->service_id }}
                                     </td>
                                     <td class="col-xs-8">
-                                        SPIC System
+                                        {{ $service->name_jp }}
                                     </td>
                                     <td class="col-xs-3">
                                         <a data-toggle="modal"
                                             href="#popup-confirm-delete-service"
                                             class="delete-service-label"
-                                            id="delete-service-{{ $i }}"
-                                            data-url="{{ route('company.confirmDeleteServiceInAllShip', ['name' => 'SPIC System']) }}">
+                                            id="delete-service-{{ $service->service_id }}"
+                                            data-url="{{ route('company.service.confirmDelete', [
+                                                    'name' => $service->name_jp,
+                                                    'id' => $service->service_id,
+                                                ])
+                                            }}">
                                             {{ trans('company.lbl_action_delete') }}
                                         </a>
                                     </td>
                                 </tr>
-                            @endfor
+                            @endforeach
                         </tbody>
                     </table>
                 </div>

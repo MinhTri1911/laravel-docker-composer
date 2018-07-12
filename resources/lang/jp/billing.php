@@ -7,6 +7,7 @@ return [
     'title_history_billing' => '請求履歴管理',
     'title_statistic_billing' => '請求集計',
     'title_popup_update_payment_date' => '入金確認日更新ポップアップ',
+    'title_popup_reason_reject' => '却下理由',
 
     // Header
     'head_search' => '検索',
@@ -108,4 +109,5 @@ return [
     'btn_statistic' => '表示',
     'btn_output_csv' => 'CSV出力',
     'btn_print' => '印刷',
+    'btn_Ok' => 'Ok',
 ];

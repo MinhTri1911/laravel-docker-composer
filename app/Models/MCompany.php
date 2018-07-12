@@ -107,7 +107,9 @@ class MCompany extends Eloquent
         'url',
         'del_flag',
         'created_by',
-        'updated_by'
+        'updated_by',
+        'pending_at',
+        'deleted_at',
     ];
 
     /**

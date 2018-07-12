@@ -6,6 +6,7 @@ const $blockTable = $('.block-table');
 const $areaPaginate = $('#area-paginate');
 const $sortValue = $('#sort-value');
 const $totalResult = $('#total-result');
+const $valueAfterSearch = $('#value-after-search');
 const HTTP_SUCCESS_CODE = 200;
 
 /**
@@ -48,16 +49,17 @@ $(document).on('click', '.th-line-one i', function (event) {
     // Get data sort attribute
     let dataSort = $(this).attr('data-sort');
     // Parse the data with JSON.parse(), the data becomes a JS object
-    let obj = JSON.parse($sortValue.val());
+    let obj = safeParseJson($sortValue.val());
     // Get URL from #sort-value
     let url = $sortValue.attr('data-url');
     // Parse search value data to JS object
-    let searchValue = JSON.parse($('#value-after-search').val());
+    let searchValue = safeParseJson($valueAfterSearch.val());
 
     // Set query string to group type and load result, field to sort
     let query = {
         'field': dataSort,
         'load': searchValue.load,
+        'company-id': searchValue.companyId
     };
 
     // Swap order by status, 0: ASC, 1: DESC
@@ -106,20 +108,20 @@ $(document).on('click', '.th-line-one i', function (event) {
 $(document).on('click', '#btn-filter', function (event) {
     // Get keywords
     let keywords = $(":input").serializeArray();
+    // Parse search value data to JS object
+    let searchValue = safeParseJson($valueAfterSearch.val());
     // Get data-url
-    let url = $(this).attr('data-url') + '?page=1';
+    let url = $(this).attr('data-url') + '?page=1' + '&company-id=' + searchValue.companyId;
     // Handle keywords
     keywords.forEach(function (element, index) {
         if (element.name !== '_token')
             url += '&' + element.name + '=' + element.value;
     });
 
-    // Parse search value data to JS object
-    let searchValue = JSON.parse($('#value-after-search').val());
-
     // Set query string and load result
     let query = {
         'load': searchValue.load,
+        'company-id': searchValue.companyId
     };
 
     // Ajax request to server to filter function
@@ -160,14 +162,21 @@ $(document).on('click', '#btn-filter', function (event) {
 $(document).on('change', '#load-result', function() {
     // Get data-url
     let url = $(this).attr('data-url');
+    // Parse search value data to JS object
+    let searchValue = safeParseJson($valueAfterSearch.val());
 
     // Set query string to group type and load result
     let query = {
         'load': $('#load-result').val(),
+        'company-id': searchValue.companyId
+    };
+    let query1 = {
+        'load': $('#load-result').val(),
+        'companyId': searchValue.companyId
     };
 
     // Set value select after click search
-    $('#value-after-search').val(JSON.stringify(query));
+    $valueAfterSearch.val(JSON.stringify(query1));
 
     // Ajax request to server to show record per page function
     $.get(url, query, function (res) {
@@ -222,8 +231,9 @@ function restartScroll() {
  */
 function replaceUrlPagination() {
     // Parse the data with JSON.parse(), the data becomes a JS object
-    let obj = JSON.parse($sortValue.val());
-    let recordPerPage = $('#load-result').val();
+    let obj = safeParseJson($sortValue.val());
+    // Get per page and company id from input hidden
+    let searchValue = safeParseJson($valueAfterSearch.val());
 
     // Set query string
     for (var key in obj) {
@@ -245,7 +255,13 @@ function replaceUrlPagination() {
     $('.pagination li').find('a').each(function (index) {
         // Replace url for paginate when sorting
         if ($(this).attr('data-url')) {
-            let url = $(this).attr('data-url') + '&field=' + query.field + '&orderBy=' + query.orderBy + '&load=' + recordPerPage;
+            let url = $(this).attr('data-url')
+                + '&field='
+                + query.field
+                + '&orderBy='
+                + query.orderBy
+                + '&load=' + searchValue.load;
+
             $(this).attr('data-url', url);
         }
     });
@@ -257,4 +273,20 @@ function replaceUrlPagination() {
 function changeTotalResultByGroup () {
     $totalResult.empty();
     $totalResult.append($('.table-content .table-result').attr('data-total'));
+}
+
+/**
+ * JSON.parse will throw error, so we need safe parse JSON
+ *
+ * @param str
+ * @returns {null|object}
+ */
+function safeParseJson(str) {
+    let result = null;
+    try {
+        result = JSON.parse(str);
+    } catch (e) {
+        console.error("Failed to parse JSON", e);
+    }
+    return result;
 }

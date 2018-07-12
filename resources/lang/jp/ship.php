@@ -63,7 +63,7 @@ return [
         'btn_update' => '更新',
     ],
     // list ship
-    'head_title_list_ship' => '契約船舶一覧',
+    'head_title_list_ship' => '船舶一覧',
     'link_search_all' => 'すべての船を検索',
     'lbl_total_result' => '合計 :total 件',
     'lbl_load_result' => '表示件数',

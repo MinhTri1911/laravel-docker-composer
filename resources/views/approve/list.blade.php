@@ -73,10 +73,16 @@
         <div class="result-app-block contract-block">
             <h4 class="rs-title">{{__('approve.header_contract')}}</h4>     
             <div class="content-block table-block">
-                <div class="block-handle align-right">
-                    <div class="btn btn-red btn-w150 btn-reject">{{__('approve.btn_approve')}}</div>
-                    <div class="btn btn-blue-dark btn-w150 btn-approve">{{__('approve.btn_reject')}}</div>
+                <div class="extra-block">
+                    <div class="pull-left lbl-page-text">{{__('approve.lbl_page_text', ['min' => '1', 'max' => 10, 'total' => 100])}}</div>
+                    <div class="limit-block pull-right">
+                        <span class="lbl_limit">{{__('ship-contract.detail.lbl_limit')}}</span>
+                        <div class="custom-select" style="min-width:100px">
+                            {{ Form::select('limit_page', \App\Common\Constant::ARY_PAGINATION_PER_PAGE, request()->filled('limit')?request()->get('limit'):null, ['class' => 'form-control limit-page', 'tabindex' => 5]) }}
+                        </div>
+                    </div>
                 </div>
+                
                 <table class="table table-blue table-contract">
                     <thead>
                         <tr>
@@ -139,11 +145,12 @@
                         </tr>
                     </tbody>
                 </table>
-                <div class="block-paginate">
-                    <div class="fl-page fl-left">
-                        {{__('approve.lbl_page_text', ['min' => '1', 'max' => 10, 'total' => 100])}}
-                    </div>
-                    <div class="fl-page fl-right">
+                <div class="block-handle align-right">
+                    <div class="btn btn-red btn-w150 btn-reject">{{__('approve.btn_approve')}}</div>
+                    <div class="btn btn-blue-dark btn-w150 btn-approve">{{__('approve.btn_reject')}}</div>
+                </div>
+                <div class="block-paginate block-handle align-center">
+                    <div class="fl-page">
                         <ul class="pagination">
                             <li class="active">
                                 <a>1</a>

@@ -198,4 +198,29 @@ interface RepositoryInterface
      * @return mixed
      */
     public function orderBy($column, $direction = 'asc');
+
+    /**
+     * Where null
+     *
+     * @param string column
+     * @param string boolean
+     * @param bool not
+     * @return mixed
+     */
+    public function whereNull($column, $boolean = 'and', $not = false);
+
+    /**
+     * Or where null
+     *
+     * @param string column
+     * @return mixed
+     */
+    public function orWhereNull($column);
+
+    /**
+     * Insert multi record
+     * @param array data
+     * @return bool
+     */
+    public function insert($data);
 }

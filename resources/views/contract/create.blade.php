@@ -15,27 +15,20 @@
 @section('content')
 <div class="main-content">
     <h1 class="main-heading">{{__('contract.create.header')}}</h1>
+    {!! Form::open(['route' => 'contract.create']) !!}
     <div class="main-summary contract-create">
+        @if($errors->all())
         <div class="alert alert-danger">
+            @foreach($errors->all() as $error)
             <div class="block-error">
                 <i class="fa fa-exclamation" aria-hidden="true"></i>
                 <label class="control-label">
-                    住所1を入力してください。
+                    {{ $error }}
                 </label>
             </div>
-            <div class="block-error">
-                <i class="fa fa-exclamation" aria-hidden="true"></i>
-                <label class="control-label">
-                    電話番号を入力してください。
-                </label>
-            </div>
-            <div class="block-error">
-                <i class="fa fa-exclamation" aria-hidden="true"></i>
-                <label class="control-label">
-                    秘密の質問を入力してください。
-                </label>
-            </div>
+            @endforeach
         </div>
+        @endif
         {{-- Start of ship block --}}
         <div class="contract-info-block">
             <div class="content-block table-block">
@@ -52,7 +45,7 @@
                         {{__('contract.lbl_ship')}}
                     </div>
                     <div class="item-value">
-                        : Tên tàu
+                        : {{ $ship->name }}
                     </div>
                 </div>
                 <div class="item-row">
@@ -60,7 +53,7 @@
                         {{__('contract.lbl_currency')}}
                     </div>
                     <div class="item-value">
-                        : JPY
+                        : {{ $ship->code }}
                     </div>
                 </div>
                 <div class="item-row">
@@ -70,20 +63,8 @@
                     </div>
                     <div class="item-value">
                         <div class="input-group">
-                            {!! Form::text('idService', "", ['class' => 'form-control', 'placeholder' => __('contract.lbl_service')]) !!}
+                            {!! Form::text('idService', old('idService'), ['class' => 'form-control', 'placeholder' => __('contract.lbl_service'),'readonly'=>'readonly']) !!}
                             <div class="input-group-addon show-modal-service"><i class="fa fa-search"></i></div>
-                        </div>
-                    </div>
-                </div>
-                 <div class="item-row">
-                    <div class="item-label">
-                        Search ship
-                        <span class="require">*</span>
-                    </div>
-                    <div class="item-value">
-                        <div class="input-group">
-                            {!! Form::text('idShip', "", ['class' => 'form-control', 'placeholder' => '']) !!}
-                            <div class="input-group-addon show-modal-ship"><i class="fa fa-search"></i></div>
                         </div>
                     </div>
                 </div>
@@ -94,7 +75,7 @@
                     </div>
                     <div class="item-value">
                         <div class="group-datepicker">
-                            {!! Form::text('Txt', date('Y/m/d'), ['class' => 'form-control custom-datepicker', 'placeholder' => date('Y/m/d')]) !!}
+                            {!! Form::text('dateStart', old('dateStart'), ['class' => 'form-control custom-datepicker', 'placeholder' => 'YYYY/MM/dd']) !!}
                             <span class="icon-picker"><i class="fa fa-calendar"></i></span>
                         </div>
                     </div>
@@ -106,8 +87,25 @@
                     </div>
                     <div class="item-value">
                         <div class="group-datepicker">
-                            {!! Form::text('Txt', date('Y/m/d'), ['class' => 'form-control custom-datepicker', 'placeholder' => date('Y/m/d')]) !!}
+                            {!! Form::text('dateEnd', old('dateEnd'), ['class' => 'form-control custom-datepicker', 'placeholder' => 'YYYY/MM/dd']) !!}
                             <span class="icon-picker"><i class="fa fa-calendar"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="item-row">
+                    <div class="item-label"  style="padding-bottom: 70px;">
+                        {{__('contract.lbl_remarks')}}
+                    </div>
+                    <div class="item-value">
+                        <div class="input-group">
+                            {{ Form::textarea('remark', old('remark'), [
+                                'class' => 'form-control',
+                                'placeholder' => trans('contract.lbl_remarks'),
+                                'tabindex' => 15,
+                                'rows' => '3',
+                                'style' => 'width: 20%;z-index: 1;',
+                            ])
+                            }}
                         </div>
                     </div>
                 </div>
@@ -130,28 +128,30 @@
                         <tr>
                             <td>1</td>
                             <td>{{__('contract.lbl_spot_regist')}}</td>
-                            <td>{!! Form::text('Txt', "1.000.000", ['class' => 'form-control', 'placeholder' => "課金種別"]) !!}</td>
+                            <td>{!! Form::text('chargeRegister', old('chargeRegister'), ['class' => 'form-control', 'placeholder' => "課金種別"]) !!}</td>
                         </tr>
                         <tr>
                             <td>2</td>
                             <td>{{__('contract.lbl_spot_data')}}</td>
-                            <td>{!! Form::text('Txt', "1.000.000", ['class' => 'form-control', 'placeholder' => "請求金額"]) !!}</td>
+                            <td>{!! Form::text('chargeCreate', old('chargeCreate'), ['class' => 'form-control', 'placeholder' => "請求金額"]) !!}</td>
                         </tr>
                     </tbody>
                 </table>
                 <div class="block-handle align-right">
                     <div href="#" class="btn btn-blue-light btn-w150 pull-left">{{__('contract.btn_back')}}</div>
-                    <div href="#" class="btn btn-blue-dark btn-w190 pull-left">{{__('contract.btn_create')}}</div>
+                    <button type="submit" class="btn btn-blue-dark btn-w190">{{__('contract.btn_create')}}</button>
                 </div>
             </div>
         </div>
         {{-- End List contract --}}
     </div>
+    {{ Form::hidden('currencyId',$ship->currency_id) }}
+    {{ Form::hidden('shipId', $ship->id) }}
+    {{ Form::hidden('serviceIdHidden','') }}
+    {!! Form::close() !!}
 </div>
 {{-- Popup Search Service --}}
-{{ Form::hidden('currencyId',1) }}
-{{ Form::hidden('shipId', 1) }}
-{{ Form::hidden('companyId', null) }}
+
 <div class="modal fade modal-service" id="modal-service">
     @include('search-service-master.index')
 </div>
@@ -165,7 +165,6 @@
 @section('javascript')
 <script type="text/javascript" src="{{ asset('js/contract.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/search-service-master.js') }}"></script>
-<script type="text/javascript" src="{{ asset('js/search-ship-master.js') }}"></script>
 <script>
 $(document).on("click", ".show-modal-service", function () {
     $("#modal-service").modal("show")

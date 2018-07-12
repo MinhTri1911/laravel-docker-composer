@@ -9,7 +9,9 @@ const HTTP_ERROR = 500;
 
 var company = new function () {
     this.model = {
+        companyId: $('#company-id').val(),
         selectModal: '#modal-protector',
+        popupShowAllService: '#delete-service-in-all-ship',
         btnSaveSettingBilling: '#btn-save-setting-billing',
         lableNameBillingMethod: '#lbl-billing-method-id',
         labelError: '.alert-danger',
@@ -20,6 +22,8 @@ var company = new function () {
         contractStartDate: '#contract-start-date',
         contractEndDate: '#contract-end-date',
         btnCreateContract: '#btn-create-contract',
+        btnShowPopupDeleteServiceInAllShip: '#btn-show-popup-delete-service-in-all-ship',
+        btnDeleteService: '#btn-delete-service'
     }
 
     this.url = {
@@ -27,6 +31,8 @@ var company = new function () {
         urlUpdateBillingMethod: window.Laravel.urlUpdateBillingMethod,
         urlShowPopupAddServiceForAllShip: $(this.model.btnAddServiceForAllShip).attr('data-url'),
         urlAddService: window.Laravel.urlAddService,
+        urlShowPopupGetAllService: $(this.model.btnShowPopupDeleteServiceInAllShip).attr('data-url'),
+        urlDeleteServiceInAllShip: window.Laravel.urlDeleteServiceInAllShip,
     }
 
     /**
@@ -40,7 +46,7 @@ var company = new function () {
             let url = event.data.companyObject.url.urlShowPopupSettingBillingMethod
             // Set param for check currency id in server
             let param = {
-                'current-url' : window.location.href
+                'company-id' : company.model.companyId,
             }
 
             $.get(url, param,function (res) {
@@ -122,7 +128,7 @@ var company = new function () {
 
                 // Set param to check currency id in server
                 let param = {
-                    'current-url' : window.location.href,
+                    'company-id' : company.model.companyId,
                     'billing-method-id' : $('#slb-billing-method').val(),
                 }
 
@@ -136,19 +142,22 @@ var company = new function () {
 
                         // Get data for append after update
                         let billings = $(company.model.btnSaveSettingBilling).attr('data-for-append');
-                        let billingId = res.billingId;
+                        let billingId = res.data.billingId;
 
                         // Append new value for billing method
                         $(company.model.lableNameBillingMethod).append(JSON.parse(billings)[billingId].jp);
 
                         // Replace new url for show popup
-                        $(company.model.btnShowSettingBilling).attr('data-url', res.newShowUrl);
+                        $(company.model.btnShowSettingBilling).attr('data-url', res.data.newShowUrl);
 
                         // Reset variable urlShowPopupSettingBillingMethod
-                        company.url.urlShowPopupSettingBillingMethod = res.newShowUrl;
-                    } else {
+                        company.url.urlShowPopupSettingBillingMethod = res.data.newShowUrl;
+                    }
+                })
+                .fail(function (res) {
+                    for (var message in res.responseJSON.errors) {
                         $(company.model.labelShowMessage).empty();
-                        $(company.model.labelShowMessage).append(res.message);
+                        $(company.model.labelShowMessage).append(res.responseJSON.errors[message][0]);
                         $(company.model.selectModal + ' ' + company.model.labelError).css({'display': 'block'});
                     }
                 });
@@ -156,18 +165,18 @@ var company = new function () {
         });
     };
 
-     /**
+    /**
      * Function add service for all ship in company
      * @returns void
      */
-    this.addServiceForAllShip = function () {
+    this.showPopupAddServiceForAllShip  = function () {
         let companyObject = this;
         $(this.model.btnAddServiceForAllShip).bind('click', {companyObject: companyObject}, function (event) {
             let company = event.data.companyObject;
             let url = company.url.urlShowPopupAddServiceForAllShip;
 
             let param = {
-                'current-url': window.location.href,
+                'company-id': company.model.companyId,
             }
 
             $.get(url, param, function (res) {
@@ -180,63 +189,10 @@ var company = new function () {
         })
     }
 
-    // this.validationDateTimeCreateContract = function () {
-    //     let companyObject = this;
-    //     $(document).bind('change', {companyObject : companyObject}, function (event) {
-    //         let company = event.data.companyObject
-    //         let now1 = moment().format('L');
-    //         let startDate = $(company.model.contractStartDate).val();
-    //         let endDate = $(company.model.contractEndDate).val();
-    //         let message = {
-
-    //         }
-
-    //         if (('#' + event.target.getAttribute('id')) == company.model.contractStartDate) {
-    //             // Check if start date less than now
-    //             if (!moment(startDate).isSameOrAfter(now1)) {
-    //                 $(company.model.labelShowMessage).empty();
-    //                 $(company.model.labelShowMessage).append('1');
-    //                 $(company.model.selectModal + ' ' + company.model.labelError).css({'display': 'block'});
-
-    //                 return;
-    //             }
-
-    //             if (endDate != undefined && !moment(startDate).isSameOrBefore(endDate)) {
-    //                 $(company.model.labelShowMessage).empty();
-    //                 $(company.model.labelShowMessage).append('2');
-    //                 $(company.model.selectModal + ' ' + company.model.labelError).css({'display': 'block'});
-
-    //                 return;
-    //             }
-    //         }
-
-    //         if (('#' + event.target.getAttribute('id')) == company.model.contractEndDate) {
-    //             // Check if end date less than now
-    //             if (!moment(endDate).isSameOrAfter(now1)) {
-    //                 $(company.model.labelShowMessage).empty();
-    //                 $(company.model.labelShowMessage).append('3');
-    //                 $(company.model.selectModal + ' ' + company.model.labelError).css({'display': 'block'});
-
-    //                 return;
-    //             }
-
-    //             if ($(startDate).val() != undefined && !moment(startDate).isAfter(startDate)) {
-    //                 $(company.model.labelShowMessage).empty();
-    //                 $(company.model.labelShowMessage).append('4');
-    //                 $(company.model.selectModal + ' ' + company.model.labelError).css({'display': 'block'});
-
-    //                 return;
-    //             }
-    //         }
-
-    //         if (moment(startDate).isSameOrAfter(now1) && moment(endDate).isAfter(startDate)) {
-    //             $(company.model.selectModal + ' ' + company.model.labelError).css({'display': 'none'});
-
-    //             return;
-    //         }
-    //     });
-    // }
-
+    /**
+     * Function add service for all ship in company
+     * @returns void
+     */
     this.addService = function () {
         let companyObject = this;
         $(document).bind('click', {companyObject: companyObject}, function (event) {
@@ -250,24 +206,106 @@ var company = new function () {
                     'service-id': $(company.model.slbServiceId).val(),
                     'start-date': $(company.model.contractStartDate).val(),
                     'end-date': $(company.model.contractEndDate).val(),
-                    'current-url': window.location.href,
+                    'company-id': company.model.companyId,
                 }
 
                 $.post(url, param, function (res) {
                     if (res.code == HTTP_SUCCESS) {
-
-                    } else {
-                        // Loop error messages
-                        for (var message in res.message) {
-                            // Append message error and show
-                            $('.' + message).empty();
-                            $('.' + message).append(res.message[message][0]);
-                            $(company.model.selectModal + ' .alert-' + message).css({'display': 'block'});
-                        }
-
-                        // Reset css for alert message
-                        $('.alert').css({'margin-bottom': '5px'});
+                        // Close Popup
+                        $(company.model.selectModal).modal('toggle');
                     }
+                })
+                .fail(function(res) {
+                    // Loop error messages
+                    for (var message in res.responseJSON.errors) {
+                        // Append message error and show
+                        $('.' + message).empty();
+                        $('.' + message).append(res.responseJSON.errors[message][0]);
+                        $(company.model.selectModal + ' .alert-' + message).css({'display': 'block'});
+                    }
+
+                    // Reset css for alert message
+                    $('.alert').css({'margin-bottom': '5px'});
+                });
+            }
+        });
+    }
+
+    /**
+     * Function show popup get all service in company
+     * @returns void
+     */
+    this.showPopupAllServiceInCompany = function () {
+        let companyObeject = this;
+        $(this.model.btnShowPopupDeleteServiceInAllShip).bind('click', {companyObeject: companyObeject}, function (event) {
+            let company = event.data.companyObeject;
+            let url = company.url.urlShowPopupGetAllService;
+            let param = {
+                'company-id': company.model.companyId
+            }
+
+            $.get(url, param, function (res) {
+                if (res.code === HTTP_SUCCESS) {
+
+                    $(company.model.popupShowAllService).empty();
+                    $(company.model.popupShowAllService).append(res.data.view);
+                    $(company.model.popupShowAllService).modal('show');
+
+                    // setting css for modal display block
+                    $(company.model.popupShowAllService).attr('style', 'display: block !important');
+                    // add perfect scroll for tbody
+                    const table = document.querySelector('.tbody-scroll');
+                    const ps = new PerfectScrollbar(table, function () {
+                        table.style.height = '200px'
+                    });
+                }
+            });
+        });
+    }
+
+    /**
+     * Function confirm delete service in all ship
+     * @return void
+     */
+    this.confirmDeleteServiceInAllShip = function () {
+        $(document).on('click', '.delete-service-label', function (event) {
+            let url = $('#' + event.target.getAttribute('id')).attr('data-url');
+            console.log(url, event.target.getAttribute('id'));
+            $.get(url, function (res) {
+                if (res.code === HTTP_SUCCESS) {
+                    $('#popup-confirm-delete-service').empty();
+                    $('#popup-confirm-delete-service').append(res.data.view);
+                    $('#popup-confirm-delete-service').attr('style', 'display: block !important'); // setting css for modal display block
+                    $('#popup-stack-delete-service').attr('style', 'opacity: 0.5');
+                }
+            })
+            .fail(function (res) {
+                return;
+            });
+        });
+    }
+
+    this.deleteServiceInAllShip = function () {
+        let companyObject = this;
+
+        $(document).bind('click', {companyObject: companyObject}, function (event) {
+            let company = event.data.companyObject;
+
+            if (('#' + event.target.getAttribute('id')) == company.model.btnDeleteService) {
+                let url = company.url.urlDeleteServiceInAllShip;
+                let param = {
+                    'service-ids': $(company.model.btnDeleteService).attr('data-id'),
+                    'company-id': company.model.companyId,
+                }
+
+                $.post(url, param, function (res) {
+                    if (res.code === HTTP_SUCCESS) {
+                        // Close popup
+                        $('#popup-confirm-delete-service').modal('toggle');
+                    }
+                })
+                .fail(function (res) {
+
                 });
             }
         });
@@ -275,50 +313,6 @@ var company = new function () {
 };
 
 
-/**
- *
- * @description event click button showw popup delete service for all ship
- * @returns {undefined}
- */
-$('#btn-delete-service-for-all-ship').on('click', function () {
-    let url = $(this).attr('data-url');
-    $.get(url, function (res) {
-        if (res.code !== 200) {
-            alert('Error');
-            return;
-        }
-
-        $('#delete-service-in-all-ship').empty();
-        $('#delete-service-in-all-ship').append(res.view);
-        $('#delete-service-in-all-ship').modal('show');
-        $('#delete-service-in-all-ship').attr('style', 'display: block !important'); // setting css for modal display block
-        // add perfect scroll for tbody
-        const table = document.querySelector('.tbody-scroll');
-        const ps = new PerfectScrollbar(table, function () {
-            table.style.height = '200px'
-        });
-    });
-});
-
-/**
- *
- * @description event click show popup confirm for delete service in all ship
- */
-$(document).on('click', '.delete-service-label', function (event) {
-    let url = $('#' + event.target.getAttribute('id')).attr('data-url');
-
-    $.get(url, function (res) {
-        if (res.code !== 200) {
-            alert('Error');
-            return;
-        }
-
-        $('#popup-confirm-delete-service').empty();
-        $('#popup-confirm-delete-service').append(res.view);
-        $('#popup-confirm-delete-service').attr('style', 'display: block !important'); // setting css for modal display block
-        $('#popup-stack-delete-service').attr('style', 'opacity: 0.5');
-    });
-});
 
 /**
  * @description event close stack modal and remove opacity in behide modal
@@ -338,6 +332,9 @@ $('#btn-delete-all-contract-company').on('click', function () {
 $(document).ready(function () {
     company.showSettingBillingMethod();
     company.updateBillingMethod();
-    company.addServiceForAllShip();
+    company.showPopupAddServiceForAllShip();
     company.addService();
+    company.showPopupAllServiceInCompany();
+    company.confirmDeleteServiceInAllShip();
+    company.deleteServiceInAllShip();
 });

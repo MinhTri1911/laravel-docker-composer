@@ -390,8 +390,8 @@
                                         <div class="col-md-6 block">
                                             {{ Form::button(trans('company.btn_delete'), [
                                                     'class' => 'btn btn-green-dark btn-w150',
-                                                    'id' => 'btn-delete-service-for-all-ship',
-                                                    'data-url' => route('company.deleteServiceInAllShip', ['id' => 1]),
+                                                    'id' => 'btn-show-popup-delete-service-in-all-ship',
+                                                    'data-url' => route('company.service.index'),
                                                 ])
                                             }}
                                         </div>
@@ -503,6 +503,9 @@
         </div>
     </div>
     <!-- end popup confirm delete all contract -->
+
+    {{-- Form hidden get company id --}}
+    {{ Form::hidden('company-id', $company->id, ['id' => 'company-id']) }}
 @endsection
 
 @section('javascript')
@@ -510,6 +513,7 @@
         window.Laravel = {!! json_encode([
             'urlUpdateBillingMethod' => route('billing.method.update'),
             'urlAddService' => route('company.service.store'),
+            'urlDeleteServiceInAllShip' => route('company.service.delete'),
         ]) !!};
     </script>
     <script type="text/javascript" src="{{ asset('js/company-general.js') }}"></script>

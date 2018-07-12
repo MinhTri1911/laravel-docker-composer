@@ -79,7 +79,7 @@
                 </div>
             </div>
             {!! Form::close() !!}
-            
+
             <!-- Title table -->
             <div class="block-title-tbl">
                 <div class="left-side">
@@ -113,7 +113,6 @@
                             <th rowspan="2" class="tbl-row-money">{{__('billing.tbl_list_company_header.ope_total_money')}}</th>
                             <th rowspan="2" class="tbl-row-status">{{__('billing.tbl_list_company_header.status')}}</th>
                             <th rowspan="2" class="tbl-row-approve">{{__('billing.tbl_list_company_header.status_approve')}}</th>
-                            <th rowspan="2" class="tbl-row-reason">{{__('billing.tbl_list_company_header.reason')}}</th>
                             <th rowspan="2" class="tbl-row-process"></th>
                         </tr>
                         <tr>
@@ -123,6 +122,35 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <tr>
+                            <td class="tbl-row-pick">
+                                <div class="custom-radio">
+                                    <input class="hidden" id="company_id" name="rdo_company" type="radio">
+                                    <label for="company_id"></label>
+                                </div>
+                            </td>
+                            <td class="tbl-row-no">1</td>
+                            <td class="tbl-row-company-name">Company 1</td>
+                            <td class="tbl-row-date">2018/09</td>
+                            <td class="tbl-row-method">四半期（船毎/個別押印）</td>
+                            <td class="tbl-row-ope-name">Full name 1</td>
+                            <td class="tbl-row-ope-phone">0944584584</td>
+                            <td class="tbl-row-ope-email">abc123456@gmail.com</td>
+                            <td class="tbl-row-money">1.000（円）</td>
+                            <td class="tbl-row-status">発行待ち</td>
+                            <td class="tbl-row-approve">
+                                <a href="#"  id="link-reason-reject" class='link-reason-reject'>却下</a>
+                            </td>
+                            <td class="tbl-row-process">
+                                <a href="{{route('billing.preview.billing.paper')}}" target="_blank" id="btn-pdf">
+                                    <i class="glyphicon glyphicon-file"></i>
+                                </a>
+                                <a href="{{route('billing.history.billing')}}"  id="btn-history">
+                                    <i class="fa fa-history" aria-hidden="true"></i>
+                                </a>
+
+                            </td>
+                        </tr>
                         @for($i = 0; $i<5; $i++ )
                             <tr>
                                 <td class="tbl-row-pick">
@@ -139,9 +167,8 @@
                                 <td class="tbl-row-ope-phone">0944584584</td>
                                 <td class="tbl-row-ope-email">abc123456@gmail.com</td>
                                 <td class="tbl-row-money">1.000（円）</td>
-                                <td class="tbl-row-status">請求書発行待ち</td>
+                                <td class="tbl-row-status">発行待ち</td>
                                 <td class="tbl-row-approve">承認済み</td>
-                                <td class="tbl-row-reason">承認済み承認済み承認済み承認済み</td>
                                 <td class="tbl-row-process">
                                     <a href="{{route('billing.preview.billing.paper')}}" target="_blank" id="btn-pdf">
                                         <i class="glyphicon glyphicon-file"></i>
@@ -215,6 +242,30 @@
                         </li>
                     </ul>
                 </nav>
+            </div>
+        </div>
+    </div>
+
+    <!--Popup show reason reject-->
+    <div class="modal modal-protector fade" id="modal-reason-reject" tabindex="-1" role="dialog" style="display: none;">
+        <div class="modal-close">
+            <button class="btn-close-modal" data-dismiss="modal"></button>
+            <label>閉じる</label>
+        </div>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="popup-title">
+                    <h2>{{__('billing.title_popup_reason_reject')}}</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" style="text-align: center;">
+                        <label class="label-control">{{__('billing.title_popup_reason_reject')}}</label>
+                    </div>
+
+                    <div class="form-btn">
+                        {!! Form::button( __('billing.btn_Ok'), ["class"=>"btn btn-blue-light btn-w150", 'id' => 'btn-Ok', 'data-dismiss' => 'modal']) !!}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

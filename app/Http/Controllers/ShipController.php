@@ -47,10 +47,10 @@ class ShipController extends Controller
     {
         // Get sort request data
         $data = [
-            'companyId' => $request->id, // Company id
-            'field' => $request->field, // Request sort field
-            'orderBy' => $request->orderBy, // Request sort is DESC or ASC
-            'perPage' => $request->load // Load total record per page
+            'companyId' => $request->get('company-id'), // Company id
+            'field' => $request->get('field'), // Request sort field
+            'orderBy' => $request->get('orderBy'), // Request sort is DESC or ASC
+            'perPage' => $request->get('load') // Load total record per page
         ];
 
         // Handle and get list ship data
@@ -69,9 +69,10 @@ class ShipController extends Controller
                 )->render(),
                 'paginate' => view('ship.component.paginate', [
                     'pagination' => $shipData,
-                    'url' => route('ship.index') . '?page='
+                    'url' => route('ship.index') . '?page=',
+                    'companyId' => $data['companyId'],
                 ])->render(),
-                'perPage' => $request->load,
+                'perPage' => $request->get('load'),
             ]);
         }
 
@@ -79,9 +80,12 @@ class ShipController extends Controller
         $viewData = [
             'ships' => $shipData,
             'url' => route('ship.index') . '?page=',
-            'perPage' => Constant::PAGINATION_PER_PAGE,
-            'aryPerPage' => Constant::ARY_PAGINATION_PER_PAGE,
-            'contractStatus' => Constant::CONTRACT_O
+            'contractStatus' => Constant::CONTRACT_O,
+            'companyId' => $data['companyId'],
+            // Get back button route and send to view
+            'backButton' => !$request->has('company-id')
+                ? route('company.index')
+                : route('company.show', ['id' => $data['companyId']])
         ];
         return view('ship.list', $viewData);
     }
@@ -112,11 +116,13 @@ class ShipController extends Controller
         ]);
 
         // Set data field column to order by
-        $filters['field'] = $request->field;
+        $filters['field'] = $request->get('field');
         // Set data order by
-        $filters['orderBy'] = $request->orderBy;
+        $filters['orderBy'] = $request->get('orderBy');
         // Set data load result
-        $filters['load'] = $request->load;
+        $filters['load'] = $request->get('load');
+        // Get company id from filter ajax request
+        $filters['companyId'] = $request->get('company-id');
 
         // Get data filter company
         $ships = $this->_shipBusiness->filterCompany(
@@ -125,7 +131,8 @@ class ShipController extends Controller
             [
                 'field' => $filters['field'], // Filter column
                 'orderBy' =>  $filters['orderBy'], // Sort type
-            ]
+            ],
+            $filters['companyId'] // Filter by company id
         );
 
         // Check total record per page, if it not have set default it
@@ -144,6 +151,7 @@ class ShipController extends Controller
             [
                 'pagination' => $ships,
                 'url' => route('ship.filter', $filters) . '&page=',
+                'companyId' => $filters['companyId'],
             ]
         )->render();
 

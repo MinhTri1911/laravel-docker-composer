@@ -284,6 +284,9 @@ a#go-top {
       margin-bottom: 7px;
       opacity: 1;
       transition: opacity 0.3s;
+      background-image: url("../../images/common/modals_close.png");
+
+        
       &:focus {
         outline: 0;
       }
@@ -315,7 +318,7 @@ a#go-top {
       }
 
       .modal-body {
-        padding: 30px 30px 50px;
+        padding: 30px 30px 30px;
 
         .form-group {
           clear: both;

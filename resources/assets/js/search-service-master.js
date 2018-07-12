@@ -9,12 +9,15 @@ var searchService = new function () {
         inputIdService: "input[name=idService]",
         inputIdServiceSearch: "input[name=idServiceSearch]",
         inputNameServiceSearch: "input[name=nameServiceSearch]",
-        showModalService : ".show-modal-service"
+        showModalService: ".show-modal-service",
+        chargeRegister: "input[name=chargeRegister]",
+        chargeCreate: "input[name=chargeCreate]",
+        serviceIdHidden : "input[name=serviceIdHidden]"
     };
 
     this.init = function () {
 
-        searchService.events.load();
+        //searchService.events.load();
 
         $(document).on('click', searchService.models.btnOk, function (e) {
             searchService.events.chosseValue();
@@ -23,11 +26,11 @@ var searchService = new function () {
         $(document).on('click', searchService.models.btnSearch, function (e) {
             searchService.events.search();
         });
-        
+
         $(document).on('click', searchService.models.showModalService, function (e) {
             searchService.events.load();
         });
-
+        
     };
 
     this.events = {
@@ -104,18 +107,18 @@ var searchService = new function () {
         },
 
         updateContentByData: function (data) {
-     
+
             $(searchService.models.contentSearch).empty();
-       
+
             if (data.length > 0) {
-           
+
                 var content = null;
                 var countForEach = 0;
 
                 data.forEach(function (item) {
-                    
+
                     searchService.events.addClassTableFixed();
-                    
+
                     var string = '';
 
                     string = '<tr>'
@@ -123,7 +126,7 @@ var searchService = new function () {
                             + '<td style="width: 70%">' + item['name_jp'] + '</td>'
                             + '<td style="width: 10%">'
                             + '<div class="custom-radio">'
-                            + '<input value="' + item['id'] + '" class="hidden" id="search-service' + item['id'] + '" name="search-service-id" type="radio" ';
+                            + '<input data-value="' + item['id'] + '" value="' + item['id'] + '" class="hidden" id="search-service' + item['id'] + '" name="search-service-id" type="radio" ';
 
                     if (countForEach == 0) {
                         string = string + 'checked="checked">';
@@ -136,11 +139,16 @@ var searchService = new function () {
                             + '</td>'
                             + '</tr>';
 
+                    string = string + '<input name="chargeRegister' + item['id'] + '" type="hidden" value="' + item['charge_register'] + '">\n\
+                                       <input name="chargeCreate' + item['id'] + '" type="hidden" value="' + item['charge_create_data'] + '">\n\
+                                       <input name="nameJP' + item['id'] + '" type="hidden" value="' + item['name_jp'] + '">';
+
+
                     content = content + string;
 
                     countForEach++;
                 });
-                
+
                 $(searchService.models.contentSearch).html(content);
 
             } else {
@@ -150,17 +158,23 @@ var searchService = new function () {
         },
 
         chosseValue: function () {
-
             var idChosse = $('input[name=search-service-id]:checked').val();
+            var id = $("input[name=search-service-id]:checked").data().value;
+            var chargeRegister = $('input[name=chargeRegister' + id + ']').val();
+            var chargeCreate = $('input[name=chargeCreate' + id + ']').val();
+            var nameJP = $('input[name=nameJP' + id + ']').val();
 
-            $(searchService.models.inputIdService).val(idChosse);
+            $(searchService.models.chargeRegister).val(chargeRegister);
+            $(searchService.models.chargeCreate).val(chargeCreate);
+            $(searchService.models.inputIdService).val(nameJP);
+            $(searchService.models.serviceIdHidden).val(idChosse);
         },
-        
-        removeClassTableFixed : function() {
-           $("#table-content-search-sv").removeClass("table-fixed");
+
+        removeClassTableFixed: function () {
+            $("#table-content-search-sv").removeClass("table-fixed");
         },
-        
-        addClassTableFixed : function() {
+
+        addClassTableFixed: function () {
         }
     };
 

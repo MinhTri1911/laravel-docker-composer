@@ -1,4 +1,4 @@
-@php $totalResult = count(collect($ships->items())->groupBy('id')); @endphp
+@php $totalResult = $ships->total(); @endphp
 <table class="table table-blue table-result" data-total="{{ trans('ship.lbl_total_result', ['total' => $totalResult]) }}">
     <tbody class="tbody-scroll-1">
     @php
@@ -51,7 +51,7 @@
                 </td>
                 <td class="col-action contract-status">
                     @if ($ship->status !== null)
-                        <button class="btn btn-custom-sm {{ $contractClass[$ship->status] }}" type="button">{{ $contractStatus[$ship->status] }}</button>
+                        <label class="btn btn-custom-sm {{ $contractClass[$ship->status] }}">{{ $contractStatus[$ship->status] }}</label>
                     @endif
                 </td>
                 <td class="col-action" rowspan="{{ $number }}">
@@ -67,7 +67,7 @@
                 </td>
                 @if ($ship->status !== null)
                     <td class="col-action contract-status">
-                        <button class="btn btn-custom-sm {{ $contractClass[$ship->status] }}" type="button">{{ $contractStatus[$ship->status] }}</button>
+                        <label class="btn btn-custom-sm {{ $contractClass[$ship->status] }}">{{ $contractStatus[$ship->status] }}</label>
                     </td>
                 @endif
             </tr>

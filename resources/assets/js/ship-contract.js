@@ -13,8 +13,8 @@ $(function(){
         };
         
         Handler.typeModal = "restore";
-        Handler.modalPopup.title = "契約を復活確認";
-        Handler.modalPopup.message = service+"の契約を復活してもよろしいですか?";
+        Handler.modalPopup.title = ShipModal.modalContractRestore.title || "";
+        Handler.modalPopup.message = service + (ShipModal.modalContractRestore.message || "");
         Handler.showPopupRestore(data);
     });
      
@@ -36,14 +36,14 @@ $(function(){
             };
 
             Handler.typeModal = "disable";
-            Handler.modalPopup.title = "船舶削除確認ポップアップ";
-            Handler.modalPopup.message = "船舶を承認してもよろしいですか?";
+            Handler.modalPopup.title = ShipModal.modalContractDisable.title || "";
+            Handler.modalPopup.message = ShipModal.modalContractDisable.message || "";
             Handler.showPopupDisable(data);
         }else{
             Handler.typeModal = "";
             Handler.contract.isDisable = false;
-            Handler.modalDone.title = "Lỗi";
-            Handler.modalDone.message = "Vui lòng chọn một hợp đồng";
+            Handler.modalDone.title = ShipModal.modalContractDisable.title_error || "";
+            Handler.modalDone.message = ShipModal.modalContractDisable.message_error || "";
             Handler.showPopupDoneDisableContract();
         }
     });
@@ -66,14 +66,14 @@ $(function(){
             };
 
             Handler.typeModal = "delete";
-            Handler.modalPopup.title = "契約を削除確認";
-            Handler.modalPopup.message = "選択した契約を削除してもよろしいですか?";
+            Handler.modalPopup.title = ShipModal.modalContractDelete.title || "";
+            Handler.modalPopup.message = ShipModal.modalContractDelete.message || "";
             Handler.showPopupDelete(data);
         }else{
             Handler.typeModal = "";
             Handler.contract.isDelete = false;
-            Handler.modalDone.title = "Lỗi";
-            Handler.modalDone.message = "Vui lòng chọn một hợp đồng";
+            Handler.modalDone.title = ShipModal.modalContractDelete.title_error || "";
+            Handler.modalDone.message = ShipModal.modalContractDelete.message_error || "";
             Handler.showPopupDoneDeleteContract();
         }
     });
@@ -90,8 +90,8 @@ $(function(){
         };
         
         Handler.typeModal = "delete-spot";
-        Handler.modalPopup.title = "スポット費用を削除確認";
-        Handler.modalPopup.message = $(this).data('spot')+"を削除してもよろしいですか?";
+        Handler.modalPopup.title = ShipModal.modalSpotDelete.title || "";
+        Handler.modalPopup.message = $(this).data('spot')+ (ShipModal.modalSpotDelete.message || "");
         Handler.showPopupDeleteSpot(data);
     });
     
@@ -131,8 +131,8 @@ $(function(){
         };
 
         Handler.typeModal = "delete-ship";
-        Handler.modalPopup.title = "船舶削除確認ポップアップ";
-        Handler.modalPopup.message = "船舶を承認してもよろしいですか?";
+        Handler.modalPopup.title = ShipModal.modalShipDelete.title || "";
+        Handler.modalPopup.message = ShipModal.modalShipDelete.message || "";
         Handler.showPopup(data);
         
     });
@@ -207,13 +207,13 @@ var Handler = {
      * @type Object
      */
     typo: {
-        stt_active: "有効",
-        stt_pending: "中断",
-        stt_finish: "完了",
+        stt_active: ShipModal.typo.stt_active || "",
+        stt_pending: ShipModal.typo.stt_pending || "",
+        stt_finish: ShipModal.typo.stt_finish || "",
         
-        apv_done: "承認済",
-        apv_pending: "承認待ち",
-        apv_reject: "拒絶"
+        apv_done: ShipModal.typo.apv_done || "",
+        apv_pending: ShipModal.typo.apv_pending || "",
+        apv_reject: ShipModal.typo.apv_reject || ""
     },
     
     /**
@@ -238,7 +238,7 @@ var Handler = {
      * Info modal popup when click delete
      */
     modalDone: {
-        title: "Ttitle done",
+        title: "Title done",
         message: "Message done"
     },
     
@@ -248,7 +248,7 @@ var Handler = {
      */
     modalAuth: {
         isAuth: false,
-        error_emp: "Vui lòng nhập mật khẩu",
+        error_emp: ShipModal.modalAuth.message_error_pw || "",
         redirectAfterDone: '/ship'
     },
     
@@ -476,7 +476,7 @@ var Handler = {
      * @returns {undefined}
      */
     uiAfterRestoreContract: function(res){
-        $('.restore-contract-'+res.contract).remove();
+//        $('.restore-contract-'+res.contract).remove();
         $('.status-contract-'+res.contract).text(this.typo.stt_active);
         $('.approve-contract-'+res.contract).text(this.typo.apv_pending);
     },
@@ -733,7 +733,7 @@ var Handler = {
             }
          }).done(function(data) {
             if (typeof data.status != typeof undefined && data.status == true) {
-                $('#modalTitleDone').text("Nguyên nhân reject");
+                $('#modalTitleDone').text(ShipModal.modalReject.title || "");
                 $('#modalMessageDone').text(data.reason);
                 $("#modal-done").modal("show");
                 $("#modal-done").on("shown.bs.modal", function() {
@@ -865,6 +865,3 @@ var Handler = {
         });
    }
 }
-
-
-

@@ -14,54 +14,71 @@
 @import "option/timepicker";
 
 .approve{
-	.approve-list{
-		.search-block{
-			.form-control, .custom-select{
-				min-width: 270px;
-				width: auto;
-			}
+    .approve-list{
+        .search-block{
+            .form-control, .custom-select{
+                min-width: 270px;
+                width: auto;
+            }
 
-			.form-group-right{
-				margin-left: 50px;
+            .form-group-right{
+                margin-left: 50px;
 
-			}
+            }
 
-			.date-group{
-				.group-datepicker{
-					float: left;
-				}
+            .date-group{
+                .group-datepicker{
+                    float: left;
+                }
 
-				.split-a{
-					float: left;
-					line-height: $input-height-base;
-					font-size: $font-size-base + 7;
-					margin-left: 20px;
-					margin-right: 20px;
+                .split-a{
+                    float: left;
+                    line-height: $input-height-base;
+                    font-size: $font-size-base + 7;
+                    margin-left: 20px;
+                    margin-right: 20px;
 
-				}
-			}
-		}
+                }
+            }
+        }
 
-		.block-paginate{
-			padding-top: 15px;
-			.fl-page{
-				float: left;
-			}
+        .block-paginate{
+            padding-top: 15px;
+            .fl-page{
+                float: left;
+            }
 
-			.fl-right{
-				float: right;
-			}
-		}
-		.pagination{
-			margin-top: 0;
-			margin-bottom: 0;
-		}
+            .fl-right{
+                float: right;
+            }
+        }
+        .pagination{
+            margin-top: 0;
+            margin-bottom: 0;
+        }
 
-		.result-app-block{
-			.rs-title{
-				padding-bottom: 10px;
-				border-bottom: 1px solid;
-			}
-		}
-	}
+        .result-app-block{
+            .rs-title{
+                padding-bottom: 10px;
+                border-bottom: 1px solid;
+            }
+        }
+        
+        .limit-block{
+            display: table;
+            margin-bottom: 10px;
+            .lbl_limit{
+                float: left;
+                padding-top: 7px;
+                padding-right: 5px;
+            }
+            
+            .custom-select{
+                float: right;
+            }
+        }
+        .lbl-page-text{
+            padding-top: 7px;
+        }
+    }
 }
