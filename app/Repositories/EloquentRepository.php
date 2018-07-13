@@ -436,4 +436,15 @@ abstract class EloquentRepository implements RepositoryInterface
     {
         return $this->_model->insert($data);
     }
+
+    /**
+     * Update multi record
+     * @param int ids
+     * @param array data
+     * @return bool
+     */
+    public function multiUpdate($ids, $data = [])
+    {
+        return $this->_model->whereIn('id', $ids)->update($data);
+    }
 }

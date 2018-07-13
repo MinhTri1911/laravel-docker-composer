@@ -29,6 +29,10 @@ class BillingMethodBusiness
      */
     public function getAllBillingMethodForCompany($currencyId)
     {
+        /**
+         * select id, name_jp, name_en form m_billing_method
+         * where currency_id = currency id company and del_flag = 0
+         */
         return $this->billingMethodRepository
             ->select([
                 'id',
@@ -36,6 +40,7 @@ class BillingMethodBusiness
                 'name_en',
             ])
             ->where('currency_id', $currencyId)
+            ->where('del_flag', 0)
             ->get();
     }
 

@@ -36,6 +36,7 @@ class CompanyServiceBusiness
      */
     public function showAllService($currencyId)
     {
+        // Get all service
         return $this->serviceRepository->getListService($currencyId);
     }
 
@@ -67,6 +68,14 @@ class CompanyServiceBusiness
         $this->contractRepository = app(ContractInterface::class);
         $this->shipRepository = app(ShipInterface::class);
 
+        /**
+         * Select m_ship.id
+         * From m_ship
+         * join m_company on m_company.id = m_ship.company_id
+         * left join m_contract on m_contract.ship_id = m_ship.id and m_contract.service_id = serviceId get from item
+         * where m_company.id = company Id and m_contract.id is null
+         */
+        // Get all ship is not have service id
         $allShipNotHaveService = $this->shipRepository->select([
                 'm_ship.id',
             ])
@@ -82,6 +91,7 @@ class CompanyServiceBusiness
 
         $dataInsert = [];
 
+        // Loop for set parameter for ship not have service id has been selected
         foreach ($allShipNotHaveService as $shipId) {
             $dataInsert[] = [
                 'ship_id' => $shipId['id'],
@@ -95,7 +105,7 @@ class CompanyServiceBusiness
             ];
         }
 
-
+        // Insert new contract
         $this->contractRepository->insert($dataInsert);
 
         return $dataInsert;
@@ -110,6 +120,14 @@ class CompanyServiceBusiness
     {
         $this->contractRepository = app(ContractInterface::class);
 
+        /**
+         * Select m_contract.service_id, m_service.name_jp, m_service.name_en
+         * From m_contract
+         * join m_service on m_service.id = m_contract.service_id
+         * join m_ship on m_ship.id = m_contract.ship_id
+         * where m_ship.company_id = company ID and (m_contract.status = 0 or m_contract.status = 1)
+         * group by m_contract.service_id
+         */
         return $this->contractRepository
             ->select([
                 'm_contract.service_id',
@@ -119,7 +137,10 @@ class CompanyServiceBusiness
             ->join('m_service', 'm_service.id', 'm_contract.service_id')
             ->join('m_ship', 'm_ship.id', 'm_contract.ship_id')
             ->where('m_ship.company_id', $companyId)
-            ->where('m_contract.status', 0)
+            ->where(function ($query) {
+                return $query->where('m_contract.status', 0)
+                    ->orWhere('m_contract.status', 1);
+            })
             ->groupBy(['m_contract.service_id'])
             ->get();
     }
@@ -161,21 +182,37 @@ class CompanyServiceBusiness
             'deleted_at' => \Carbon\Carbon::now()->format('Y-m-d'),
         ];
 
-        // Loop update status contract
-        foreach ($shipIds as $ship) {
-            $contract = $this->contractRepository
-                ->where('ship_id', $ship->id)
-                ->where(function ($query) use ($serviceIds) {
-                    return $query->whereIn('service_id', $serviceIds);
-                })
-                ->first();
+        // Get contract id with ship id and service id
+        $contractIds = $this->contractRepository
+            ->select(['m_contract.id'])
+            ->join('m_ship', 'm_ship.id', 'm_contract.ship_id')
+            ->where(function ($query) use ($shipIds, $serviceIds) {
+                return $query->whereIn('m_contract.ship_id', array_column($shipIds->toArray(), 'id'))
+                    ->whereIn('m_contract.service_id', $serviceIds);
+            })
+            ->get()->toArray();
 
-            if ($contract) {
-                $contract->update([
-                    'approved_flag' => Constant::STATUS_WAITING_APPROVE,
-                    'reason_reject' => json_encode($reasonDelete),
-                ]);
-            }
-        }
+        $this->contractRepository
+            ->multiUpdate(array_column($contractIds, 'id'), [
+                'approved_flag' => Constant::STATUS_WAITING_APPROVE,
+                'reason_reject' => json_encode($reasonDelete),
+            ]);
+
+        // // Loop update status contract
+        // foreach ($shipIds as $ship) {
+        //     $contract = $this->contractRepository
+        //         ->where('ship_id', $ship->id)
+        //         ->where(function ($query) use ($serviceIds) {
+        //             return $query->whereIn('service_id', $serviceIds);
+        //         })
+        //         ->first();
+
+        //     if ($contract) {
+        //         $contract->update([
+        //             'approved_flag' => Constant::STATUS_WAITING_APPROVE,
+        //             'reason_reject' => json_encode($reasonDelete),
+        //         ]);
+        //     }
+        // }
     }
 }
