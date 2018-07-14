@@ -54,7 +54,7 @@
                             <label>{{ trans('company.lbl_title_company_nation') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>{{ $nation->name_jp }}</label>
+                            <label>{{ $nation ? $nation->name_jp: '' }}</label>
                         </div>
                     </div>
 
@@ -99,7 +99,7 @@
                             <label>{{ trans('company.lbl_title_company_currency') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>{{ $currency->code }}</label>
+                            <label>{{ $currency ? $currency->code : '' }}</label>
                         </div>
                     </div>
 
@@ -108,7 +108,7 @@
                             <label>{{ trans('company.lbl_title_company_employee_number') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>{{ $nation->employees_number }}</label>
+                            <label>{{ $company->employees_number }}</label>
                         </div>
                     </div>
 
@@ -117,7 +117,7 @@
                             <label>{{ trans('company.lbl_title_company_year_research') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>{{ $nation->year_research }}</label>
+                            <label>{{ $company->year_research }}</label>
                         </div>
                     </div>
 
@@ -126,7 +126,7 @@
                             <label>{{ trans('company.lbl_title_company_billing_id') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label id="lbl-billing-method-id">{{ $billingMethod->name_jp . ' ' . $billingMethod->id }}</label>
+                            <label id="lbl-billing-method-id">{{ $billingMethod ? $billingMethod->name_jp : '' }}</label>
                         </div>
                     </div>
 
@@ -171,7 +171,7 @@
                             <label>{{ trans('company.lbl_title_ope_name') . ' :' }}</label>
                         </div>
                         <div class="label-content">
-                            <label>{{ $companyOperation->name }}</label>
+                            <label>{{ $companyOperation ? $companyOperation->name: '' }}</label>
                         </div>
                     </div>
 
@@ -363,7 +363,7 @@
                                             {{ Form::button(trans('company.btn_setting_billing_method'), [
                                                     'class' => 'btn btn-green-dark btn-w150',
                                                     'id' => 'btn-setting-billing',
-                                                    'data-url' => route('billing.method.show', ['billing-method' => $billingMethod->id]),
+                                                    'data-url' => route('billing.method.show', ['billing-method' => $billingMethod ? $billingMethod->id : 0]),
                                                 ])
                                             }}
                                         </div>
@@ -412,7 +412,9 @@
                                     </div>
                                     <div class="col-md-12">
                                         <div class="col-md-6">
-                                            {{ Form::button(trans('company.btn_create'), ['class' => 'btn btn-green-dark btn-w150']) }}
+                                            <a href="{{ route('ship.createShipContract', ['company-id' => $company->id]) }}" class="btn btn-green-dark btn-w150">
+                                                {{ trans('company.btn_create') }}
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -429,7 +431,7 @@
                                         <div class="col-md-6">
                                             {{ Form::button(trans('company.btn_delete'), [
                                                     'class' => 'btn btn-green-dark btn-w150',
-                                                    'id' => 'btn-delete-all-contract-company',
+                                                    'id' => 'btn-show-popup-delete-all-service',
                                                 ])
                                             }}
                                         </div>
@@ -443,9 +445,22 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="block-detail block-center">
-                            {{ Form::button(trans('company.btn_back_to_list_company'), ['class' => 'btn btn-green-dark btn-w150']) }}
-                            {{ Form::button(trans('company.btn_edit_company'), ['class' => 'btn btn-green-dark btn-w150']) }}
-                            {{ Form::button(trans('company.btn_go_to_list_ship'), ['class' => 'btn btn-green-dark btn-w150']) }}
+                            <a href="{{ route('company.index') }}" class="btn btn-blue-light btn-w150">
+                                {{ trans('company.btn_back_to_list_company') }}
+                            </a>
+
+                            {{ Form::button(trans('company.btn_delete_company'), [
+                                    'class' => 'btn btn-red btn-w150',
+                                    'id' => 'btn-show-popup-confirm-delete-company',
+                                ])
+                            }}
+
+                            <a href="{{ route('company.edit', ['id' => $company->id]) }}" class="btn btn-green-dark btn-w150">
+                                {{ trans('company.btn_edit_company') }}
+                            </a>
+                            <a href="{{ route('ship.index', ['company-id' => $company->id]) }}" class="btn btn-green-dark btn-w150">
+                                {{ trans('company.btn_go_to_list_ship') }}
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -475,7 +490,7 @@
     <!-- end modal stack -->
 
     <!-- begin popup confirm delete all contract -->
-    <div class="modal modal-protector confirm" id="popup-confirm-delete-all-contract">
+    <div class="modal modal-protector confirm" id="popup-delete-all-service">
         <div class="modal-close">
             <button class="btn-close-modal" style="background-image: url('https://mufmgr.schl.jp/images/common/modals_close.png')" data-dismiss="modal"></button>
             <label>閉じる</label>
@@ -496,13 +511,100 @@
                                 'data-dismiss' => 'modal'
                             ])
                         }}
-                        {{ Form::button(trans('company.btn_delete'), ['class' => 'center-block btn btn-blue-dark btn-w150']) }}
+                        {{ Form::button(trans('company.btn_delete'), [
+                                'id' => 'btn-delete-all-service',
+                                'class' => 'center-block btn btn-blue-dark btn-w150',
+                                'data-url' => route('company.service.deleteAll'),
+                            ])
+                        }}
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <!-- end popup confirm delete all contract -->
+
+    <!-- Begin delete company -->
+    <div class="modal modal-protector fade" id="modal-confirm" tabindex="-1" role="dialog">
+        <div class="modal-close">
+            <button class="btn-close-modal" style="background-image: url({{url('images/common/modals_close.png')}})" data-dismiss="modal"></button>
+            <label>閉じる</label>
+        </div>
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modalTitle">Popup confrim xóa công ty</h4>
+                </div>
+                <div class="modal-body">
+                    <text id="modalMessage">msg confim del company with all infomation</text>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-blue-light btn-w150" data-dismiss="modal">{{ trans('company.btn_cancel_delete') }}</button>
+                    <button type="button" class="btn btn-blue-dark btn-w190" id="modalBtnOK">OKE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal modal-protector fade" id="modal-done" tabindex="-1" role="dialog">
+        <div class="modal-close">
+            <button class="btn-close-modal" style="background-image: url({{url('images/common/modals_close.png')}})" data-dismiss="modal"></button>
+            <label>閉じる</label>
+        </div>
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modalTitleDone">{{__('ship-contract.detail.lbl_popup_del_contract')}}</h4>
+                </div>
+                <div class="modal-body">
+                    <text id="modalMessageDone">{{__('ship-contract.detail.lbl_popup_del_contract_msg')}}</text>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-blue-light btn-w150" data-dismiss="modal">{{__('ship-contract.detail.btn_ok')}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal modal-protector fade" id="modal-auth" tabindex="-1" role="dialog">
+        <div class="modal-close">
+            <button class="btn-close-modal" style="background-image: url({{url('images/common/modals_close.png')}})" data-dismiss="modal"></button>
+            <label>閉じる</label>
+        </div>
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modalTitleAuth">{{__('ship-contract.detail.pop_auth_delete_ship')}}</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="setting-content">
+                            <div class="col-md-12">
+                                <div class="alert alert-danger">
+                                    <div class="block-error">
+                                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                                        <label class="control-label lbl-error-message"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <text id="modalMessageAuth">{{__('ship-contract.detail.lbl_input_pw')}}</text>
+                        {{ Form::password('pw-user', ['class' => 'form-control', 'id' => 'pw-user']) }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-blue-light btn-w150" data-dismiss="modal">{{__('ship-contract.detail.btn_cancel')}}</button>
+                    <button type="button" class="btn btn-blue-dark btn-w190" id="modalBtnOKAuth" data-url="{{ route('company.delete') }}">
+                        {{__('ship-contract.detail.btn_ok')}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End delete company -->
+
 
     {{-- Form hidden get company id --}}
     {{ Form::hidden('company-id', $company->id, ['id' => 'company-id']) }}

@@ -234,7 +234,7 @@ abstract class EloquentRepository implements RepositoryInterface
      */
     public function whereIn($column, $array = [])
     {
-        $this->_model = $this->_model->orWhere($column, $array);
+        $this->_model = $this->_model->whereIn($column, $array);
 
         return $this;
     }
@@ -435,5 +435,23 @@ abstract class EloquentRepository implements RepositoryInterface
     public function insert($data)
     {
         return $this->_model->insert($data);
+    }
+
+    /**
+     * Update multi record
+     * @param array ids
+     * @param array data
+     * @param string column
+     * @return bool
+     */
+    public function multiUpdate($ids, $data = [], $column = null)
+    {
+        $ids = is_array($ids) ? $ids : [$ids];
+
+        if ($column) {
+            return $this->_model->whereIn($column, $ids)->update($data);
+        }
+
+        return $this->_model->whereIn('id', $ids)->update($data);
     }
 }

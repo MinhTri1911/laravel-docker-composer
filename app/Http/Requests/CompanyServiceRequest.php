@@ -43,9 +43,11 @@ class CompanyServiceRequest extends FormRequest
      */
     public function rules()
     {
+        $now = date('Y/m/d');
+
         return [
             'service-id' => 'required|numeric',
-            'start-date' => 'required|date_format:Y/m/d|after_or_equal:now',
+            'start-date' => 'required|date_format:Y/m/d|after_or_equal:' . $now,
             'end-date' => 'required|date_format:Y/m/d|after:start-date',
         ];
     }

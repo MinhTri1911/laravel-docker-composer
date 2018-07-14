@@ -12,6 +12,8 @@
 namespace App\Business;
 
 use App\Repositories\Company\CompanyInterface;
+use App\Repositories\Ship\ShipInterface;
+use App\Repositories\Contract\ContractInterface;
 
 class CompanyBusiness
 {
@@ -195,7 +197,7 @@ class CompanyBusiness
      */
     public function getDetailCompany($id, $columns = ['*'])
     {
-        $company = $this->companyRepository->findOrFail($id, $columns = ['*']);
+        $company = $this->companyRepository->where('del_flag', 0)->findOrFail($id, $columns = ['*']);
         $nationOfCompany = $company->nation;
         $companyOperation = $company->companyOperation;
         $billingMethod = $company->billingMethod;
@@ -236,11 +238,31 @@ class CompanyBusiness
     }
 
     /**
-     * Function get all ship in company
+     * Function delete company
      * @param int companyId
-     * @return array
+     * @return boolean
      */
-    public function getAllShipIdInCompany($companyId)
+    public function deleteCompany($companyId)
     {
+        // Get intantce ship repository from container
+        $shipRepository = app(ShipInterface::class);
+
+        $ships = $shipRepository
+            ->select(['id'])
+            ->where('company_id', $companyId)
+            ->get()
+            ->toArray();
+
+        $shipRepository->multiUpdate(array_column($ships, 'id'), ['del_flag' => 1]);
+
+        // Get intantce contract repository from container
+        $contractRepository = app(ContractInterface::class);
+        $contractRepository->multiUpdate(array_column($ships, 'id'), [
+            'deleted_at' => \Carbon\Carbon::now()->format('Y-m-d'),
+            'approved_flag' => 1,
+            'reason_reject' => null,
+        ], 'ship_id');
+
+        $this->companyRepository->update($companyId, ['del_flag' => 1]);
     }
 }

@@ -11,7 +11,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class MContract
- * 
+ *
  * @property int $id
  * @property float $revision_number
  * @property int $ship_id
@@ -59,6 +59,8 @@ class MContract extends Eloquent
         'approved_flag',
         'reason_reject',
         'created_by',
-        'updated_by'
+        'updated_by',
+        'pending_at',
+        'deleted_at',
     ];
 }

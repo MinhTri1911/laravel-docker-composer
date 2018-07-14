@@ -223,4 +223,13 @@ interface RepositoryInterface
      * @return bool
      */
     public function insert($data);
+
+    /**
+     * Update multi record
+     * @param array ids
+     * @param array data
+     * @param string column
+     * @return bool
+     */
+    public function multiUpdate($ids, $data = [], $column = null);
 }

@@ -36,6 +36,7 @@ class BillingMethodBusiness
                 'name_en',
             ])
             ->where('currency_id', $currencyId)
+            ->where('del_flag', 0)
             ->get();
     }
 

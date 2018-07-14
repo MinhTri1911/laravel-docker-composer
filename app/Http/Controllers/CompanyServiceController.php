@@ -120,11 +120,11 @@ class CompanyServiceController extends Controller
         \DB::beginTransaction();
         try {
 
-            $this->_companyServiceBusiness->deleteService($request->get('service-ids'), $request->get('company-id'));
+            $this->_companyServiceBusiness->deleteServiceInCompany($request->get('service-ids'), $request->get('company-id'));
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
-
+            dd($e);
             return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('common.validate_error_exists'));
         }
 
@@ -148,5 +148,30 @@ class CompanyServiceController extends Controller
             ->render();
 
         return $this->returnJson(Constant::HTTP_CODE_SUCCESS, '', ['view' => $view]);
+    }
+
+    /**
+     * Function delete all service
+     * @param Illuminate\Http\Request request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function deleteAll(Request $request)
+    {
+        if (!$request->ajax()) {
+            return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('error.500'));
+        }
+
+        \DB::beginTransaction();
+        try {
+
+            $this->_companyServiceBusiness->deleteAllService($request->get('company-id'));
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+
+            return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('common.validate_error_exists'));
+        }
+
+        return $this->returnJson(Constant::HTTP_CODE_SUCCESS);
     }
 }

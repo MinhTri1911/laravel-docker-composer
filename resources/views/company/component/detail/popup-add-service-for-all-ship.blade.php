@@ -15,7 +15,7 @@
                 <!--begin show errors-->
                 <div class="setting-content">
                     <div class="col-md-12">
-                        <div class="alert alert-danger alert-service-id" style="display: none;">
+                        <div class="alert alert-danger alert-service-id">
                             <div class="block-error">
                                 <i class="fa fa-exclamation" aria-hidden="true"></i>
                                 <label class="control-label lbl-error-message service-id"></label>
@@ -26,7 +26,7 @@
 
                 <div class="setting-content">
                     <div class="col-md-12">
-                        <div class="alert alert-danger alert-start-date" style="display: none;">
+                        <div class="alert alert-danger alert-start-date">
                             <div class="block-error">
                                 <i class="fa fa-exclamation" aria-hidden="true"></i>
                                 <label class="control-label lbl-error-message start-date"></label>
@@ -37,7 +37,7 @@
 
                 <div class="setting-content">
                     <div class="col-md-12">
-                        <div class="alert alert-danger alert-end-date" style="display: none;">
+                        <div class="alert alert-danger alert-end-date">
                             <div class="block-error">
                                 <i class="fa fa-exclamation" aria-hidden="true"></i>
                                 <label class="control-label lbl-error-message end-date"></label>

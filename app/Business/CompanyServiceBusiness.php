@@ -36,6 +36,7 @@ class CompanyServiceBusiness
      */
     public function showAllService($currencyId)
     {
+        // Get all service
         return $this->serviceRepository->getListService($currencyId);
     }
 
@@ -67,6 +68,7 @@ class CompanyServiceBusiness
         $this->contractRepository = app(ContractInterface::class);
         $this->shipRepository = app(ShipInterface::class);
 
+        // Get all ship is not have service id
         $allShipNotHaveService = $this->shipRepository->select([
                 'm_ship.id',
             ])
@@ -82,6 +84,7 @@ class CompanyServiceBusiness
 
         $dataInsert = [];
 
+        // Loop for set parameter for ship not have service id has been selected
         foreach ($allShipNotHaveService as $shipId) {
             $dataInsert[] = [
                 'ship_id' => $shipId['id'],
@@ -95,7 +98,7 @@ class CompanyServiceBusiness
             ];
         }
 
-
+        // Insert new contract
         $this->contractRepository->insert($dataInsert);
 
         return $dataInsert;
@@ -119,7 +122,10 @@ class CompanyServiceBusiness
             ->join('m_service', 'm_service.id', 'm_contract.service_id')
             ->join('m_ship', 'm_ship.id', 'm_contract.ship_id')
             ->where('m_ship.company_id', $companyId)
-            ->where('m_contract.status', 0)
+            ->where(function ($query) {
+                return $query->where('m_contract.status', 0)
+                    ->orWhere('m_contract.status', 1);
+            })
             ->groupBy(['m_contract.service_id'])
             ->get();
     }
@@ -128,17 +134,12 @@ class CompanyServiceBusiness
      * Function delete services
      * @param array serviceIds
      * @param int companyId
+     * @param array serviceExists
      * @throws Exception
      * @return boolean
      */
-    public function deleteService($serviceIds, $companyId)
+    public function deleteService($serviceIds, $companyId, $serviceExists)
     {
-        // Get all service of company
-        $serviceExists = $this->getAllServiceOfCompany($companyId)->toArray();
-
-        // Detech get service id to array
-        $serviceExists = array_column($serviceExists, 'service_id');
-
         // Check param is array
         $serviceIds = is_array($serviceIds) ? $serviceIds : [$serviceIds];
 
@@ -149,33 +150,66 @@ class CompanyServiceBusiness
             }
         }
 
+        // Get instance object from service container
         $this->contractRepository = app(ContractInterface::class);
-        $this->shipRepository = app(ShipInterface::class);
-
-        $shipIds = $this->shipRepository->select(['m_ship.id'])
-            ->where('company_id', $companyId)
-            ->get();
 
         $reasonDelete = [
             'status' => 3,
             'deleted_at' => \Carbon\Carbon::now()->format('Y-m-d'),
         ];
 
-        // Loop update status contract
-        foreach ($shipIds as $ship) {
-            $contract = $this->contractRepository
-                ->where('ship_id', $ship->id)
-                ->where(function ($query) use ($serviceIds) {
-                    return $query->whereIn('service_id', $serviceIds);
-                })
-                ->first();
+        // Get contract id with ship id and service id
+        $contractIds = $this->contractRepository
+            ->select(['m_contract.id'])
+            ->join('m_ship', 'm_ship.id', 'm_contract.ship_id')
+            ->join('m_company', function ($join) use ($companyId) {
+                $join->on('m_company.id', 'm_ship.company_id')
+                    ->on('m_company.currency_id', 'm_contract.currency_id')
+                    ->where('m_company.id', $companyId);
+            })
+            ->whereIn('m_contract.service_id', $serviceIds)
+            ->get()
+            ->toArray();
 
-            if ($contract) {
-                $contract->update([
-                    'approved_flag' => Constant::STATUS_WAITING_APPROVE,
-                    'reason_reject' => json_encode($reasonDelete),
-                ]);
-            }
-        }
+        // Update contract watting for approved delete
+        $this->contractRepository
+            ->multiUpdate(array_column($contractIds, 'id'), [
+                'approved_flag' => Constant::STATUS_WAITING_APPROVE,
+                'reason_reject' => json_encode($reasonDelete),
+            ]);
+    }
+
+    /**
+     * Function delete service in company
+     * @param array serviceIds
+     * @param int companyId
+     * @throws Exception
+     * @return boolean
+     */
+    public function deleteServiceInCompany($serviceIds, $companyId)
+    {
+        // Get all service of company
+        $serviceExists = $this->getAllServiceOfCompany($companyId)->toArray();
+
+        // Detech get service id to array
+        $serviceExists = array_column($serviceExists, 'service_id');
+
+        return $this->deleteService($serviceIds, $companyId, $serviceExists);
+    }
+
+    /**
+     * Function delete all service in company
+     * @param int companyId
+     * @return boolean
+     */
+    public function deleteAllService($companyId)
+    {
+        // Get all service of company
+        $serviceExists = $this->getAllServiceOfCompany($companyId)->toArray();
+
+        // Detech get service id to array
+        $serviceExists = array_column($serviceExists, 'service_id');
+
+        return $this->deleteService($serviceExists, $companyId, $serviceExists);
     }
 }

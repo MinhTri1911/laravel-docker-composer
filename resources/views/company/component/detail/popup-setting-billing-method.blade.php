@@ -14,7 +14,7 @@
 
                 <div class="setting-content">
                     <div class="col-md-12">
-                        <div class="alert alert-danger" style="display: none;">
+                        <div class="alert alert-danger">
                             <div class="block-error">
                                 <i class="fa fa-exclamation" aria-hidden="true"></i>
                                 <label class="control-label lbl-error-message"></label>

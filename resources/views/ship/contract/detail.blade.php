@@ -188,7 +188,7 @@
                 <table class="table table-blue table-ship">
                     <thead>
                         <tr>
-                            
+
                             <th style="width:3%" class="custom-checkbox">
                                 @if( $ship->contracts->count() > 0)
                                 <input class="hidden" id="chk_ct_full" type="checkbox">
@@ -278,7 +278,7 @@
         </div>
         {{-- End List contract --}}
         @endif
-        
+
         {{-- List Spot --}}
         <div class="spot-block">
             @if(property_exists($ship, 'spots') && !is_null($ship->spots))

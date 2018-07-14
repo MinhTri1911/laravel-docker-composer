@@ -64,6 +64,7 @@
 
 // Custom Alert Danger
 .alert-danger{
+    display: none;
     padding: 0;
     .block-error{
         @include clearfix;

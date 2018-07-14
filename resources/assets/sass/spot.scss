@@ -9,6 +9,10 @@ and open the template in the editor.
 */
 // Import Mixin
 @import "option/mixins";
+// Import Header
+@import "elements/header";
+// Import Sidebar
+@import "elements/sidebar";
 // import Date Picker Jquery
 @import "option/datepicker";
 // import Time Picker Jquery

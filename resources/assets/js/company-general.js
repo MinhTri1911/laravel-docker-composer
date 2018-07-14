@@ -10,22 +10,40 @@ const HTTP_ERROR = 500;
 var company = new function () {
     this.model = {
         companyId: $('#company-id').val(),
+
+        // Modal id
         selectModal: '#modal-protector',
         popupShowAllService: '#delete-service-in-all-ship',
+        popupConfirmDeleteService: '#popup-confirm-delete-service',
+        popupDeleteAllService: '#popup-delete-all-service',
+        popupConfirmDeleteCompany: '#modal-confirm',
+
+        // Button action
         btnSaveSettingBilling: '#btn-save-setting-billing',
+        btnShowPopupDeleteAllService: '#btn-show-popup-delete-all-service',
+        btnDeleteAllService: '#btn-delete-all-service',
+        btnCreateContract: '#btn-create-contract',
+        btnShowPopupDeleteServiceInAllShip: '#btn-show-popup-delete-service-in-all-ship',
+        btnDeleteService: '#btn-delete-service',
+        btnShowSettingBilling: '#btn-setting-billing',
+        btnAddServiceForAllShip: '#btn-add-service-for-all-ship',
+        btnShowPopupConfirmDeleteCompany: '#btn-show-popup-confirm-delete-company',
+        btnAccpetDeleteCompany: '#modalBtnOK',
+
+        // Item
         lableNameBillingMethod: '#lbl-billing-method-id',
         labelError: '.alert-danger',
         labelShowMessage: '.lbl-error-message',
-        btnShowSettingBilling: '#btn-setting-billing',
-        btnAddServiceForAllShip: '#btn-add-service-for-all-ship',
+        lblDeleteService: '.delete-service-label',
+
+        // Form input
+        txtPassword: '#pw-user',
         slbServiceId: '#slb-service-id',
         contractStartDate: '#contract-start-date',
         contractEndDate: '#contract-end-date',
-        btnCreateContract: '#btn-create-contract',
-        btnShowPopupDeleteServiceInAllShip: '#btn-show-popup-delete-service-in-all-ship',
-        btnDeleteService: '#btn-delete-service'
     }
 
+    // Url hanlde
     this.url = {
         urlShowPopupSettingBillingMethod: $(this.model.btnShowSettingBilling).attr('data-url'),
         urlUpdateBillingMethod: window.Laravel.urlUpdateBillingMethod,
@@ -33,6 +51,7 @@ var company = new function () {
         urlAddService: window.Laravel.urlAddService,
         urlShowPopupGetAllService: $(this.model.btnShowPopupDeleteServiceInAllShip).attr('data-url'),
         urlDeleteServiceInAllShip: window.Laravel.urlDeleteServiceInAllShip,
+        urlDeleteAllService: $(this.model.btnDeleteAllService).attr('data-url'),
     }
 
     /**
@@ -50,13 +69,10 @@ var company = new function () {
             }
 
             $.get(url, param,function (res) {
-                if (res.code !== 200) {
-                    alert('Error');
-                    return;
+                if (res.code === HTTP_SUCCESS) {
+                    event.data.companyObject.appendData(res.view);
+                    event.data.companyObject.initSelect2();
                 }
-
-                event.data.companyObject.appendData(res.view);
-                event.data.companyObject.initSelect2();
             })
         })
     };
@@ -268,23 +284,33 @@ var company = new function () {
      * @return void
      */
     this.confirmDeleteServiceInAllShip = function () {
-        $(document).on('click', '.delete-service-label', function (event) {
-            let url = $('#' + event.target.getAttribute('id')).attr('data-url');
-            console.log(url, event.target.getAttribute('id'));
-            $.get(url, function (res) {
-                if (res.code === HTTP_SUCCESS) {
-                    $('#popup-confirm-delete-service').empty();
-                    $('#popup-confirm-delete-service').append(res.data.view);
-                    $('#popup-confirm-delete-service').attr('style', 'display: block !important'); // setting css for modal display block
-                    $('#popup-stack-delete-service').attr('style', 'opacity: 0.5');
-                }
-            })
-            .fail(function (res) {
-                return;
-            });
+        let companyObject = this;
+        $(document).bind('click', {companyObject: companyObject}, function (event) {
+            if (('.' + event.target.getAttribute('class')) === company.model.lblDeleteService) {
+                let company = event.data.companyObject;
+                let url = $('#' + event.target.getAttribute('id')).attr('data-url');
+
+                $.get(url, function (res) {
+                    if (res.code === HTTP_SUCCESS) {
+                        // Append data
+                        $(company.model.popupConfirmDeleteService).empty();
+                        $(company.model.popupConfirmDeleteService).append(res.data.view);
+
+                        // setting css for modal display block
+                        $(company.model.popupConfirmDeleteService).attr('style', 'display: block !important');
+                        $('#popup-stack-delete-service').attr('style', 'opacity: 0.5');
+                    }
+                })
+                .fail(function (res) {
+                    return;
+                });
+            }
         });
     }
 
+    /**
+     * Function delete service in all ship
+     */
     this.deleteServiceInAllShip = function () {
         let companyObject = this;
 
@@ -305,14 +331,101 @@ var company = new function () {
                     }
                 })
                 .fail(function (res) {
+                    return;
+                });
+            }
+        });
+    }
 
+    this.showPopupDelelteAllService = function () {
+        let companyObject = this;
+
+        $(this.model.btnShowPopupDeleteAllService).bind('click', {companyObject: companyObject}, function (event) {
+            let company = event.data.companyObject;
+            $(company.model.popupDeleteAllService).modal('show');
+        });
+    }
+
+    this.delelteAllService = function () {
+        let companyObject = this;
+
+        $(document).bind('click', {companyObject: companyObject}, function (event) {
+            let company = event.data.companyObject;
+            if (('#' + event.target.getAttribute('id')) === company.model.btnDeleteAllService) {
+                let url = company.url.urlDeleteAllService;
+                let param = {
+                    'company-id': company.model.companyId,
+                }
+
+                $.post(url, param, function (res) {
+                    if (res.code === HTTP_SUCCESS) {
+                        $(company.model.popupDeleteAllService).modal('toggle');
+                    } else {
+                        alert('Fail');
+                    }
+                })
+                .fail(function (res) {
+                    return;
+                });
+            }
+
+        });
+    }
+
+    /**
+     * Function show popup confirm delete company
+     */
+    this.showPopupConfirmDeleteCompany = function () {
+        let companyObject = this;
+        $(this.model.btnShowPopupConfirmDeleteCompany).bind('click', {companyObject: companyObject}, function (event) {
+            let company = event.data.companyObject;
+
+            // Show popup confirm
+            $(company.model.popupConfirmDeleteCompany).modal('show');
+        });
+    }
+
+    this.showPopupEnterPassword = function () {
+        let companyObject = this;
+        $(document).bind('click', {companyObject: companyObject}, function (event) {
+            let company = event.data.companyObject;
+
+            if (('#' + event.target.getAttribute('id')) === company.model.btnAccpetDeleteCompany) {
+                $(company.model.popupConfirmDeleteCompany).modal('toggle');
+                $('#modal-auth').modal('show');
+            }
+        });
+    }
+
+    this.enterPasswordDeleteCompany = function () {
+        let companyObject = this;
+        $(document).bind('click', {companyObject: companyObject}, function (event) {
+            let company = event.data.companyObject;
+
+            if (('#' + event.target.getAttribute('id')) === '#modalBtnOKAuth') {
+                let url = $('#modalBtnOKAuth').attr('data-url');
+                let param = {
+                    'password': $(company.model.txtPassword).val(),
+                    'company-id': company.model.companyId,
+                }
+
+                $.post(url, param, function (res) {
+                    console.log(res);
+                })
+                .fail(function (res) {
+                    //Append error message
+                    for (var error in res.responseJSON.errors) {
+                        $(company.model.labelShowMessage).empty();
+                        $(company.model.labelShowMessage).append(res.responseJSON.errors[error][0]);
+                    }
+
+                    // Show error
+                    $(company.model.labelError).css({'display': 'block'});
                 });
             }
         });
     }
 };
-
-
 
 /**
  * @description event close stack modal and remove opacity in behide modal
@@ -321,12 +434,8 @@ $('#popup-confirm-delete-service').on('hide.bs.modal', function () {
     $('#popup-stack-delete-service').removeAttr('style');
 });
 
-/**
- *
- * @description event click show popup confirm for delete all contract in company
- */
-$('#btn-delete-all-contract-company').on('click', function () {
-    $('#popup-confirm-delete-all-contract').modal('show');
+$('#modal-auth').on('hide.bs.modal', function () {
+    $(company.model.txtPassword).val('');
 });
 
 $(document).ready(function () {
@@ -337,4 +446,9 @@ $(document).ready(function () {
     company.showPopupAllServiceInCompany();
     company.confirmDeleteServiceInAllShip();
     company.deleteServiceInAllShip();
+    company.showPopupDelelteAllService();
+    company.delelteAllService();
+    company.showPopupConfirmDeleteCompany();
+    company.showPopupEnterPassword();
+    company.enterPasswordDeleteCompany();
 });

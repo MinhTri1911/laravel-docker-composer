@@ -59,7 +59,8 @@ return [
     'btn_delete' => '削除',
     'btn_cancel_delete' => 'キャンセル',
     'btn_create' => '追加',
-
+    'btn_delete_company' => '会社削除',
+    'e022_password_not_match' => 'パスワードが間違っています。',
 
     // popup setting billing method
     'title_popup_setting_billing_method' => '請求・支払方式一括',

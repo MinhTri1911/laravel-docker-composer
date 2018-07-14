@@ -19,6 +19,7 @@ Route::group(['middleware' => 'auth'], function() {
         Route::get('/filter', 'CompanyController@filterCompany')->name('filter');
         Route::get('/show/{id}', 'CompanyController@show')->name('show');
         Route::get('/show-popup', 'CompanyController@detail')->name('detail');
+        Route::post('/delete-company', 'CompanyController@delete')->name('delete');
     });
 
     Route::group(['prefix' => 'company-service', 'as' => 'company.service.'], function () {
@@ -28,6 +29,6 @@ Route::group(['middleware' => 'auth'], function() {
         Route::get('/confirm-delete-service/{name}/{id}', 'CompanyServiceController@confirmDeleteServiceInAllShip')
             ->name('confirmDelete');
         Route::post('/delete-service', 'CompanyServiceController@delete')->name('delete');
-
+        Route::post('/delete-all-service', 'CompanyServiceController@deleteAll')->name('deleteAll');
     });
 });

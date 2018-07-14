@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use App\Business\CompanyBusiness;
 use App\Business\BillingMethodBusiness;
 use App\Common\Constant;
+use App\Http\Requests\ConfrimPasswordRequest;
 
 class CompanyController extends Controller
 {
@@ -240,10 +241,13 @@ class CompanyController extends Controller
      * @param int id
      * @return view
      */
-
     public function show(Request $request, $id)
     {
-        $data = $this->_companyBusiness->getDetailCompany($id);
+        try {
+            $data = $this->_companyBusiness->getDetailCompany($id);
+        } catch (\Exception $e) {
+            return abort(404);
+        }
 
         return view('company.detail', [
                 'company' => $data['company'],
@@ -252,5 +256,29 @@ class CompanyController extends Controller
                 'billingMethod' => $data['billingMethod'],
                 'currency' => $data['currency'],
         ]);
+    }
+
+    /**
+     * Function delete company
+     * @param Illuminate\Http\Request request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function delete(ConfrimPasswordRequest $request)
+    {
+        if (!$request->ajax()) {
+            $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('error.500'));
+        }
+
+        \DB::beginTransaction();
+        try {
+            $this->_companyBusiness->deleteCompany($request->get('company-id'));
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+
+            return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('error.500'));
+        }
+
+        $this->returnJson(Constant::HTTP_CODE_SUCCESS);
     }
 }
