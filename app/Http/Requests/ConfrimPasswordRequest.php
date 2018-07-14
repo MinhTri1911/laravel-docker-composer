@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * File confirm password request
+ * Hanlde check validation request is coming
+ *
+ * @package App\Http\Controllers
+ * @author Rikkei.trihnm
+ * @date 2018/07/13
+ */
+
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -24,7 +33,7 @@ class ConfrimPasswordRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'password' => 'require|min:6',
         ];
     }
 

@@ -124,7 +124,7 @@ class CompanyServiceController extends Controller
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
-            dd($e);
+
             return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('common.validate_error_exists'));
         }
 
