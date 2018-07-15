@@ -37,8 +37,10 @@ class Constant
     const STATUS_CONTRACT_ACTIVE    = 0;
     // Status contract pending
     const STATUS_CONTRACT_PENDING   = 1;
-    // Status contract finished/deleted
+    // Status contract finished
     const STATUS_CONTRACT_EXPIRED   = 2;
+    // Status contract deleted
+    const STATUS_CONTRACT_DELETE   = 3;
 
     // Status approve actived
     const STATUS_APPROVED          = 1;

@@ -273,12 +273,13 @@ class CompanyController extends Controller
         try {
             $this->_companyBusiness->deleteCompany($request->get('company-id'));
             \DB::commit();
+            // \DB::rollback();
         } catch (\Exception $e) {
             \DB::rollback();
 
             return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('error.500'));
         }
 
-        $this->returnJson(Constant::HTTP_CODE_SUCCESS);
+        return $this->returnJson(Constant::HTTP_CODE_SUCCESS);
     }
 }

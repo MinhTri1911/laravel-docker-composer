@@ -60,7 +60,6 @@ return [
     'btn_cancel_delete' => 'キャンセル',
     'btn_create' => '追加',
     'btn_delete_company' => '会社削除',
-    'e022_password_not_match' => 'パスワードが間違っています。',
 
     // popup setting billing method
     'title_popup_setting_billing_method' => '請求・支払方式一括',
@@ -129,5 +128,8 @@ return [
     'btn_back_to_list' => '戻る',
     'btn_create_company' => '新規登録',
     'btn_update_company' => '更新',
+
+    // Errors
+    'e022_password_not_match' => 'パスワードが間違っています。',
 ];
 
