@@ -546,11 +546,7 @@
             </div>
         </div>
     </div>
-    <div class="modal modal-protector fade" id="modal-done" tabindex="-1" role="dialog">
-        <div class="modal-close">
-            <button class="btn-close-modal" style="background-image: url({{url('images/common/modals_close.png')}})" data-dismiss="modal"></button>
-            <label>閉じる</label>
-        </div>
+    <div class="modal modal-protector fade" id="modal-done" tabindex="-1" role="dialog" data-backdrop="static">
         <div class="modal-dialog">
             <!-- Modal content-->
             <div class="modal-content">
@@ -561,7 +557,9 @@
                     <text id="modalMessageDone">{{__('ship-contract.detail.lbl_popup_del_contract_msg')}}</text>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-blue-light btn-w150" data-dismiss="modal">{{__('ship-contract.detail.btn_ok')}}</button>
+                    <a href="{{ route('company.index') }}" class="btn btn-blue-light btn-w150">
+                        OKE
+                    </a>
                 </div>
             </div>
         </div>

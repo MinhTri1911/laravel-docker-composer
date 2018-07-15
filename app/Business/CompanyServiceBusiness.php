@@ -123,9 +123,10 @@ class CompanyServiceBusiness
             ->join('m_ship', 'm_ship.id', 'm_contract.ship_id')
             ->where('m_ship.company_id', $companyId)
             ->where(function ($query) {
-                return $query->where('m_contract.status', 0)
-                    ->orWhere('m_contract.status', 1);
+                return $query->where('m_contract.status', Constant::STATUS_CONTRACT_ACTIVE)
+                    ->orWhere('m_contract.status', Constant::STATUS_CONTRACT_PENDING);
             })
+            ->whereNull('m_contract.deleted_at')
             ->groupBy(['m_contract.service_id'])
             ->get();
     }
@@ -154,7 +155,7 @@ class CompanyServiceBusiness
         $this->contractRepository = app(ContractInterface::class);
 
         $reasonDelete = [
-            'status' => 3,
+            'status' => Constant::STATUS_CONTRACT_DELETE,
             'deleted_at' => \Carbon\Carbon::now()->format('Y-m-d'),
         ];
 

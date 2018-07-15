@@ -12,6 +12,7 @@
 namespace App\Business;
 
 use App\Repositories\BillingMethod\BillingMethodInterface;
+use App\Common\Constant;
 
 class BillingMethodBusiness
 {
@@ -36,7 +37,7 @@ class BillingMethodBusiness
                 'name_en',
             ])
             ->where('currency_id', $currencyId)
-            ->where('del_flag', 0)
+            ->where('del_flag', Constant::DELETE_FLAG_FALSE)
             ->get();
     }
 

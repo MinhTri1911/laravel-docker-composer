@@ -17,6 +17,7 @@ var company = new function () {
         popupConfirmDeleteService: '#popup-confirm-delete-service',
         popupDeleteAllService: '#popup-delete-all-service',
         popupConfirmDeleteCompany: '#modal-confirm',
+        popupDeleteCompanyDone: '#modal-done',
 
         // Button action
         btnSaveSettingBilling: '#btn-save-setting-billing',
@@ -410,7 +411,16 @@ var company = new function () {
                 }
 
                 $.post(url, param, function (res) {
-                    console.log(res);
+                    if (res.code === HTTP_SUCCESS) {
+                        $('#modal-auth').modal('toggle');
+                        $(company.model.popupDeleteCompanyDone).modal('show');
+
+                        window.setTimeout(function() {
+                            window.location.href = 'http://www.google.com';
+                        }, 5000);
+                    } else {
+                        return;
+                    }
                 })
                 .fail(function (res) {
                     //Append error message
