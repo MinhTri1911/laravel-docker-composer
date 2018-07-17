@@ -26,5 +26,11 @@ return [
     'button_error'=> 'トップページへ',
     'footer_content' => 'Powered by NTT ラーニングシステムズ',
 
-    'e009_not_exists_master' => ':field は存在しません。',
+    'e003_required' => ':fieldを入力してください。',
+    'e005_format_date' => ':fieldのフォーマットは:format形式にしてください。',
+    'e008_numeric' => ':fieldは数字で入力してください。',
+    'e009_not_exists_master' => ':fieldは存在しません。',
+    'e012_start_date_less_than_end_date' => '契約終了日は契約開始日より大きくしてください。',
+    'e022_password_not_match' => 'パスワードが間違っています。',
+    'e020_greater_than_or_equal' => ':fieldは<現在日付>より大きくしてください。',
 ];

@@ -5,10 +5,9 @@
  *
  * Handle business related to contract
  * @package App\Business
- * @author Rikkei.datPDT
+ * @author Rikkei.DatPDT
  * @date 2018/07/10
  */
-
 namespace App\Business;
 
 use App\Repositories\Contract\ContractInterface;
@@ -17,7 +16,6 @@ use App\Repositories\TShipSpot\TShipSpotInterface;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Exception;
-use Carbon\Carbon;
 
 class ContractBusiness 
 {
@@ -54,16 +52,15 @@ class ContractBusiness
             $data['remark'] = $request->remark;
 
             $idContract = $this->_contractInterface->createContract($data);
-            
             $data['idContract'] = $idContract;
             $data['chargeRegister'] = $request->chargeRegister;
             $data['chargeCreate'] = $request->chargeCreate;
-            
+
             // Insert table TShipSlot 
-            // chargeRegister : 1
+            // ChargeRegister : 1
             $this->_tShipSpotInterface->createTShipSpot($data, 1);
-            
-            // chargeCreate : 2
+
+            // ChargeCreate : 2
             $this->_tShipSpotInterface->createTShipSpot($data, 2);
             
             DB::commit();
@@ -82,10 +79,9 @@ class ContractBusiness
      * @access public
      * @param int idShip
      * @return mixed Illuminate\Support\Collection
-     */
+    */
     public function initCreate($idShip) 
     {
         return $this->_shipInterface->getIdShip($idShip);
     }
-
 }

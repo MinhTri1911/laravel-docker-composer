@@ -72,13 +72,17 @@ class CompanyServiceBusiness
         $allShipNotHaveService = $this->shipRepository->select([
                 'm_ship.id',
             ])
-            ->join('m_company', 'm_company.id', 'm_ship.company_id')
+            ->join('m_company', function ($join) {
+                $join->on('m_company.id', 'm_ship.company_id');
+                $join->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE);
+            })
             ->leftJoin('m_contract', function ($join) use ($serviceId) {
-                $join->on('m_contract.ship_id', '=', 'm_ship.id')
-                    ->where('m_contract.service_id', $serviceId);
+                $join->on('m_contract.ship_id', '=', 'm_ship.id');
+                $join->where('m_contract.service_id', $serviceId);
             })
             ->where('m_company.id', $companyId)
             ->whereNull('m_contract.id')
+            ->where('m_ship.del_flag', Constant::DELETE_FLAG_FALSE)
             ->get()
             ->toArray();
 
@@ -101,13 +105,13 @@ class CompanyServiceBusiness
         // Insert new contract
         $this->contractRepository->insert($dataInsert);
 
-        return $dataInsert;
+        return true;
     }
 
     /**
      * Function get all service of company
      * @param int companyId
-     * @return
+     * @return Collection
      */
     public function getAllServiceOfCompany($companyId)
     {
@@ -123,8 +127,8 @@ class CompanyServiceBusiness
             ->join('m_ship', 'm_ship.id', 'm_contract.ship_id')
             ->where('m_ship.company_id', $companyId)
             ->where(function ($query) {
-                return $query->where('m_contract.status', 0)
-                    ->orWhere('m_contract.status', 1);
+                return $query->where('m_contract.status', Constant::STATUS_CONTRACT_ACTIVE)
+                    ->orWhere('m_contract.status', Constant::STATUS_CONTRACT_PENDING);
             })
             ->groupBy(['m_contract.service_id'])
             ->get();
@@ -154,7 +158,7 @@ class CompanyServiceBusiness
         $this->contractRepository = app(ContractInterface::class);
 
         $reasonDelete = [
-            'status' => 3,
+            'status' => Constant::STATUS_CONTRACT_DELETED,
             'deleted_at' => \Carbon\Carbon::now()->format('Y-m-d'),
         ];
 
@@ -165,11 +169,17 @@ class CompanyServiceBusiness
             ->join('m_company', function ($join) use ($companyId) {
                 $join->on('m_company.id', 'm_ship.company_id')
                     ->on('m_company.currency_id', 'm_contract.currency_id')
-                    ->where('m_company.id', $companyId);
+                    ->where('m_company.id', $companyId)
+                    ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE);
             })
             ->whereIn('m_contract.service_id', $serviceIds)
             ->get()
             ->toArray();
+
+        // Check company not have contract then return
+        if (empty($contractIds)) {
+            return true;
+        }
 
         // Update contract watting for approved delete
         $this->contractRepository
@@ -177,6 +187,8 @@ class CompanyServiceBusiness
                 'approved_flag' => Constant::STATUS_WAITING_APPROVE,
                 'reason_reject' => json_encode($reasonDelete),
             ]);
+
+        return true;
     }
 
     /**

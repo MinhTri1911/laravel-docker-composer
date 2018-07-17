@@ -17,6 +17,9 @@ var company = new function () {
         popupConfirmDeleteService: '#popup-confirm-delete-service',
         popupDeleteAllService: '#popup-delete-all-service',
         popupConfirmDeleteCompany: '#modal-confirm',
+        popupDeleteCompanyDone: '#modal-done',
+        popupModalAuth: '#modal-auth',
+        modalStackShowAllService: '#modal-stack-one',
 
         // Button action
         btnSaveSettingBilling: '#btn-save-setting-billing',
@@ -29,6 +32,7 @@ var company = new function () {
         btnAddServiceForAllShip: '#btn-add-service-for-all-ship',
         btnShowPopupConfirmDeleteCompany: '#btn-show-popup-confirm-delete-company',
         btnAccpetDeleteCompany: '#modalBtnOK',
+        btnEnterPassword: '#modalBtnOKAuth',
 
         // Item
         lableNameBillingMethod: '#lbl-billing-method-id',
@@ -70,7 +74,7 @@ var company = new function () {
 
             $.get(url, param,function (res) {
                 if (res.code === HTTP_SUCCESS) {
-                    event.data.companyObject.appendData(res.view);
+                    event.data.companyObject.appendData(res.data.view);
                     event.data.companyObject.initSelect2();
                 }
             })
@@ -298,7 +302,7 @@ var company = new function () {
 
                         // setting css for modal display block
                         $(company.model.popupConfirmDeleteService).attr('style', 'display: block !important');
-                        $('#popup-stack-delete-service').attr('style', 'opacity: 0.5');
+                        $(company.model.modalStackShowAllService).attr('style', 'opacity: 0.5');
                     }
                 })
                 .fail(function (res) {
@@ -392,7 +396,7 @@ var company = new function () {
 
             if (('#' + event.target.getAttribute('id')) === company.model.btnAccpetDeleteCompany) {
                 $(company.model.popupConfirmDeleteCompany).modal('toggle');
-                $('#modal-auth').modal('show');
+                $(company.model.popupModalAuth).modal('show');
             }
         });
     }
@@ -402,15 +406,37 @@ var company = new function () {
         $(document).bind('click', {companyObject: companyObject}, function (event) {
             let company = event.data.companyObject;
 
-            if (('#' + event.target.getAttribute('id')) === '#modalBtnOKAuth') {
-                let url = $('#modalBtnOKAuth').attr('data-url');
+            if (('#' + event.target.getAttribute('id')) === company.model.btnEnterPassword) {
+                let url = $(company.model.btnEnterPassword).attr('data-url');
                 let param = {
                     'password': $(company.model.txtPassword).val(),
                     'company-id': company.model.companyId,
                 }
 
                 $.post(url, param, function (res) {
-                    console.log(res);
+                    if (res.code === HTTP_SUCCESS) {
+                        // Hidden modal verify password
+                        $(company.model.popupModalAuth).modal('toggle');
+
+                        // Show popup alert delete done
+                        $(company.model.popupDeleteCompanyDone).modal('show');
+
+                        // Set timeout for redirect with 5 seconds
+                        window.setTimeout(function() {
+                            window.location.href = $(company.model.btnEnterPassword).attr('data-redirect');
+                        }, 5000);
+                    } else {
+                        //Append error message
+                        for (var error in res.message) {
+                            $(company.model.labelShowMessage).empty();
+                            $(company.model.labelShowMessage).append(res.message[error]);
+                        }
+
+                        // Show error
+                        $(company.model.labelError).css({'display': 'block'});
+
+                        return;
+                    }
                 })
                 .fail(function (res) {
                     //Append error message
@@ -425,18 +451,30 @@ var company = new function () {
             }
         });
     }
+
+    /**
+     * Function close stack modal and remove opacity in behide modal
+     */
+    this.hiddenModalStack = function () {
+        $(company.model.popupConfirmDeleteService).on('hide.bs.modal', function () {
+            // Remove attribute style in modal
+            $(company.model.modalStackShowAllService).removeAttr('style');
+        });
+    }
+
+    /**
+     * Function close modal verify password user
+     */
+    this.hiddenModalAuth = function () {
+        $(company.model.popupModalAuth).on('hide.bs.modal', function () {
+            $(company.model.txtPassword).val('');
+
+            // Hidden error
+            $(company.model.labelShowMessage).empty();
+            $(company.model.labelError).css({'display': 'none'});
+        });
+    }
 };
-
-/**
- * @description event close stack modal and remove opacity in behide modal
- */
-$('#popup-confirm-delete-service').on('hide.bs.modal', function () {
-    $('#popup-stack-delete-service').removeAttr('style');
-});
-
-$('#modal-auth').on('hide.bs.modal', function () {
-    $(company.model.txtPassword).val('');
-});
 
 $(document).ready(function () {
     company.showSettingBillingMethod();
@@ -445,10 +483,12 @@ $(document).ready(function () {
     company.addService();
     company.showPopupAllServiceInCompany();
     company.confirmDeleteServiceInAllShip();
+    company.hiddenModalStack();
     company.deleteServiceInAllShip();
     company.showPopupDelelteAllService();
     company.delelteAllService();
     company.showPopupConfirmDeleteCompany();
     company.showPopupEnterPassword();
     company.enterPasswordDeleteCompany();
+    company.hiddenModalAuth();
 });

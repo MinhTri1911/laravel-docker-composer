@@ -33,7 +33,19 @@ class ConfrimPasswordRequest extends FormRequest
     public function rules()
     {
         return [
-            'password' => 'require|min:6',
+            'password' => 'required',
+        ];
+    }
+
+    /**
+     * Get the validation messages that apply to the request.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'password.required' => trans('common.service_profile_item.password_require'),
         ];
     }
 
@@ -53,7 +65,7 @@ class ConfrimPasswordRequest extends FormRequest
         // Verify password user to delete
         if (is_null($user) || !\Hash::check($this->get('password'), $user->password)) {
             $validator->after(function ($validator) {
-                $validator->errors()->add('password', trans('company.e022_password_not_match'));
+                $validator->errors()->add('password', trans('error.e022_password_not_match'));
             });
         }
     }

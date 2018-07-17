@@ -37,8 +37,10 @@ class Constant
     const STATUS_CONTRACT_ACTIVE    = 0;
     // Status contract pending
     const STATUS_CONTRACT_PENDING   = 1;
-    // Status contract finished/deleted
+    // Status contract finished
     const STATUS_CONTRACT_EXPIRED   = 2;
+    // Status contract deleted
+    const STATUS_CONTRACT_DELETED   = 3;
 
     // Status approve actived
     const STATUS_APPROVED          = 1;
@@ -78,7 +80,7 @@ class Constant
 
     // Status code error 500 Internal Server Error
     const HTTP_CODE_ERROR_500 = 500;
-    
+
     // Format datetime
     const FORMAT_DATE_TIME = [
         'd' => 'Y/m/d',

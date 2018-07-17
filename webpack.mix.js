@@ -29,6 +29,7 @@ mix.babel([
     'resources/assets/js/common/moment.js',
     'resources/assets/js/common/moment-ja.js',
     'resources/assets/js/common/bootstrap-datetimepicker.min.js',
+    'resources/assets/js/common/resizable-tables.js'
 ], 'public/js/vendor.js')
     .babel([
         'node_modules/jquery-pjax/jquery.pjax.js',
@@ -94,4 +95,5 @@ mix.babel([
     .sass('resources/assets/sass/spot.scss', 'public/css')
     .sass('resources/assets/sass/approve.scss', 'public/css')
     .sass('resources/assets/sass/preview-billing-paper.scss', 'public/css')
+    .sass('resources/assets/sass/exception.scss', 'public/css')
     .copyDirectory('resources/images/common', 'public/images/common');

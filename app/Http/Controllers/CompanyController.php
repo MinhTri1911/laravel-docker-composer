@@ -246,7 +246,7 @@ class CompanyController extends Controller
         try {
             $data = $this->_companyBusiness->getDetailCompany($id);
         } catch (\Exception $e) {
-            return abort(404);
+            return abort(500);
         }
 
         return view('company.detail', [
@@ -271,6 +271,8 @@ class CompanyController extends Controller
 
         \DB::beginTransaction();
         try {
+
+            // Delete company
             $this->_companyBusiness->deleteCompany($request->get('company-id'));
             \DB::commit();
         } catch (\Exception $e) {
@@ -279,6 +281,6 @@ class CompanyController extends Controller
             return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('error.500'));
         }
 
-        $this->returnJson(Constant::HTTP_CODE_SUCCESS);
+        return $this->returnJson(Constant::HTTP_CODE_SUCCESS);
     }
 }

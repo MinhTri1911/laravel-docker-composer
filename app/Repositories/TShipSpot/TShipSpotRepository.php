@@ -4,7 +4,7 @@
  * Ship management Repository
  *
  * @package App\Repositories\Ship
- * @author Rikkei.quyenl
+ * @author Rikkei.Quyenl
  * @date 2018/07/05
  */
 
@@ -12,7 +12,7 @@ namespace App\Repositories\TShipSpot;
 
 use App\Repositories\EloquentRepository;
 use App\Models\TShipSpot;
-use Illuminate\Support\Facades\DB;
+use App\Common\Constant;
 
 class TShipSpotRepository extends EloquentRepository implements TShipSpotInterface 
 {
@@ -33,7 +33,7 @@ class TShipSpotRepository extends EloquentRepository implements TShipSpotInterfa
      * @return mixed Illuminate\Support\Collection
      */
     public function createTShipSpot($data,$typeInsert) {
-         
+
         $ship = new $this->_model;
         $ship->ship_id = $data['ship_id'];
         $ship->currency_id = $data['currency_id'];
@@ -44,8 +44,8 @@ class TShipSpotRepository extends EloquentRepository implements TShipSpotInterfa
         } else {
            $ship->amount_charge = $data['chargeCreate'];
         }
-        $ship->approved_flag = 2;
-        
+        $ship->approved_flag = Constant::STATUS_WAITING_APPROVE;
+
         return $ship->save();
     }
 }

@@ -56,7 +56,7 @@
                         : {{ $ship->code }}
                     </div>
                 </div>
-                <div class="item-row">
+                <div class="item-row {{ $errors->has('idService') ? ' has-error' : '' }}">
                     <div class="item-label">
                         {{__('contract.lbl_service')}}
                         <span class="require">*</span>
@@ -68,7 +68,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="item-row">
+                <div class="item-row {{ $errors->has('dateStart') ? ' has-error' : '' }}">
                     <div class="item-label">
                         {{__('contract.lbl_start')}}
                         <span class="require">*</span>
@@ -80,7 +80,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="item-row">
+                <div class="item-row {{ $errors->has('dateEnd') ? ' has-error' : '' }}">
                     <div class="item-label">
                         {{__('contract.lbl_end')}}
                         <span class="require">*</span>
@@ -116,7 +116,7 @@
         <div class="spot-block">
             <h4>{{__('contract.header_spot')}}</h4>     
             <div class="content-block table-block">
-                <table class="table table-blue table-ship">
+                <table class="table table-blue table-ship resizable">
                     <thead>
                         <tr>
                             <th>No</th>
@@ -128,12 +128,12 @@
                         <tr>
                             <td>1</td>
                             <td>{{__('contract.lbl_spot_regist')}}</td>
-                            <td>{!! Form::text('chargeRegister', old('chargeRegister'), ['class' => 'form-control', 'placeholder' => "課金種別"]) !!}</td>
+                            <td class="{{ $errors->has('chargeRegister') ? ' has-error' : '' }}">{!! Form::text('chargeRegister', old('chargeRegister'), ['class' => 'form-control', 'placeholder' => "初期登録費"]) !!}</td>
                         </tr>
                         <tr>
                             <td>2</td>
                             <td>{{__('contract.lbl_spot_data')}}</td>
-                            <td>{!! Form::text('chargeCreate', old('chargeCreate'), ['class' => 'form-control', 'placeholder' => "請求金額"]) !!}</td>
+                            <td class="{{ $errors->has('chargeCreate') ? ' has-error' : '' }}">{!! Form::text('chargeCreate', old('chargeCreate'), ['class' => 'form-control', 'placeholder' => "データ作成費"]) !!}</td>
                         </tr>
                     </tbody>
                 </table>

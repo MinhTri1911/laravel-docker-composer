@@ -17,7 +17,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::group(['prefix' => 'company', 'as' => 'company.'], function () {
         Route::get('/search', 'CompanyController@searchCompany')->name('search');
         Route::get('/filter', 'CompanyController@filterCompany')->name('filter');
-        Route::get('/show/{id}', 'CompanyController@show')->name('show');
+        Route::get('/show/{id}', 'CompanyController@show')->middleware('prevent-history')->name('show');
         Route::get('/show-popup', 'CompanyController@detail')->name('detail');
         Route::post('/delete-company', 'CompanyController@delete')->name('delete');
     });

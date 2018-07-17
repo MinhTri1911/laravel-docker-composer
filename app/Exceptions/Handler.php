@@ -5,15 +5,15 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
-class Handler extends ExceptionHandler
-{
+class Handler extends ExceptionHandler {
+
     /**
      * A list of the exception types that are not reported.
      *
      * @var array
      */
     protected $dontReport = [
-        //
+            //
     ];
 
     /**
@@ -34,8 +34,7 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return void
      */
-    public function report(Exception $exception)
-    {
+    public function report(Exception $exception) {
         parent::report($exception);
     }
 
@@ -46,8 +45,34 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $exception)
-    {
-        return parent::render($request, $exception);
+    public function render($request, Exception $exception) {
+        if ($this->isHttpException($exception)) {
+
+            switch ($exception->getStatusCode()) {
+
+                // page not found
+                case 404:
+                    return \Response::view('exception.404');
+                    break;
+
+                // Internal error
+                case 500:
+                    $data['message'] = $exception->getMessage();
+                    return \Response::view('exception.500',$data);
+                    break;
+                
+                // Permission denied
+                case 403:
+                    return \Response::view('exception.403');
+                    break;
+                
+                default:
+                    return \Response::view('exception.404');
+                    break;
+            }
+        } else {
+            return parent::render($request, $exception);
+        }
     }
+
 }

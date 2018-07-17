@@ -36,7 +36,7 @@ class BillingMethodCompanyController extends Controller
     public function show(Request $request, $id)
     {
         if (!$request->ajax()) {
-            return $this->returnJson(trans('error.500'));
+            return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('error.500'));
         }
 
         // Get currency id of company
@@ -48,7 +48,7 @@ class BillingMethodCompanyController extends Controller
         // Render view for show popup
         $view = view('company.component.detail.popup-setting-billing-method', ['billings' => $billings, 'id' => $id])->render();
 
-        return response()->json([
+        return $this->returnJson(Constant::HTTP_CODE_SUCCESS, '', [
             'code' => Constant::HTTP_CODE_SUCCESS,
             'view' => $view,
         ]);

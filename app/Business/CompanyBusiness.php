@@ -14,6 +14,7 @@ namespace App\Business;
 use App\Repositories\Company\CompanyInterface;
 use App\Repositories\Ship\ShipInterface;
 use App\Repositories\Contract\ContractInterface;
+use App\Common\Constant;
 
 class CompanyBusiness
 {
@@ -197,11 +198,19 @@ class CompanyBusiness
      */
     public function getDetailCompany($id, $columns = ['*'])
     {
-        $company = $this->companyRepository->where('del_flag', 0)->findOrFail($id, $columns = ['*']);
-        $nationOfCompany = $company->nation;
-        $companyOperation = $company->companyOperation;
-        $billingMethod = $company->billingMethod;
-        $currency = $company->currency;
+        $company = $this->companyRepository->where('del_flag', Constant::DELETE_FLAG_FALSE)->findOrFail($id, $columns = ['*']);
+        $nationOfCompany = $company->nation()
+            ->where('m_nation.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->firstOrFail(['m_nation.name_jp', 'm_nation.name_en']);
+        $companyOperation = $company->companyOperation()
+            ->where('del_flag', Constant::DELETE_FLAG_FALSE)
+            ->firstOrFail(['name']);
+        $billingMethod = $company->billingMethod()
+            ->where('del_flag', Constant::DELETE_FLAG_FALSE)
+            ->firstOrFail(['m_billing_method.name_jp', 'm_billing_method.name_en', 'm_billing_method.id']);
+        $currency = $company->currency()
+            ->where('del_flag', Constant::DELETE_FLAG_FALSE)
+            ->firstOrFail(['code']);
 
         return [
             'company' => $company,
@@ -234,7 +243,10 @@ class CompanyBusiness
      */
     public function updateBillingMethod($companyId, $billingMethodId)
     {
-        return $this->companyRepository->update($companyId, ['billing_method_id' => $billingMethodId]);
+        // Update billing method when del_flag = 0
+        return $this->companyRepository
+            ->where('del_flag', Constant::DELETE_FLAG_FALSE)
+            ->multiUpdate($companyId, ['billing_method_id' => $billingMethodId]);
     }
 
     /**
@@ -247,22 +259,26 @@ class CompanyBusiness
         // Get intantce ship repository from container
         $shipRepository = app(ShipInterface::class);
 
+        // Get ship ids
         $ships = $shipRepository
             ->select(['id'])
             ->where('company_id', $companyId)
             ->get()
             ->toArray();
 
-        $shipRepository->multiUpdate(array_column($ships, 'id'), ['del_flag' => 1]);
+        // Update ship del_flag = 1
+        $shipRepository->multiUpdate(array_column($ships, 'id'), ['del_flag' => Constant::DELETE_FLAG_TRUE]);
 
         // Get intantce contract repository from container
         $contractRepository = app(ContractInterface::class);
+
+        // Update contract when delete company
         $contractRepository->multiUpdate(array_column($ships, 'id'), [
             'deleted_at' => \Carbon\Carbon::now()->format('Y-m-d'),
-            'approved_flag' => 1,
+            'approved_flag' => Constant::STATUS_APPROVED,
             'reason_reject' => null,
         ], 'ship_id');
 
-        $this->companyRepository->update($companyId, ['del_flag' => 1]);
+        return $this->companyRepository->update($companyId, ['del_flag' => Constant::DELETE_FLAG_TRUE]);
     }
 }

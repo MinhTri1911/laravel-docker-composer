@@ -2,11 +2,11 @@
     <button class="btn-close-modal" style="background-image: url('https://mufmgr.schl.jp/images/common/modals_close.png')" data-dismiss="modal"></button>
     <label>閉じる</label>
 </div>
-<div class="modal-dialog" id="popup-stack-delete-service">
+<div class="modal-dialog" id="modal-stack-one">
     <!-- Modal content-->
     <div class="modal-content">
         <div class="popup-title">
-            <h2>{{ trans('company.title_popup_add_service') }}</h2>
+            <h2>{{ trans('company.title_popup_delete_service') }}</h2>
         </div>
         <div class="modal-body">
             <h2>{{ trans('company.lbl_delete_service') }}</h2>
@@ -16,7 +16,7 @@
                         <thead>
                             <tr>
                                 <th class="col-xs-1">ID</th>
-                                <th class="col-xs-8">{{ trans('company.lbl_head_system') }}</th>
+                                <th class="col-xs-8">{{ trans('company.lbl_head_service') }}</th>
                                 <th class="col-xs-3">{{ trans('company.lbl_head_action_delete') }}</th>
                             </tr>
                         </thead>

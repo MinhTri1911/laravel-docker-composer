@@ -167,6 +167,10 @@ and open the template in the editor.
 */
 
 .detail-company {
+  .alert-danger {
+    display: none;
+  }
+
   .label-title-button {
     width: 250px;
   }

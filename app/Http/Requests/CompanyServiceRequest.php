@@ -53,6 +53,29 @@ class CompanyServiceRequest extends FormRequest
     }
 
     /**
+     * Get the validation messages that apply to the request.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        $serviceId = trans('company.lbl_service_name');
+        $startDate =  trans('company.lbl_contract_start_date');
+        $endDate = trans('company.lbl_contract_end_date');
+
+        return [
+            'service-id.required' => trans('error.e003_required', ['field' => $serviceId]),
+            'service-id.numeric' => trans('error.e008_numeric', ['field' => $serviceId]),
+            'start-date.required' => trans('error.e003_required', ['field' => $startDate]),
+            'start-date.date_format' => trans('error.e005_format_date', ['field' => $startDate, 'format' => 'Y/m/d']),
+            'start-date.after_or_equal' => trans('error.e020_greater_than_or_equal', ['field' => $startDate]),
+            'end-date.required' => trans('error.e003_required', ['field' => $endDate]),
+            'end-date.date_format' => trans('error.e005_format_date', ['field' => $endDate, 'format' => 'Y/m/d']),
+            'end-date.after' => trans('error.e012_start_date_less_than_end_date'),
+        ];
+    }
+
+    /**
      * Configure the validator instance.
      *
      * @param \Illuminate\Validation\Validator validator
@@ -63,10 +86,11 @@ class CompanyServiceRequest extends FormRequest
         $currencyId = $this->_companyBusiness->getCompanyCurrencyId($this->get('company-id'));
         $checkExists = $this->_companyServiceBusiness->checkServiceId($this->get('service-id'), $currencyId);
 
+        // Check service id exists master and equal currency id with company
         if (!$checkExists) {
             $validator->after(function ($validator) {
-                $validator->errors()->add('service-id', trans('validation.exists', [
-                        'attribute' => trans('company.lbl_service_name')
+                $validator->errors()->add('service-id', trans('error.e009_not_exists_master', [
+                        'field' => trans('company.lbl_service_name')
                     ])
                 );
             });

@@ -66,7 +66,7 @@ class ServiceRepository extends EloquentRepository implements ServiceInterface {
                         ->where('m_service.del_flag', 0)
                         ->where('t_price_service.del_flag', 0)
                         ->where('t_price_service.currency_id', $currencyId)
-                        ->whereRaw("m_service.id NOT IN (SELECT id FROM m_contract WHERE m_contract.ship_id =  ? )", [$shipId])
+                        ->whereRaw("m_service.id NOT IN (SELECT m_contract.service_id FROM m_contract WHERE m_contract.ship_id =  ? )", [$shipId])
                         ->get();
     }
 
@@ -108,7 +108,7 @@ class ServiceRepository extends EloquentRepository implements ServiceInterface {
 
         // Search by shipId
         if ($shipId != null || $shipId != '') {
-            $query = $query->whereRaw("m_service.id NOT IN (SELECT id FROM m_contract WHERE m_contract.ship_id =  ? )", [$shipId]);
+            $query = $query->whereRaw("m_service.id NOT IN (SELECT m_contract.service_id FROM m_contract WHERE m_contract.ship_id =  ? )", [$shipId]);
         }
 
         return $query->get();

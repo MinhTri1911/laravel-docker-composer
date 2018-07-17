@@ -108,27 +108,32 @@ class CompanyRepository extends EloquentRepository implements CompanyInterface
                     ->orWhere('m_nation.name_en', 'LIKE', '%' . $param['filter-nation'] . '%');
             })
             ->where(function ($query) use ($param) {
-                return $query->where('m_company.head_office_address', 'LIKE', '%' . $param['filter-address'] . '%')
-                    ->orWhereNull('m_company.head_office_address');
+                if ($param['filter-address']) {
+                    return $query->where('m_company.head_office_address', 'LIKE', '%' . $param['filter-address'] . '%');
+                }
             })
             ->where('m_company_operation.name', 'LIKE', '%' . $param['filter-company-operation'] . '%')
             ->where('m_company.ope_person_name_1', 'LIKE', '%' . $param['filter-company-ope-person-name-1'] . '%')
             ->where('m_company.ope_email_1', 'LIKE', '%' . $param['filter-company-ope-person-email-1'] . '%')
             ->where(function ($query) use ($param) {
-                return $query->where('m_company.ope_phone_1', 'LIKE', '%' . $param['filter-company-ope-person-phone-1'] . '%')
-                    ->orWhereNull('m_company.ope_phone_1');
+                if ($param['filter-company-ope-person-phone-1']) {
+                    return $query->where('m_company.ope_phone_1', 'LIKE', '%' . $param['filter-company-ope-person-phone-1'] . '%');
+                }
             })
             ->where(function ($query) use ($param) {
-                return $query->where('m_company.ope_person_name_2', 'LIKE', '%' . $param['filter-company-ope-person-name-2'] . '%')
-                    ->orWhereNull('m_company.ope_person_name_2');
+                if ($param['filter-company-ope-person-name-2']) {
+                    return $query->where('m_company.ope_person_name_2', 'LIKE', '%' . $param['filter-company-ope-person-name-2'] . '%');
+                }
             })
             ->where(function ($query) use ($param) {
-                return $query->where('m_company.ope_email_2', 'LIKE', '%' . $param['filter-company-ope-person-email-2'] . '%')
-                    ->orWhereNull('m_company.ope_email_2');
+                if ($param['filter-company-ope-person-email-2']) {
+                    return $query->where('m_company.ope_email_2', 'LIKE', '%' . $param['filter-company-ope-person-email-2'] . '%');
+                }
             })
             ->where(function ($query) use ($param) {
-                return $query->where('m_company.ope_phone_2', 'LIKE', '%' . $param['filter-company-ope-person-phone-2'] . '%')
-                    ->orWhereNull('m_company.ope_phone_2');
+                if ($param['filter-company-ope-person-phone-2']) {
+                    return $query->where('m_company.ope_phone_2', 'LIKE', '%' . $param['filter-company-ope-person-phone-2'] . '%');
+                }
             })
             ->where(function ($query) use ($param) {
                 return $query->where('m_service.name_jp', 'LIKE', '%' . $param['filter-service'] . '%')
@@ -170,16 +175,4 @@ class CompanyRepository extends EloquentRepository implements CompanyInterface
             ])
             ->get();
     }
-
-    // /**
-    //  * Function get detail company by id
-    //  * @param int id
-    //  * @param array colums
-    //  * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
-    //  * @return \App\Models\MCompany
-    //  */
-    // public function getCompany($id, $columns = ['*'])
-    // {
-    //     return $this->findOrFail($id, $columns);
-    // }
 }

@@ -1,12 +1,15 @@
 <?php
-
+/**
+ * Contract controller
+ *
+ * @package App\Http\Controllers
+ * @author Rikkei.DatPDT
+ * @date 2018/06/13
+*/
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Business\ContractBusiness;
 use App\Http\Requests\ContractRequest;
-use Exception;
-use Illuminate\Support\Facades\Log;
 
 class ContractController extends Controller 
 {

@@ -36,7 +36,7 @@
                                 $dataAppend = [];
                                 $dataBilings = [];
                                 foreach ($billings as $billing) {
-                                    $dataBilings[$billing->id] = $billing->name_jp . ' ' . $billing->id;
+                                    $dataBilings[$billing->id] = $billing->name_jp;
                                     $dataAppend[$billing->id] = [
                                         'jp' => $billing->name_jp,
                                         'en' => $billing->name_en,
