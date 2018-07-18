@@ -502,6 +502,16 @@
                     <h2>{{ trans('company.lbl_confirm_delete_contract') }}</h2>
                 </div>
                 <div class="modal-body">
+                    <div class="setting-content">
+                        <div class="col-md-12">
+                            <div class="alert alert-danger">
+                                <div class="block-error">
+                                    <i class="fa fa-exclamation" aria-hidden="true"></i>
+                                    <label class="control-label lbl-error-message"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="modal-setting-billing-content">
                         <h2 class="block-center">{{ trans('company.lbl_confirm_delete_contract') }}</h2>
                     </div>

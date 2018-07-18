@@ -12,9 +12,18 @@
 */
 
 Route::group(['middleware' => 'auth', 'prefix' => 'billing', 'as' => 'billing.'], function () {
+
+    // Index create billing
     Route::get('/', 'BillingPaperController@index')->name('create.billing.paper');
+    Route::get('/search', 'BillingPaperController@searchBillingPaper')->name('search.billing.paper');
+
+    // History billing
     Route::get('/history', 'HistoryBillingController@index')->name('history.billing');
+
+    // Statistic billing
     Route::get('/statistic', 'StatisticBillingController@index')->name('statistic.billing');
+
+    // Preview billing
     Route::get('/preview', 'BillingPaperController@previewBillingPaper')->name('preview.billing.paper');
 });
 

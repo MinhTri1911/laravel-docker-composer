@@ -278,7 +278,7 @@ class CompanyController extends Controller
         } catch (\Exception $e) {
             \DB::rollback();
 
-            return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('error.500'));
+            return $this->returnJson(Constant::HTTP_CODE_ERROR_500, [$e->getMessage()]);
         }
 
         return $this->returnJson(Constant::HTTP_CODE_SUCCESS);

@@ -242,9 +242,9 @@ return [
         // Helper
         'Str' => App\Helpers\Str::class,
         //'Debugbar' => Barryvdh\Debugbar\Facade::class,
-        
 
-
+        // Constant
+        'Constant' => App\Common\Constant::class,
     ],
 
 ];

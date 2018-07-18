@@ -19,6 +19,8 @@ use App\Common\Constant;
 class CompanyBusiness
 {
     protected $companyRepository;
+    protected $contractRepository;
+    protected $shipRepository;
 
     public function __construct(CompanyInterface $companyInterface)
     {
@@ -256,29 +258,53 @@ class CompanyBusiness
      */
     public function deleteCompany($companyId)
     {
+        // Check can delete company
+        $this->_checkCanDeleteCompany($companyId);
+
         // Get intantce ship repository from container
-        $shipRepository = app(ShipInterface::class);
+        $this->shipRepository = app(ShipInterface::class);
 
         // Get ship ids
-        $ships = $shipRepository
+        $ships = $this->shipRepository
             ->select(['id'])
             ->where('company_id', $companyId)
             ->get()
             ->toArray();
 
         // Update ship del_flag = 1
-        $shipRepository->multiUpdate(array_column($ships, 'id'), ['del_flag' => Constant::DELETE_FLAG_TRUE]);
+        $this->shipRepository->multiUpdate(array_column($ships, 'id'), ['del_flag' => Constant::DELETE_FLAG_TRUE]);
 
         // Get intantce contract repository from container
-        $contractRepository = app(ContractInterface::class);
+        $this->contractRepository = app(ContractInterface::class);
 
         // Update contract when delete company
-        $contractRepository->multiUpdate(array_column($ships, 'id'), [
+        $this->contractRepository->multiUpdate(array_column($ships, 'id'), [
             'deleted_at' => \Carbon\Carbon::now()->format('Y-m-d'),
             'approved_flag' => Constant::STATUS_APPROVED,
             'reason_reject' => null,
         ], 'ship_id');
 
         return $this->companyRepository->update($companyId, ['del_flag' => Constant::DELETE_FLAG_TRUE]);
+    }
+
+    private function _checkCanDeleteCompany($companyId)
+    {
+        // Select all contract in company have approved_flag = 2
+        $contractWattingApproved = $this->companyRepository
+            ->select(['m_contract.id'])
+            ->join('m_ship', function ($join) use ($companyId) {
+                $join->on('m_ship.company_id', 'm_company.id')
+                    ->where('m_ship.company_id', $companyId);
+            })
+            ->join('m_contract', 'm_contract.ship_id', 'm_ship.id')
+            ->where('m_contract.approved_flag', Constant::STATUS_WAITING_APPROVE)
+            ->whereNotNull('m_contract.updated_at')
+            ->exists();
+
+        if ($contractWattingApproved) {
+            throw new \Exception(trans('error.e023_have_contract_watting_approve'));
+        }
+
+        return true;
     }
 }

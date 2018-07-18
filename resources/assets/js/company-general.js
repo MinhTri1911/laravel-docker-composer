@@ -341,15 +341,25 @@ var company = new function () {
         });
     }
 
+    /**
+     * Function show popup confirm delete all service in company
+     */
     this.showPopupDelelteAllService = function () {
         let companyObject = this;
 
         $(this.model.btnShowPopupDeleteAllService).bind('click', {companyObject: companyObject}, function (event) {
             let company = event.data.companyObject;
+            $(company.model.labelShowMessage).empty();
+            // Hidden label error
+            $(company.model.labelError).css({'display': 'none'});
+
             $(company.model.popupDeleteAllService).modal('show');
         });
     }
 
+    /**
+     * Function delete all service in company
+     */
     this.delelteAllService = function () {
         let companyObject = this;
 
@@ -365,7 +375,16 @@ var company = new function () {
                     if (res.code === HTTP_SUCCESS) {
                         $(company.model.popupDeleteAllService).modal('toggle');
                     } else {
-                        alert('Fail');
+                        //Append error message
+                        for (var error in res.message) {
+                            $(company.model.labelShowMessage).empty();
+                            $(company.model.labelShowMessage).append(res.message[error]);
+                        }
+
+                        // Show error
+                        $(company.model.labelError).css({'display': 'block'});
+
+                        return;
                     }
                 })
                 .fail(function (res) {
@@ -389,18 +408,28 @@ var company = new function () {
         });
     }
 
+    /**
+     * Function show popup verify password user
+     */
     this.showPopupEnterPassword = function () {
         let companyObject = this;
         $(document).bind('click', {companyObject: companyObject}, function (event) {
             let company = event.data.companyObject;
 
             if (('#' + event.target.getAttribute('id')) === company.model.btnAccpetDeleteCompany) {
+                $(company.model.labelShowMessage).empty();
+                // Hidden label error
+                $(company.model.labelError).css({'display': 'none'});
+
                 $(company.model.popupConfirmDeleteCompany).modal('toggle');
                 $(company.model.popupModalAuth).modal('show');
             }
         });
     }
 
+    /**
+     * Function delete company
+     */
     this.enterPasswordDeleteCompany = function () {
         let companyObject = this;
         $(document).bind('click', {companyObject: companyObject}, function (event) {

@@ -23,7 +23,7 @@ class Constant
     const APPROVED_O = [
       1 =>  "承認済",
       2 =>  "承認待ち",
-      3 =>  "拒絶",
+      3 =>  "却下",
     ];
 
     // Contract status text
@@ -32,6 +32,20 @@ class Constant
       1 =>  "中断",
       2 =>  "完了",
     ];
+
+    // Arrray billing paper status
+    const ARR_BILLING_PAPER_STATUS = [
+        1 => '未作成',
+        2 => '発行待ち',
+        3 => '発行済'
+    ];
+
+    // Status billing paper don't create
+    const STATUS_BILLING_NO_CREATE    = 1;
+    // Status billing paper waiting delivery
+    const STATUS_BILLING_WAITING_DELIVERY    = 2;
+    // Status billing paper delivered
+    const STATUS_BILLING_DELIVERED    = 3;
 
     // Status contract activating
     const STATUS_CONTRACT_ACTIVE    = 0;

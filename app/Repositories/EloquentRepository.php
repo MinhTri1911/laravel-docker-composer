@@ -270,6 +270,19 @@ abstract class EloquentRepository implements RepositoryInterface
     }
 
     /**
+     * Where not null
+     *
+     * @param string column
+     * @return mixed
+     */
+    public function whereNotNull($column)
+    {
+        $this->_model = $this->_model->whereNotNull($column);
+
+        return $this;
+    }
+
+    /**
      * Or where null
      *
      * @param string column
@@ -453,5 +466,22 @@ abstract class EloquentRepository implements RepositoryInterface
         }
 
         return $this->_model->whereIn('id', $ids)->update($data);
+    }
+
+    /**
+     * Multi delelte record
+     * @param array ids
+     * @param string column
+     * @return bool
+     */
+    public function multiDelete($ids, $column = null)
+    {
+        $ids = is_array($ids) ? $ids : [$ids];
+
+        if ($column) {
+            return $this->_model->whereIn($column, $ids)->delete();
+        }
+
+        return $this->_model->whereIn('id', $ids)->delete();
     }
 }

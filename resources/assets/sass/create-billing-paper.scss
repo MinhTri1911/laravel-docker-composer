@@ -87,15 +87,14 @@
     border-bottom: 1px solid #d8e3f3;
     min-width: 880px;
     overflow-y: hidden;
-    overflow-x: scroll;
-    position: relative;
+    overflow-x: auto;
 
     table.table-list-company {
       min-width: 1550px;
 
       .tbl-row-pick {
-        width: 40px;
-      }
+        width: 35px;
+      }/*
       .tbl-row-no {
          width: 3%;
       }
@@ -125,26 +124,21 @@
       }
       .tbl-row-approve {
         width: 7%;
-      }
+      }*/
       .tbl-row-process {
-        width: 7%;
+        width: 100px;
       }
 
       thead {
         width: 100%;
-        display: block;
 
         tr th {
           text-align: center;
           vertical-align: middle;
+          
         }
       }
       tbody {
-        max-height: 675px;
-        overflow-y: scroll;
-        overflow-x: hidden;
-        display:block;
-        position: relative;
 
         tr {
           td {
@@ -192,6 +186,7 @@
               font-size: 25px;
 
               a {
+                margin: 0 3px;
                 &:hover,&:focus {
                   text-decoration: none;
                 }

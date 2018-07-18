@@ -11,7 +11,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Business\BillingPaperBusiness;
-
+use App\Common\Constant;
 use App\Common\RenderPDF as PDFRender;
 
 class BillingPaperController extends Controller
@@ -42,12 +42,14 @@ class BillingPaperController extends Controller
      */
     public function index()
     {
-        $models = null;
 
         $models = $this->_billingPaperBusiness->initScreen();
 
-
-        return view('billing.create-billing-paper', ['model' => $models]);
+        return view('billing.create-billing-paper', [
+            'model' => $models, 
+            'paginator' => $models['resultSearch'],
+            'url' => route('billing.create.billing.paper') . '?page='
+        ]);
     }
 
     /**
@@ -60,5 +62,29 @@ class BillingPaperController extends Controller
     {
         PDFRender::$pdfFileName = "関する基CMAXS";
         return PDFRender::exportPDFWithView('billing.paper-billing-pdf', ['user' => 'QuangPM'], 'stream');
+    }
+
+    /**
+     * Search billing paper
+     * 
+     * @access public
+     * @return view
+     */
+    public function searchBillingPaper(Request $request)
+    {
+
+        $models = $this->_billingPaperBusiness->searchBillingPaper($request->conditionSearch);
+
+        // Render data paginate after search
+        $paginationView = view('billing.component.table.billing-paper', [
+            'model' => $models,
+            'paginator' => $models['resultSearch'],
+            'url' => route('billing.search.billing.paper') . '?page='
+        ])->render();
+
+        return response()->json([
+            'code' => Constant::HTTP_CODE_SUCCESS,
+            'html' => $paginationView,
+        ]);
     }
 }

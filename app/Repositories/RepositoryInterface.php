@@ -210,6 +210,14 @@ interface RepositoryInterface
     public function whereNull($column, $boolean = 'and', $not = false);
 
     /**
+     * Where not null
+     *
+     * @param string column
+     * @return mixed
+     */
+    public function whereNotNull($column);
+
+    /**
      * Or where null
      *
      * @param string column

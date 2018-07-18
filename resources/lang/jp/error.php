@@ -33,4 +33,5 @@ return [
     'e012_start_date_less_than_end_date' => '契約終了日は契約開始日より大きくしてください。',
     'e022_password_not_match' => 'パスワードが間違っています。',
     'e020_greater_than_or_equal' => ':fieldは<現在日付>より大きくしてください。',
+    'e023_have_contract_watting_approve' => "Contract can't delete, some contracts are watting for approve!",
 ];

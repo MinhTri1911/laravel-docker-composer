@@ -121,7 +121,8 @@ class CompanyServiceController extends Controller
         try {
 
             $this->_companyServiceBusiness->deleteServiceInCompany($request->get('service-ids'), $request->get('company-id'));
-            \DB::commit();
+            // \DB::commit();
+            \DB::rollback();
         } catch (\Exception $e) {
             \DB::rollback();
 
@@ -169,7 +170,7 @@ class CompanyServiceController extends Controller
         } catch (\Exception $e) {
             \DB::rollback();
 
-            return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('common.validate_error_exists'));
+            return $this->returnJson(Constant::HTTP_CODE_ERROR_500, [$e->getMessage()]);
         }
 
         return $this->returnJson(Constant::HTTP_CODE_SUCCESS);

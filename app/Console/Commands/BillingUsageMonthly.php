@@ -315,7 +315,7 @@ class BillingUsageMonthly extends Command
                                             INNER JOIN m_company AS SCO ON SCO.id = SSH.company_id
                                             WHERE (SC.status = $contractActive 
                                                        OR (MONTH(SC.pending_at) = $month AND YEAR(SC.pending_at) = $year)
-                                                       OR (MONTH(SC.deleted_at) = $month AND YEAR(SC.deleted_at) = $year))
+                                                       OR (SC.pending_at IS NULL AND MONTH(SC.deleted_at) = $month AND YEAR(SC.deleted_at) = $year))
                                                   AND (SC.approved_flag = $approveDone OR ((SC.approved_flag = $approvePending OR SC.approved_flag = $approveReject) 
                                                                                   AND SC.updated_at IS NOT NULL))
                                             GROUP BY SCO.id, SC.service_id
@@ -327,7 +327,7 @@ class BillingUsageMonthly extends Command
                            AND DI.del_flag = $deleted
                         WHERE (C.status = $contractActive 
                                 OR (MONTH(C.pending_at) = $month AND YEAR(C.pending_at) = $year)
-                                OR (MONTH(C.deleted_at) = $month AND YEAR(C.deleted_at) = $year))
+                                OR (C.pending_at IS NULL AND MONTH(C.deleted_at) = $month AND YEAR(C.deleted_at) = $year))
                             AND (C.approved_flag = $approveDone OR ((C.approved_flag = $approvePending OR C.approved_flag = $approveReject) AND C.updated_at IS NOT NULL))
                             AND C.start_date < '$this->_now'
                         ORDER BY CO.id ASC
@@ -451,11 +451,12 @@ class BillingUsageMonthly extends Command
     {
         try {
             $totalMoneySpot = 0;
-            if (count($listChargeSpot) > 0) {
-                $arrListInsert = [];
+            $arrListInsert = [];
 
-                foreach ($listChargeSpot as $spot) {
-                    // Add value insert
+            foreach ($listChargeSpot as $spot) {
+
+                // Add value insert
+                if ($spot->amount_charge != 0) {
                     $arrListInsert[] = [
                         'history_usage_id'       => $historyUsageId,
                         'charge_type_id'         => Constant::CHARGE_SPOT_ID,
@@ -467,8 +468,11 @@ class BillingUsageMonthly extends Command
                         'money'                  => $spot->amount_charge * $this->_rateCurrency,
                         'created_at'             => date('Y-m-d H:i:s')
                     ];
-                    $totalMoneySpot += $spot->amount_charge;
                 }
+                $totalMoneySpot += $spot->amount_charge;
+            }
+
+            if (count($arrListInsert) > 0) {
                 DB::table('t_detail_history_usage')->insert($arrListInsert);
             }
 
@@ -609,20 +613,22 @@ class BillingUsageMonthly extends Command
     private function _registerMoneyDiscount($historyUsageId, $contract, $moneyDiscount, $discountId)
     {
         try {
-            // Add value insert
-            $arrDataInsert = [
-                'history_usage_id'      => $historyUsageId,
-                'charge_type_id'        => Constant::CHARGE_DISCOUNT_ID,
-                'detail_charge_type_id' => $discountId,
-                'month_usage'           => $this->_monthUsage,
-                'description'           => $contract->service_id,
-                'currency_id'           => $contract->currency_id,
-                'money_billing'         => -$moneyDiscount,
-                'money'                 => -$moneyDiscount * $this->_rateCurrency,
-                'created_at'            => date('Y-m-d H:i:s')
-                ];
-
-            return DB::table('t_detail_history_usage')->insert($arrDataInsert);
+            if ($moneyDiscount != 0) {
+                // Add value insert
+                $arrDataInsert = [
+                    'history_usage_id'      => $historyUsageId,
+                    'charge_type_id'        => Constant::CHARGE_DISCOUNT_ID,
+                    'detail_charge_type_id' => $discountId,
+                    'month_usage'           => $this->_monthUsage,
+                    'description'           => $contract->service_id,
+                    'currency_id'           => $contract->currency_id,
+                    'money_billing'         => -$moneyDiscount,
+                    'money'                 => -$moneyDiscount * $this->_rateCurrency,
+                    'created_at'            => date('Y-m-d H:i:s')
+                    ];
+                return DB::table('t_detail_history_usage')->insert($arrDataInsert);
+            }
+            return 1;
 
         } catch (Exception $ex) {
             $this->_log->err('Register money discount into table t_detail_history_usage fail: ' . $ex->getMessage());

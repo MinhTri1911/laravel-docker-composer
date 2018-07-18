@@ -72,7 +72,7 @@ return [
         'ope_name' => '担当者名',
         'ope_phone' => '電話番号',
         'ope_email' => 'メールアドレス',
-        'ope_total_money' => '請求総額',
+        'total_money' => '請求総額<br>（円）',
         'status' => '状態',
         'status_approve' => '承認',
         'reason' => '却下理由',

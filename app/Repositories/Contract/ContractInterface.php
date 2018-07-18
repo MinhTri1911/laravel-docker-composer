@@ -26,4 +26,12 @@ interface ContractInterface {
      * @return mixed
      */
     public function editContract($data);
+
+    /**
+     * Function get contract id by company id and service id
+     * @param int companyId
+     * @param int serviceId
+     * @return mixed this
+     */
+    public function selectContractIds($companyId, $serviceIds);
 }
