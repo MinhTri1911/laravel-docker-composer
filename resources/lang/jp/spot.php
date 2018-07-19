@@ -17,4 +17,19 @@ return [
     'btn_back' => '戻る',
     'btn_create_spot' => '作成',
     'lbl_ship_spot_id' => 'スッポト費用ID',
+    
+    // Message error
+    'spot_not_exits' => ':valueは存在しません。',
+    
+    'error' => [
+        'E003' => ':itemを入力してください。',
+        'E004' => ':item は:value文字以内で入力してください。',
+        'E005' => ':itemのフォーマットはYYYY/MM/dd形式にしてください。',
+        'E020' => ':itemは:valueより大きくしてください。',
+        'E006' => ':startDateは:startEndより大きくしてください。',
+        'E008' => ':valueは数字で入力してください。',
+        'E009' => ':valueは存在しません。',
+        'service_not_exist' => 'サービスは存在しません。',
+    ],
+    
 ];

@@ -13,6 +13,7 @@ namespace App\Repositories\Company;
 
 use App\Repositories\EloquentRepository;
 use App\Models\MCompany;
+use App\Common\Constant;
 
 class CompanyRepository extends EloquentRepository implements CompanyInterface
 {
@@ -174,5 +175,93 @@ class CompanyRepository extends EloquentRepository implements CompanyInterface
                 'm_ship.id',
             ])
             ->get();
+    }
+
+    /**
+     * Function check exits currency by currency id
+     * @access public
+     * @param int $currencyId
+     * @return boolean
+    */
+    public function checkExits($currencyId) {
+        return $this->where('currency_id', $currencyId)->exists();
+    }
+
+    /** Function get detail company by id
+     * @param int id
+     * @param array columns
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     * @return array
+     */
+    public function getDetailCompanyWithRelation($id, $columns = ['*'])
+    {
+        $company = $this->where('del_flag', Constant::DELETE_FLAG_FALSE)->findOrFail($id, $columns = ['*']);
+
+        $nationOfCompany = $company->nation()
+            ->where('m_nation.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->firstOrFail(['m_nation.name_jp', 'm_nation.name_en']);
+
+        $companyOperation = $company->companyOperation()
+            ->where('del_flag', Constant::DELETE_FLAG_FALSE)
+            ->firstOrFail(['name']);
+
+        $billingMethod = $company->billingMethod()
+            ->where('del_flag', Constant::DELETE_FLAG_FALSE)
+            ->firstOrFail(['m_billing_method.name_jp', 'm_billing_method.name_en', 'm_billing_method.id']);
+
+        $currency = $company->currency()
+            ->where('del_flag', Constant::DELETE_FLAG_FALSE)
+            ->firstOrFail(['code']);
+
+        return [
+            'company' => $company,
+            'nation' => $nationOfCompany,
+            'companyOperation' => $companyOperation,
+            'billingMethod' => $billingMethod,
+            'currency' => $currency,
+        ];
+    }
+
+    /**
+     * Function company currency id
+     * @param int companyId
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     * @return array
+     */
+    public function getCompanyCurrencyId($companyId)
+    {
+        return $this->findOrFail($companyId, ['currency_id'])->toArray();
+    }
+
+    /**
+     * Function update currency company
+     * @param int companyId
+     * @param int currencyId
+     * @return bool|mixed
+     */
+    public function updateCompanyBillingMethod($companyId, $billingMethodId)
+    {
+        // Update billing method when del_flag = 0
+        return $this->where('del_flag', Constant::DELETE_FLAG_FALSE)
+            ->multiUpdate($companyId, ['billing_method_id' => $billingMethodId]);
+    }
+
+    /**
+     * Function check exists contract in company watting for approved
+     * @param int companyId
+     * @return boolean
+     */
+    public function existsContractWattingApprove($companyId)
+    {
+        // Select all contract in company have approved_flag = 2 and updated_at not null
+        return $this->select(['m_contract.id'])
+            ->join('m_ship', function ($join) use ($companyId) {
+                $join->on('m_ship.company_id', 'm_company.id')
+                    ->where('m_ship.company_id', $companyId);
+            })
+            ->join('m_contract', 'm_contract.ship_id', 'm_ship.id')
+            ->where('m_contract.approved_flag', Constant::STATUS_WAITING_APPROVE)
+            ->whereNotNull('m_contract.updated_at')
+            ->exists();
     }
 }

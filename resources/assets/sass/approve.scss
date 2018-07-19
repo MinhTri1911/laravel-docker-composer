@@ -80,5 +80,20 @@
         .lbl-page-text{
             padding-top: 7px;
         }
+        
+    }
+    
+    .block-detail{
+        display: table;
+        width: 100%;
+        .split-col{
+            float: left;
+            width: 50%;
+            padding: 5px;
+            
+            &:nth-child(1){
+                color: $gray;
+            }
+        }
     }
 }

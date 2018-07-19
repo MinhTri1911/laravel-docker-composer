@@ -10,7 +10,16 @@
 
 namespace App\Repositories\TShipSpot;
 
-interface TShipSpotInterface {
+interface TShipSpotInterface 
+{
+    /**
+     * Create
+     * @access public
+     * @param arr $data
+     * @param int $typeInsert
+     * @return mixed Illuminate\Support\Collection
+     */
+    public function createTShipSpot($data, $typeInsert);
 
     /**
      * Create
@@ -19,5 +28,5 @@ interface TShipSpotInterface {
      * @param int $typeInsert
      * @return mixed Illuminate\Support\Collection
      */
-    public function createTShipSpot($data,$typeInsert);
+    public function createTShipSpotByCurrencyId($data);
 }

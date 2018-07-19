@@ -13,13 +13,13 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Repositories\Service\ServiceInterface;
+use App\Common\Common;
 
-class ContractRequest extends FormRequest 
-{
+class ContractRequest extends FormRequest {
+
     private $_serviceInterface;
 
-    public function __construct(ServiceInterface $serviceInterface) 
-    {
+    public function __construct(ServiceInterface $serviceInterface) {
         $this->_serviceInterface = $serviceInterface;
     }
 
@@ -28,8 +28,7 @@ class ContractRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize() 
-    {
+    public function authorize() {
         return true;
     }
 
@@ -38,21 +37,21 @@ class ContractRequest extends FormRequest
      *
      * @return array
      */
-    public function rules() 
-    {
+    public function rules() {
+        $now = date('Y/m/d');
+
         $rules = [
             'idService' => 'required',
-            'dateStart' => 'required|date_format:Y/m/d|after_or_equal:now',
+            'dateStart' => 'required|date_format:Y/m/d|after_or_equal:' . $now,
             'dateEnd' => 'required|date_format:Y/m/d|after:dateStart',
-            'chargeRegister' => 'nullable|numeric|min:0',
-            'chargeCreate' => 'nullable|numeric|min:0',
+            'chargeRegister' => 'nullable|min:0',
+            'chargeCreate' => 'nullable|min:0',
         ];
 
         return $rules;
     }
 
-    public function messages() 
-    {
+    public function messages() {
         return [
             'idService.required' => __('contract.error.E003', ['item' => __('contract.lbl_service')]),
             'dateStart.required' => __('contract.error.E003', ['item' => __('contract.lbl_start')]),
@@ -62,9 +61,7 @@ class ContractRequest extends FormRequest
             'dateEnd.date_format' => __('contract.error.E005', ['item' => __('contract.lbl_end')]),
             'dateEnd.after' => __('contract.error.E006', ['startDate' => __('contract.lbl_start'), 'startEnd' => __('contract.lbl_end')]),
             'chargeRegister.min' => __('contract.error.E020', ['item' => __('contract.lbl_spot_regist'), 'value' => '0']),
-            'chargeRegister.numeric' => __('contract.error.E008', ['value' => __('contract.lbl_spot_regist')]),
             'chargeCreate.min' => __('contract.error.E020', ['item' => __('contract.lbl_spot_data'), 'value' => '0']),
-            'chargeCreate.numeric' => __('contract.error.E008', ['value' => __('contract.lbl_spot_data')]),
         ];
     }
 
@@ -74,12 +71,27 @@ class ContractRequest extends FormRequest
      * @param \Illuminate\Validation\Validator validator
      * @return void
      */
-    public function withValidator($validator) 
-    {
+    public function withValidator($validator) {
         // Validate maxlenght
         $chargeRegister = $this->get('chargeRegister');
         $chargeCreate = $this->get('chargeCreate');
         $remark = $this->get('remark');
+
+        $chargeRegister = Common::foramtNumber($chargeRegister);
+        $chargeCreate = Common::foramtNumber($chargeCreate);
+     
+        // Check format number
+        if (preg_match('/^[0-9]+$/', $chargeRegister) == 0) {
+            $validator->after(function ($validator) {
+                $validator->errors()->add('chargeRegister', __('contract.error.E008', ['value' => __('contract.lbl_spot_regist')]));
+            });
+        }
+        
+        if (preg_match('/^[0-9]+$/', $chargeCreate) == 0) {
+            $validator->after(function ($validator) {
+                $validator->errors()->add('chargeCreate', __('contract.error.E008', ['value' => __('contract.lbl_spot_data')]));
+            });
+        }
 
         if (strlen($chargeRegister) > 22) {
             $validator->after(function ($validator) {
@@ -108,4 +120,5 @@ class ContractRequest extends FormRequest
             });
         }
     }
+
 }

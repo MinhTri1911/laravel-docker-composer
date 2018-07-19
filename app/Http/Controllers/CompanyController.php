@@ -12,9 +12,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Business\CompanyBusiness;
-use App\Business\BillingMethodBusiness;
 use App\Common\Constant;
-use App\Http\Requests\ConfrimPasswordRequest;
+use App\Http\Requests\ConfirmPasswordRequest;
 
 class CompanyController extends Controller
 {
@@ -263,7 +262,7 @@ class CompanyController extends Controller
      * @param Illuminate\Http\Request request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function delete(ConfrimPasswordRequest $request)
+    public function delete(ConfirmPasswordRequest $request)
     {
         if (!$request->ajax()) {
             $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('error.500'));

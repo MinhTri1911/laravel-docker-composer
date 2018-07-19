@@ -48,11 +48,7 @@ class CompanyServiceBusiness
      */
     public function checkServiceId($serviceId, $currencyId)
     {
-        return $this->serviceRepository
-            ->join('t_price_service', 't_price_service.service_id', 'm_service.id')
-            ->where('m_service.id', $serviceId)
-            ->where('t_price_service.currency_id', $currencyId)
-            ->exists();
+        return $this->serviceRepository->checkCurrencyService($serviceId, $currencyId);
     }
 
     /**
@@ -69,22 +65,7 @@ class CompanyServiceBusiness
         $this->shipRepository = app(ShipInterface::class);
 
         // Get all ship is not have service id
-        $allShipNotHaveService = $this->shipRepository->select([
-                'm_ship.id',
-            ])
-            ->join('m_company', function ($join) {
-                $join->on('m_company.id', 'm_ship.company_id');
-                $join->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE);
-            })
-            ->leftJoin('m_contract', function ($join) use ($serviceId) {
-                $join->on('m_contract.ship_id', '=', 'm_ship.id');
-                $join->where('m_contract.service_id', $serviceId);
-            })
-            ->where('m_company.id', $companyId)
-            ->whereNull('m_contract.id')
-            ->where('m_ship.del_flag', Constant::DELETE_FLAG_FALSE)
-            ->get()
-            ->toArray();
+        $allShipNotHaveService = $this->shipRepository->selectShipNotHaveService($companyId, $serviceId, ['m_ship.id']);
 
         $dataInsert = [];
 
@@ -99,6 +80,8 @@ class CompanyServiceBusiness
                 'approved_flag' => Constant::STATUS_WAITING_APPROVE,
                 'currency_id' => $currencyId,
                 'revision_number' => 1,
+                'created_by' => auth()->id(),
+                'created_at' => date('Y-m-d H:i:s'),
             ];
         }
 
@@ -117,23 +100,11 @@ class CompanyServiceBusiness
     {
         $this->contractRepository = app(ContractInterface::class);
 
-        return $this->contractRepository
-            ->select([
-                'm_contract.service_id',
-                'm_service.name_jp',
-                'm_service.name_en',
-            ])
-            ->join('m_service', 'm_service.id', 'm_contract.service_id')
-            ->join('m_ship', 'm_ship.id', 'm_contract.ship_id')
-            ->where('m_ship.company_id', $companyId)
-            ->where('m_ship.del_flag', Constant::DELETE_FLAG_FALSE)
-            ->where(function ($query) {
-                return $query->where('m_contract.status', Constant::STATUS_CONTRACT_ACTIVE)
-                    ->orWhere('m_contract.status', Constant::STATUS_CONTRACT_PENDING);
-            })
-            ->whereNull('m_contract.deleted_at')
-            ->groupBy(['m_contract.service_id'])
-            ->get();
+        return $this->contractRepository->selectServiceNotWattingApproveOfCompany($companyId, [
+            'm_contract.service_id',
+            'm_service.name_jp',
+            'm_service.name_en',
+        ]);
     }
 
     /**
@@ -152,7 +123,7 @@ class CompanyServiceBusiness
         // Check can delete service id
         foreach ($serviceIds as $serviceId) {
             if (!in_array($serviceId, $serviceExists)) {
-                throw new \Exception("Service id is not valid");
+                throw new \Exception("Service id is not valid", 500);
             }
         }
 
@@ -166,43 +137,34 @@ class CompanyServiceBusiness
             $this->contractRepository = app(ContractInterface::class);
         }
 
+        // Select new contract watting approve or new contract have been reject
+        $newContractIdWattingApproved = $this->contractRepository
+            ->getNewContractByCompanyAndService($companyId, $serviceIds);
+
+        if (!empty($newContractIdWattingApproved)) {
+            $this->contractRepository->multiDelete(array_column($newContractIdWattingApproved, 'id'));
+        }
+
         $reasonDelete = [
             'status' => Constant::STATUS_CONTRACT_DELETED,
             'deleted_at' => \Carbon\Carbon::now()->format('Y-m-d'),
+            'updated_at' => \Carbon\Carbon::now()->format('Y-m-d H:i:s'),
+            'updated_by' => auth()->id(),
         ];
 
         /*
-         * Get contract id with ship id and service id
+         * Get contract id with company id and service id
          * The contract was approved or contract have been reject then update else not select
          */
-        $contractIds = $this->contractRepository
-            ->selectContractIdsNotYetDelete($companyId, $serviceIds)
-            ->whereIn('m_contract.approved_flag', [Constant::STATUS_APPROVED, Constant::STATUS_REJECT_APPROVE])
-            ->whereIn('m_contract.status', [Constant::STATUS_CONTRACT_ACTIVE, Constant::STATUS_CONTRACT_PENDING])
-            ->get()
-            ->toArray();
+        $contractIds = $this->contractRepository->getContractActiveOrPendingById($companyId, $serviceIds);
 
         // Check company not have contract then return
         if (!empty($contractIds)) {
             // Update contract watting for approved delete
-            $this->contractRepository
-            ->multiUpdate(array_column($contractIds, 'id'), [
+            $this->contractRepository->multiUpdate(array_column($contractIds, 'id'), [
                 'approved_flag' => Constant::STATUS_WAITING_APPROVE,
                 'reason_reject' => json_encode($reasonDelete),
             ]);
-        }
-
-        // Select new contract watting approve
-        $newContractIdWattingApproved = $this->contractRepository
-            ->selectContractIdsNotYetDelete($companyId, $serviceIds)
-            ->whereIn('m_contract.approved_flag', [Constant::STATUS_WAITING_APPROVE, Constant::STATUS_REJECT_APPROVE])
-            ->where('m_contract.status', Constant::STATUS_CONTRACT_ACTIVE)
-            ->whereNull('m_contract.updated_at')
-            ->get()
-            ->toArray();
-
-        if (!empty($newContractIdWattingApproved)) {
-            $this->contractRepository->multiDelete(array_column($newContractIdWattingApproved, 'id'));
         }
 
         return true;
@@ -217,12 +179,17 @@ class CompanyServiceBusiness
      */
     public function deleteServiceInCompany($serviceIds, $companyId)
     {
-        // Get all service of company
-        $serviceExists = $this->getAllServiceOfCompany($companyId)->toArray();
+        $this->contractRepository = app(ContractInterface::class);
+
+        // Get all service of company for check service id is valid in all service company using
+        $serviceExists = $this->contractRepository->selectServiceOfCompany($companyId, [
+            'm_contract.service_id',
+        ])->toArray();
 
         // Detech get service id to array
         $serviceExists = array_column($serviceExists, 'service_id');
 
+        // Delete service id in company
         return $this->deleteService($serviceIds, $companyId, $serviceExists);
     }
 
@@ -233,8 +200,12 @@ class CompanyServiceBusiness
      */
     public function deleteAllService($companyId)
     {
-        // Get all service of company
-        $serviceExists = $this->getAllServiceOfCompany($companyId)->toArray();
+        $this->contractRepository = app(ContractInterface::class);
+
+        // Get all service of company for check service id is valid in all service company using
+        $serviceExists = $this->contractRepository->selectServiceOfCompany($companyId, [
+            'm_contract.service_id',
+        ])->toArray();
 
         // Detech get service id to array
         $serviceExists = array_column($serviceExists, 'service_id');
@@ -242,6 +213,7 @@ class CompanyServiceBusiness
         // Check can delete contract
         $this->_checkCanDeleteServices($companyId, $serviceExists);
 
+        // Delete all service
         return $this->deleteService($serviceExists, $companyId, $serviceExists);
     }
 
@@ -258,14 +230,12 @@ class CompanyServiceBusiness
             $this->contractRepository = app(ContractInterface::class);
         }
 
+        // Select contract in company have approved_flag = 2 and updated_at not null
         $contractCanNotDelete = $this->contractRepository
-            ->selectContractIds($companyId, $serviceIds)
-            ->where('m_contract.approved_flag', Constant::STATUS_WAITING_APPROVE)
-            ->whereNotNull('m_contract.updated_at')
-            ->exists();
+            ->checkHaveContractWattingApproveById($companyId, $serviceIds);
 
         if ($contractCanNotDelete) {
-            throw new \Exception(trans('error.e023_have_contract_watting_approve'));
+            throw new \Exception(trans('error.w005_have_contract_watting_approve'));
         }
 
         return true;

@@ -60,6 +60,7 @@ class MContract extends Eloquent
         'reason_reject',
         'created_by',
         'updated_by',
+        'updated_at',
         'pending_at',
         'deleted_at',
     ];

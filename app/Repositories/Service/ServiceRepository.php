@@ -101,7 +101,7 @@ class ServiceRepository extends EloquentRepository implements ServiceInterface {
             $query = $query->where('m_service.id', $idServiceSearch);
         }
 
-        // Search by name service 
+        // Search by name service
         if ($nameServiceSearch != null) {
             $query = $query->whereRaw("m_service.name_jp  LIKE ? ", [$nameServiceSearch]);
         }
@@ -122,5 +122,19 @@ class ServiceRepository extends EloquentRepository implements ServiceInterface {
      */
     public function checkExits($idService) {
         return $this->_model->where('id', $idService)->exists();
+    }
+
+    /**
+     * Function check exists currency of service by id
+     * @param int serviceId
+     * @param int currencyId
+     * @return boolean
+     */
+    public function checkCurrencyService($serviceId, $currencyId)
+    {
+        return $this->join('t_price_service', 't_price_service.service_id', 'm_service.id')
+            ->where('m_service.id', $serviceId)
+            ->where('t_price_service.currency_id', $currencyId)
+            ->exists();
     }
 }

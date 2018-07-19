@@ -37,6 +37,7 @@ var company = new function () {
         // Item
         lableNameBillingMethod: '#lbl-billing-method-id',
         labelError: '.alert-danger',
+        labelSuccess: '.alert-success',
         labelShowMessage: '.lbl-error-message',
         lblDeleteService: '.delete-service-label',
 
@@ -67,6 +68,7 @@ var company = new function () {
         // Binding parameter to event click
         $('#btn-setting-billing').bind('click', {companyObject: companyObject}, function (event) {
             let url = event.data.companyObject.url.urlShowPopupSettingBillingMethod
+
             // Set param for check currency id in server
             let param = {
                 'company-id' : company.model.companyId,
@@ -111,7 +113,6 @@ var company = new function () {
             var ps;
             setTimeout(function(){
                 ps = new PerfectScrollbar('.select2-container .select2-results > .select2-results__options', {
-                    // wheelSpeed: 0.1,
                     minScrollbarLength: 90
                 })
             }, 5);
@@ -273,6 +274,7 @@ var company = new function () {
 
                     // setting css for modal display block
                     $(company.model.popupShowAllService).attr('style', 'display: block !important');
+
                     // add perfect scroll for tbody
                     const table = document.querySelector('.tbody-scroll');
                     const ps = new PerfectScrollbar(table, function () {
@@ -330,8 +332,21 @@ var company = new function () {
 
                 $.post(url, param, function (res) {
                     if (res.code === HTTP_SUCCESS) {
+                        // Remove row container service
+                        $('#row-service-id-' + param['service-ids']).remove();
+
                         // Close popup
                         $('#popup-confirm-delete-service').modal('toggle');
+
+                        // Show message success
+                        $(company.model.labelSuccess).find('label').empty();
+                        $(company.model.labelSuccess).find('label').append(res.message);
+                        $(company.model.labelSuccess).css({'display': 'block'});
+
+                        // Setting after 5 seconds is hidden
+                        window.setTimeout(function () {
+                            $(company.model.labelSuccess).css({'display': 'none'});
+                        }, 5000);
                     }
                 })
                 .fail(function (res) {
@@ -350,6 +365,7 @@ var company = new function () {
         $(this.model.btnShowPopupDeleteAllService).bind('click', {companyObject: companyObject}, function (event) {
             let company = event.data.companyObject;
             $(company.model.labelShowMessage).empty();
+
             // Hidden label error
             $(company.model.labelError).css({'display': 'none'});
 
@@ -373,7 +389,18 @@ var company = new function () {
 
                 $.post(url, param, function (res) {
                     if (res.code === HTTP_SUCCESS) {
-                        $(company.model.popupDeleteAllService).modal('toggle');
+                        // Show message success
+                        $(company.model.labelSuccess).find('label').empty();
+                        $(company.model.labelSuccess).find('label').append(res.message);
+                        $(company.model.labelSuccess).css({'display': 'block'});
+
+                        // Setting after 5 seconds do actions
+                        window.setTimeout(function () {
+                            $(company.model.labelSuccess).css({'display': 'none'});
+
+                            // Close popup
+                            $(company.model.popupDeleteAllService).modal('toggle');
+                        }, 5000);
                     } else {
                         //Append error message
                         for (var error in res.message) {
@@ -418,6 +445,7 @@ var company = new function () {
 
             if (('#' + event.target.getAttribute('id')) === company.model.btnAccpetDeleteCompany) {
                 $(company.model.labelShowMessage).empty();
+
                 // Hidden label error
                 $(company.model.labelError).css({'display': 'none'});
 

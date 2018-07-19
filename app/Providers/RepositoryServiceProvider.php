@@ -46,6 +46,10 @@ class RepositoryServiceProvider extends ServiceProvider {
                 'interface' => \App\Repositories\Contract\ContractInterface::class,
                 'repository' => \App\Repositories\Contract\ContractRepository::class
             ],
+            'approve' => [
+                'interface' => \App\Repositories\Approve\ApproveInterface::class,
+                'repository' => \App\Repositories\Approve\ApproveRepository::class
+            ],
             'billingPaper' => [
                 'interface' => \App\Repositories\Billing\BillingPaperInterface::class,
                 'repository' => \App\Repositories\Billing\BillingPaperRepository::class
@@ -53,9 +57,16 @@ class RepositoryServiceProvider extends ServiceProvider {
             'tshipspot' => [
                 'interface' => \App\Repositories\TShipSpot\TShipSpotInterface::class,
                 'repository' => \App\Repositories\TShipSpot\TShipSpotRepository::class
+            ],
+            'mspot' => [
+                'interface' => \App\Repositories\MSpot\MSpotInterface::class,
+                'repository' => \App\Repositories\MSpot\MSpotRepository::class
+            ],
+            'mcurrency' => [
+                'interface' => \App\Repositories\MCurrency\MCurrencyInterface::class,
+                'repository' => \App\Repositories\MCurrency\MCurrencyRepository::class
             ]
         ];
-
         foreach ($paths as $value) {
             $this->app->singleton($value['interface'], $value['repository']);
         }

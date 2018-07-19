@@ -1,6 +1,6 @@
 <div class="modal-close">
-    <button class="btn-close-modal" style="background-image: url('https://mufmgr.schl.jp/images/common/modals_close.png')" data-dismiss="modal"></button>
-    <label>閉じる</label>
+    <button class="btn-close-modal" data-dismiss="modal"></button>
+    <label>{{ trans('common.btn_close_modal') }}</label>
 </div>
 <div class="modal-dialog" id="modal-stack-one">
     <!-- Modal content-->
@@ -9,6 +9,12 @@
             <h2>{{ trans('company.title_popup_delete_service') }}</h2>
         </div>
         <div class="modal-body">
+            <div class="alert alert-success">
+                <div class="block-success">
+                    <i class="fa fa-check" aria-hidden="true"></i>
+                    <label></label>
+                </div>
+            </div>
             <h2>{{ trans('company.lbl_delete_service') }}</h2>
             <div class="modal-setting-billing-content">
                 <div class="setting-content">
@@ -22,7 +28,7 @@
                         </thead>
                         <tbody class="tbody-scroll">
                             @foreach ($services as $service)
-                                <tr>
+                                <tr id="row-service-id-{{ $service->service_id }}">
                                     <td class="col-xs-1">
                                         {{ $service->service_id }}
                                     </td>

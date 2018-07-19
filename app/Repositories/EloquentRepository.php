@@ -462,10 +462,14 @@ abstract class EloquentRepository implements RepositoryInterface
         $ids = is_array($ids) ? $ids : [$ids];
 
         if ($column) {
-            return $this->_model->whereIn($column, $ids)->update($data);
+            $this->_model->whereIn($column, $ids)->update($data);
+        } else {
+            $this->_model->whereIn('id', $ids)->update($data);
         }
 
-        return $this->_model->whereIn('id', $ids)->update($data);
+        $this->setModel();
+
+        return true;
     }
 
     /**
@@ -479,9 +483,13 @@ abstract class EloquentRepository implements RepositoryInterface
         $ids = is_array($ids) ? $ids : [$ids];
 
         if ($column) {
-            return $this->_model->whereIn($column, $ids)->delete();
+            $this->_model->whereIn($column, $ids)->delete();
+        } else {
+            $this->_model->whereIn('id', $ids)->delete();
         }
 
-        return $this->_model->whereIn('id', $ids)->delete();
+        $this->setModel();
+
+        return true;
     }
 }

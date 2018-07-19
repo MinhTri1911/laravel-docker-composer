@@ -6,6 +6,9 @@
  * and open the template in the editor.
  */
 
-Route::group(['middleware' => 'auth'], function() {
-    Route::resource('/spot', 'SpotController', ['only' => ['create', 'edit']]);
+
+Route::group(['middleware' => 'auth', 'prefix' => 'spot', 'as' => 'spot'], function() {
+   Route::get('/{idShip}/create', 'SpotController@initCreate')->name('.init.create') ;
+   Route::post('/search/amount', 'SpotController@searchAmount')->name('.search.amount') ;
+   Route::post('/create', 'SpotController@create')->name('.create') ;
 });

@@ -75,7 +75,7 @@ interface ShipInterface
      * @return mixed
      */
     public function getListShip($companyId);
-    
+
     /**
      * Function search list ship
      * @access public
@@ -85,7 +85,7 @@ interface ShipInterface
      * @return mixed
     */
     public function searchListShip($companyId, $shipId , $shipName);
-    
+
      /**
      * Get detail ship by id
      *
@@ -94,4 +94,29 @@ interface ShipInterface
      * @return mixed Illuminate\Support\Collection
      */
     public function getIdShip($idShip = null);
+
+    /**
+     * Function get ship by company id
+     * @param int companyId
+     * @param array columns
+     * @return array
+     */
+    public function getShipByCompanyId($companyId, $columns);
+
+    /**
+     * Function delete ships by ids
+     * @param array ids
+     * @param array data
+     * @return boolean
+     */
+    public function updateDeleteShipWattingApprove($ids, $data);
+
+    /**
+     * Function select ship not have service by company id and service id
+     * @param int companyId
+     * @param int serviceId
+     * @param array columnsSelect
+     * @return array
+     */
+    public function selectShipNotHaveService($companyId, $serviceId, $columnsSelect = ['*']);
 }

@@ -469,7 +469,7 @@
         </div>
     </div>
     <!-- begin modal -->
-    <div class="modal modal-protector fade" id="modal-protector" tabindex="-1" role="dialog" style="display: none;"></div>
+    <div class="modal modal-protector fade" id="modal-protector" tabindex="-1" role="dialog"></div>
     <!-- end modal -->
 
     <!-- begin modal stack -->
@@ -492,8 +492,8 @@
     <!-- begin popup confirm delete all contract -->
     <div class="modal modal-protector confirm" id="popup-delete-all-service">
         <div class="modal-close">
-            <button class="btn-close-modal" style="background-image: url('https://mufmgr.schl.jp/images/common/modals_close.png')" data-dismiss="modal"></button>
-            <label>閉じる</label>
+            <button class="btn-close-modal" data-dismiss="modal"></button>
+            <label>{{ trans('common.btn_close_modal') }}</label>
         </div>
         <div class="modal-dialog">
             <!-- Modal content-->
@@ -512,6 +512,18 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="setting-content">
+                        <div class="col-md-12">
+                            <div class="alert alert-success">
+                                <div class="block-success">
+                                    <i class="fa fa-check" aria-hidden="true"></i>
+                                    <label></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="modal-setting-billing-content">
                         <h2 class="block-center">{{ trans('company.lbl_confirm_delete_contract') }}</h2>
                     </div>
@@ -537,8 +549,8 @@
     <!-- Begin delete company -->
     <div class="modal modal-protector fade" id="modal-confirm" tabindex="-1" role="dialog">
         <div class="modal-close">
-            <button class="btn-close-modal" style="background-image: url({{url('images/common/modals_close.png')}})" data-dismiss="modal"></button>
-            <label>閉じる</label>
+            <button class="btn-close-modal" data-dismiss="modal"></button>
+            <label>{{ trans('common.btn_close_modal') }}</label>
         </div>
         <div class="modal-dialog">
             <!-- Modal content-->
@@ -574,8 +586,8 @@
     </div>
     <div class="modal modal-protector fade" id="modal-auth" tabindex="-1" role="dialog">
         <div class="modal-close">
-            <button class="btn-close-modal" style="background-image: url({{url('images/common/modals_close.png')}})" data-dismiss="modal"></button>
-            <label>閉じる</label>
+            <button class="btn-close-modal" data-dismiss="modal"></button>
+            <label>{{ trans('common.btn_close_modal') }}</label>
         </div>
         <div class="modal-dialog">
             <!-- Modal content-->

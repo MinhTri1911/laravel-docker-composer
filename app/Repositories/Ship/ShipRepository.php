@@ -34,13 +34,19 @@ class ShipRepository extends EloquentRepository implements ShipInterface
      * @param int $idShip
      * @return mixed Illuminate\Support\Collection
      */
-    public function getShip($idShip = null)
+    public function getShip($idShip = null, $param = [])
     {
         // Check exists param id ship
         $queryShip = DB::table('m_ship')
                 ->join('m_company', function($join) {
-                    $join->on('m_ship.company_id', '=', 'm_company.id')
-                         ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE);
+                    if (isset($param['company']) && count($param['company']) > 0) {
+                        $join->on('m_ship.company_id', '=', 'm_company.id')
+                            ->whereIn('m_company.id', $param['company'])
+                            ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE);
+                    } else {
+                        $join->on('m_ship.company_id', '=', 'm_company.id')
+                            ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE);
+                    }
                 })
                 ->join('m_nation', function($join) {
                     $join->on('m_ship.nation_id', '=', 'm_nation.id')
@@ -126,8 +132,8 @@ class ShipRepository extends EloquentRepository implements ShipInterface
                     "m_service.name_jp as service_name",
                 ])
                 ->whereIn('approved_flag', [
-                    Constant::STATUS_APPROVED, 
-                    Constant::STATUS_WAITING_APPROVE, 
+                    Constant::STATUS_APPROVED,
+                    Constant::STATUS_WAITING_APPROVE,
                     Constant::STATUS_REJECT_APPROVE]);
 
         // Check if get all contract inside all ship
@@ -475,5 +481,59 @@ class ShipRepository extends EloquentRepository implements ShipInterface
                 ->where('m_ship.del_flag', 0)
                 ->where('m_ship.id', $idShip)
                 ->first();
+    }
+
+    /**
+     * Function get ship by company id
+     * @param int companyId
+     * @param array columns
+     * @return array
+     */
+    public function getShipByCompanyId($companyId, $columns)
+    {
+        $columns = is_array($columns) ? $columns : [$columns];
+
+        return $this->select($columns)
+            ->where('company_id', $companyId)
+            ->get()
+            ->toArray();
+    }
+
+    /**
+     * Function delete ships by ids
+     * @param array ids
+     * @param array data
+     * @return boolean
+     */
+    public function updateDeleteShipWattingApprove($ids, $data)
+    {
+        $data = is_array($data) ? $data : [$data];
+
+        return $this->multiUpdate($ids, $data);
+    }
+
+    /**
+     * Function select ship not have service by company id and service id
+     * @param int companyId
+     * @param int serviceId
+     * @param array columnsSelect
+     * @return array
+     */
+    public function selectShipNotHaveService($companyId, $serviceId, $columnsSelect = ['*'])
+    {
+        return $this->select($columnsSelect)
+            ->join('m_company', function ($join) {
+                $join->on('m_company.id', 'm_ship.company_id');
+                $join->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE);
+            })
+            ->leftJoin('m_contract', function ($join) use ($serviceId) {
+                $join->on('m_contract.ship_id', '=', 'm_ship.id');
+                $join->where('m_contract.service_id', $serviceId);
+            })
+            ->where('m_company.id', $companyId)
+            ->whereNull('m_contract.id')
+            ->where('m_ship.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->get()
+            ->toArray();
     }
 }

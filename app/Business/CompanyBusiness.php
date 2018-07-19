@@ -195,44 +195,30 @@ class CompanyBusiness
      * Function get detail company by id
      * @param int id
      * @param array colums
-     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      * @return array
      */
     public function getDetailCompany($id, $columns = ['*'])
     {
-        $company = $this->companyRepository->where('del_flag', Constant::DELETE_FLAG_FALSE)->findOrFail($id, $columns = ['*']);
-        $nationOfCompany = $company->nation()
-            ->where('m_nation.del_flag', Constant::DELETE_FLAG_FALSE)
-            ->firstOrFail(['m_nation.name_jp', 'm_nation.name_en']);
-        $companyOperation = $company->companyOperation()
-            ->where('del_flag', Constant::DELETE_FLAG_FALSE)
-            ->firstOrFail(['name']);
-        $billingMethod = $company->billingMethod()
-            ->where('del_flag', Constant::DELETE_FLAG_FALSE)
-            ->firstOrFail(['m_billing_method.name_jp', 'm_billing_method.name_en', 'm_billing_method.id']);
-        $currency = $company->currency()
-            ->where('del_flag', Constant::DELETE_FLAG_FALSE)
-            ->firstOrFail(['code']);
+        $company = $this->companyRepository->getDetailCompanyWithRelation($id, $columns = ['*']);
 
         return [
-            'company' => $company,
-            'nation' => $nationOfCompany,
-            'companyOperation' => $companyOperation,
-            'billingMethod' => $billingMethod,
-            'currency' => $currency,
+            'company' => $company['company'],
+            'nation' => $company['nation'],
+            'companyOperation' => $company['companyOperation'],
+            'billingMethod' => $company['billingMethod'],
+            'currency' => $company['currency'],
         ];
     }
 
     /**
      * Function get currency of company
      * @param int companyId
-     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      * @return int
      */
     public function getCompanyCurrencyId($companyId)
     {
         // Find or fail company get currency id
-        $company = $this->companyRepository->findOrFail($companyId, ['currency_id'])->toArray();
+        $company = $this->companyRepository->getCompanyCurrencyId($companyId);
 
         return $company['currency_id'];
     }
@@ -246,9 +232,7 @@ class CompanyBusiness
     public function updateBillingMethod($companyId, $billingMethodId)
     {
         // Update billing method when del_flag = 0
-        return $this->companyRepository
-            ->where('del_flag', Constant::DELETE_FLAG_FALSE)
-            ->multiUpdate($companyId, ['billing_method_id' => $billingMethodId]);
+        return $this->companyRepository->updateCompanyBillingMethod($companyId, $billingMethodId);
     }
 
     /**
@@ -265,44 +249,53 @@ class CompanyBusiness
         $this->shipRepository = app(ShipInterface::class);
 
         // Get ship ids
-        $ships = $this->shipRepository
-            ->select(['id'])
-            ->where('company_id', $companyId)
-            ->get()
-            ->toArray();
+        $ships = $this->shipRepository->getShipByCompanyId($companyId, ['id']);
+
+        // Setting update time
+        $updatedAt = \Carbon\Carbon::now()->format('Y-m-d H:i:s');
 
         // Update ship del_flag = 1
-        $this->shipRepository->multiUpdate(array_column($ships, 'id'), ['del_flag' => Constant::DELETE_FLAG_TRUE]);
+        $this->shipRepository->updateDeleteShipWattingApprove(array_column($ships, 'id'), [
+            'del_flag' => Constant::DELETE_FLAG_TRUE,
+            'updated_at' => $updatedAt,
+            'updated_by' => auth()->id(),
+        ]);
 
         // Get intantce contract repository from container
         $this->contractRepository = app(ContractInterface::class);
 
-        // Update contract when delete company
-        $this->contractRepository->multiUpdate(array_column($ships, 'id'), [
-            'deleted_at' => \Carbon\Carbon::now()->format('Y-m-d'),
-            'approved_flag' => Constant::STATUS_APPROVED,
-            'reason_reject' => null,
-        ], 'ship_id');
+        // Delete new contract watting approved or new contract have been reject
+        $this->contractRepository->deleteContract(array_column($ships, 'id'), 'ship_id');
 
-        return $this->companyRepository->update($companyId, ['del_flag' => Constant::DELETE_FLAG_TRUE]);
+        // Update contract active or pending with approved_flag = 0 or 3 when delete company
+        $this->contractRepository->updateDeleteContractWattingApprove(array_column($ships, 'id'), [
+                'deleted_at' => \Carbon\Carbon::now()->format('Y-m-d'),
+                'approved_flag' => Constant::STATUS_APPROVED,
+                'reason_reject' => null,
+                'updated_at' => $updatedAt,
+                'updated_by' => auth()->id(),
+            ], 'ship_id');
+
+        return $this->companyRepository->update($companyId, [
+            'del_flag' => Constant::DELETE_FLAG_TRUE,
+            'updated_at' => $updatedAt,
+            'updated_by' => auth()->id(),
+        ]);
     }
 
+    /**
+     * Function check can delete company
+     * @param int companyId
+     * @throws Exception
+     * @return boolean
+     */
     private function _checkCanDeleteCompany($companyId)
     {
-        // Select all contract in company have approved_flag = 2
-        $contractWattingApproved = $this->companyRepository
-            ->select(['m_contract.id'])
-            ->join('m_ship', function ($join) use ($companyId) {
-                $join->on('m_ship.company_id', 'm_company.id')
-                    ->where('m_ship.company_id', $companyId);
-            })
-            ->join('m_contract', 'm_contract.ship_id', 'm_ship.id')
-            ->where('m_contract.approved_flag', Constant::STATUS_WAITING_APPROVE)
-            ->whereNotNull('m_contract.updated_at')
-            ->exists();
+        // Select all contract in company have approved_flag = 2 and updated_at not null
+        $contractWattingApproved = $this->companyRepository->existsContractWattingApprove($companyId);
 
         if ($contractWattingApproved) {
-            throw new \Exception(trans('error.e023_have_contract_watting_approve'));
+            throw new \Exception(trans('error.w005_have_contract_watting_approve'));
         }
 
         return true;

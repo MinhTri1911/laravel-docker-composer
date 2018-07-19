@@ -31,6 +31,7 @@ class Constant
       0 =>  "有効",
       1 =>  "中断",
       2 =>  "完了",
+      3 =>  "完了"
     ];
 
     // Arrray billing paper status
@@ -97,8 +98,52 @@ class Constant
 
     // Format datetime
     const FORMAT_DATE_TIME = [
-        'd' => 'Y/m/d',
-        'dt' => 'Y/m/d H:i:s',
-        't' => 'H:i:s'
+        'd'     => 'Y/m/d',
+        'dt'    => 'Y/m/d H:i:s',
+        't'     => 'H:i:s'
+    ];
+    
+    // Config type approve are contract, spot, billing
+    const TYPE_APPROVE = ['契約', 'スポット費用', '請求書'];
+    
+    // Config type operation
+    const TYPE_OPE = [
+        'create'    => 'CREATE',
+        'edit'      => 'EDIT',
+        'delete'    => 'DELETE',
+        'reactive'    => 'REACTIVE',
+        'restore'    => 'RESTORE'
+    ];
+    
+    const ID_SCREEN = [
+        // FCM0001
+        'SCM0001' => 'SCM0001',
+        'SCM0002' => 'SCM0002',
+        'SCM0003' => 'SCM0003',
+        // FMA0001
+        'SMA0001' => 'SMA0001',
+        'SMA0002' => 'SMA0002',
+        'SMA0003' => 'SMA0003',
+        // FMB0001
+        'SMB0001' => 'SMB0001',
+        'SMB0002' => 'SMB0002',
+        'SMB0003' => 'SMB0003',
+        'SMB0004' => 'SMB0004',
+        'SMB0005' => 'SMB0005',
+        'SMB0006' => 'SMB0006',
+        'SMB0007' => 'SMB0007',
+        'SMB0008' => 'SMB0008',
+        'SMB0009' => 'SMB0009',
+        // FMC0001
+        'SMC0001' => 'SMC0001',
+        'SMC0002' => 'SMC0002',
+        'SMC0003' => 'SMC0003',
+        'SMC0004' => 'SMC0004',
+        // FBA0001
+        'SBA0001' => 'SBA0001',
+        'SBA0002' => 'SBA0002',
+        'SBA0003' => 'SBA0003',
+        'SBA0004' => 'SBA0004',
+        'BBA0005' => 'BBA0005',
     ];
 }

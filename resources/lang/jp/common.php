@@ -5,7 +5,7 @@ return [
         'validate_error_required'               => 'を入力してください。',
         'validate_input_required'               => 'を入力してください。',
         'validate_error_exists_user_id'         => 'が存在しません。',
-        
+
         'validate_errors_user_id_not_existed'   => '存在しない:columnが入力されています。',
         'validate_errors_user_id_must_be_blank' => '作成時に:columnは入力できません。',
         'validate_errors_role_id_not_existed'   => '存在しない:columnが入力されています。',
@@ -15,7 +15,7 @@ return [
         'validate_errors_cannot_assign_group'   => '設定できない:columnが入力されています。',
         'validate_errors_value_is_valid'        => ':columnに不正な値が入力されています。',
         // 'validate_errors_change_type'           => ':columnに不正な値が入力されています。',
-        
+
         'validate_error_length_between'         => 'は:min文字以上:max文字以内で入力してください。',
         'validate_error_between'                => 'は:min文字以上:max文字以内で入力してください。',
         'validate_error_length_min'             => 'は:min文字以上。',
@@ -57,7 +57,7 @@ return [
         'lbl_confirm'                           => '（確認）'
     ],
     'page_not_found' => '画面が存在しません。',
-    
+
     'btn_confirm' => '確認',
     'btn_create' => '作成',
     'btn_cancel' => 'キャンセル',
@@ -65,4 +65,10 @@ return [
     'btn_edit' => '編集',
     'btn_update' => '更新',
     'btn_delete' => '削除',
+    'btn_close_modal' => '閉じる',
+
+    'messages' => [
+        'm038_delete_watting_approve' => 'Thao tác sẽ được xác nhận ở màn hình approve',
+        'm039_action_was_executed' => 'Thao tác đã được thực hiện',
+    ],
 ];

@@ -163,7 +163,10 @@ var searchService = new function () {
             var chargeRegister = $('input[name=chargeRegister' + id + ']').val();
             var chargeCreate = $('input[name=chargeCreate' + id + ']').val();
             var nameJP = $('input[name=nameJP' + id + ']').val();
-
+            
+            chargeRegister = Events.separateCommaValue(chargeRegister)+".00";
+            chargeCreate = Events.separateCommaValue(chargeCreate)+".00";
+            
             $(searchService.models.chargeRegister).val(chargeRegister);
             $(searchService.models.chargeCreate).val(chargeCreate);
             $(searchService.models.inputIdService).val(nameJP);

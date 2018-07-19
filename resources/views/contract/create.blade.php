@@ -63,7 +63,7 @@
                     </div>
                     <div class="item-value">
                         <div class="input-group">
-                            {!! Form::text('idService', old('idService'), ['class' => 'form-control', 'placeholder' => __('contract.lbl_service'),'readonly'=>'readonly']) !!}
+                            {!! Form::text('idService', old('idService'), ['class' => 'form-control', 'placeholder' => __('contract.lbl_service'),'readonly'=>'readonly','tabindex' => '1']) !!}
                             <div class="input-group-addon show-modal-service"><i class="fa fa-search"></i></div>
                         </div>
                     </div>
@@ -75,7 +75,7 @@
                     </div>
                     <div class="item-value">
                         <div class="group-datepicker">
-                            {!! Form::text('dateStart', old('dateStart'), ['class' => 'form-control custom-datepicker', 'placeholder' => 'YYYY/MM/dd']) !!}
+                            {!! Form::text('dateStart', old('dateStart'), ['class' => 'form-control custom-datepicker', 'placeholder' => 'YYYY/MM/dd','tabindex' => '2']) !!}
                             <span class="icon-picker"><i class="fa fa-calendar"></i></span>
                         </div>
                     </div>
@@ -87,7 +87,7 @@
                     </div>
                     <div class="item-value">
                         <div class="group-datepicker">
-                            {!! Form::text('dateEnd', old('dateEnd'), ['class' => 'form-control custom-datepicker', 'placeholder' => 'YYYY/MM/dd']) !!}
+                            {!! Form::text('dateEnd', old('dateEnd'), ['class' => 'form-control custom-datepicker', 'placeholder' => 'YYYY/MM/dd','tabindex' => '3']) !!}
                             <span class="icon-picker"><i class="fa fa-calendar"></i></span>
                         </div>
                     </div>
@@ -104,6 +104,7 @@
                                 'tabindex' => 15,
                                 'rows' => '3',
                                 'style' => 'width: 20%;z-index: 1;',
+                                'tabindex' => '4'
                             ])
                             }}
                         </div>
@@ -128,18 +129,18 @@
                         <tr>
                             <td>1</td>
                             <td>{{__('contract.lbl_spot_regist')}}</td>
-                            <td class="{{ $errors->has('chargeRegister') ? ' has-error' : '' }}">{!! Form::text('chargeRegister', old('chargeRegister'), ['class' => 'form-control', 'placeholder' => "初期登録費"]) !!}</td>
+                            <td class="{{ $errors->has('chargeRegister') ? ' has-error' : '' }}">{!! Form::text('chargeRegister', old('chargeRegister'), ['tabindex' => '5','class' => 'form-control', 'placeholder' => "初期登録費"]) !!}</td>
                         </tr>
                         <tr>
                             <td>2</td>
                             <td>{{__('contract.lbl_spot_data')}}</td>
-                            <td class="{{ $errors->has('chargeCreate') ? ' has-error' : '' }}">{!! Form::text('chargeCreate', old('chargeCreate'), ['class' => 'form-control', 'placeholder' => "データ作成費"]) !!}</td>
+                            <td class="{{ $errors->has('chargeCreate') ? ' has-error' : '' }}">{!! Form::text('chargeCreate', old('chargeCreate'), ['tabindex' => '6','class' => 'form-control', 'placeholder' => "データ作成費"]) !!}</td>
                         </tr>
                     </tbody>
                 </table>
                 <div class="block-handle align-right">
-                    <div href="#" class="btn btn-blue-light btn-w150 pull-left">{{__('contract.btn_back')}}</div>
-                    <button type="submit" class="btn btn-blue-dark btn-w190">{{__('contract.btn_create')}}</button>
+                    <a href="{{ route('ship.contract.detail', $ship->id) }}"><div class="btn btn-blue-light btn-w150 pull-left" tabindex=7 >{{__('contract.btn_back')}}</div></a>
+                    <button type="submit" class="btn btn-blue-dark btn-w190" tabindex=8>{{__('contract.btn_create')}}</button>
                 </div>
             </div>
         </div>
@@ -166,6 +167,7 @@
 <script type="text/javascript" src="{{ asset('js/contract.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/search-service-master.js') }}"></script>
 <script>
+
 $(document).on("click", ".show-modal-service", function () {
     $("#modal-service").modal("show")
 });

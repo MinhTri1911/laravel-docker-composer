@@ -38,12 +38,43 @@ interface CompanyInterface
      */
     public function getDetailByGroup($id, $type = 0);
 
-    // /**
-    //  * Function get detail company by id
-    //  * @param int id
-    //  * @param array colums
-    //  * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
-    //  * @return \App\Models\MCompany
-    //  */
-    // public function getCompany($id, $columns = ['*']);
+     /**
+     * Function check exits currency by currency id
+     * @access public
+     * @param int $currencyId
+     * @return boolean
+    */
+    public function checkExits($currencyId);
+
+    /**
+     * Function get detail company by id
+     * @param int id
+     * @param array columns
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     * @return array
+     */
+    public function getDetailCompanyWithRelation($id, $columns = ['*']);
+
+    /**
+     * Function company currency id
+     * @param int companyId
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     * @return array
+     */
+    public function getCompanyCurrencyId($companyId);
+
+    /**
+     * Function update currency company
+     * @param int companyId
+     * @param int currencyId
+     * @return bool|mixed
+     */
+    public function updateCompanyBillingMethod($companyId, $billingMethodId);
+
+    /**
+     * Function check exists contract in company watting for approved
+     * @param int companyId
+     * @return boolean
+     */
+    public function existsContractWattingApprove($companyId);
 }

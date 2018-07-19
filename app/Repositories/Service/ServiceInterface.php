@@ -11,7 +11,7 @@
 
 namespace App\Repositories\Service;
 
-interface ServiceInterface 
+interface ServiceInterface
 {
     /**
      * Function get list service by currencyId
@@ -20,8 +20,8 @@ interface ServiceInterface
      * @return mixed
     */
     public function getListService($currencyId);
-    
-    
+
+
     /**
      * Function get list service by currencyId and ShipId
      * @access public
@@ -30,7 +30,7 @@ interface ServiceInterface
      * @return mixed
     */
     public function getListServiceByShipId($currencyId, $shipId);
-    
+
     /**
      * Function search list service
      * @access public
@@ -41,7 +41,7 @@ interface ServiceInterface
      * @return mixed
     */
     public function searchListService($currencyId, $shipId , $idServiceSearch , $nameServiceSearch);
-    
+
     /**
      * Function check exits service by idService
      * @access public
@@ -49,5 +49,13 @@ interface ServiceInterface
      * @return boolen
     */
     public function checkExits($idService);
-    
+
+    /**
+     * Function check exists currency of service by id
+     * @param int serviceId
+     * @param int currencyId
+     * @return boolean
+     */
+    public function checkCurrencyService($serviceId, $currencyId);
+
 }

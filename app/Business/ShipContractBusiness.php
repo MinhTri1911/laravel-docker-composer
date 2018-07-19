@@ -393,7 +393,7 @@ class ShipContractBusiness
         $dataUpdate = [
           'reason_reject' => json_encode(
                   [
-                      'status' => Constant::STATUS_CONTRACT_EXPIRED, 
+                      'status' => Constant::STATUS_CONTRACT_DELETED, 
                       'updated_by' => auth()->user()->id,
                       'deleted_at' => date('Y-m-d H:i:s')
                   ]),
@@ -538,7 +538,7 @@ class ShipContractBusiness
             if (!is_null($spot))
                 return [
                     'status' => true, 
-                    'reason' => $contract->spot_reason_reject];
+                    'reason' => $spot->spot_reason_reject];
         }
     }
     
@@ -669,7 +669,7 @@ class ShipContractBusiness
                 ->where('m_contract.ship_id', $ship->ship_id)
                 ->whereIn('m_contract.id', $dataIdActive)
                 ->update([
-                    'm_contract.status'         => Constant::STATUS_CONTRACT_EXPIRED,
+                    'm_contract.status'         => Constant::STATUS_CONTRACT_DELETED,
                     'm_contract.deleted_at'       => date('Y-m-d H:i:s'),
                     'm_contract.approved_flag'  => Constant::STATUS_APPROVED
                 ]);
@@ -680,7 +680,7 @@ class ShipContractBusiness
                 ->where('m_contract.ship_id', $ship->ship_id)
                 ->whereIn('m_contract.id', $dataIdPending)
                 ->update([
-                    'm_contract.status'         => Constant::STATUS_CONTRACT_EXPIRED,
+                    'm_contract.status'         => Constant::STATUS_CONTRACT_DELETED,
                     'm_contract.deleted_at'       => date('Y-m-d H:i:s'),
                     'm_contract.approved_flag'  => Constant::STATUS_APPROVED
                 ]);

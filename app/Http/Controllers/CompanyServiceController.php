@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 use App\Business\CompanyServiceBusiness;
 use App\Business\CompanyBusiness;
 use App\Common\Constant;
-use Validator;
 use App\Http\Requests\CompanyServiceRequest;
 
 class CompanyServiceController extends Controller
@@ -121,15 +120,14 @@ class CompanyServiceController extends Controller
         try {
 
             $this->_companyServiceBusiness->deleteServiceInCompany($request->get('service-ids'), $request->get('company-id'));
-            // \DB::commit();
-            \DB::rollback();
+            \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
 
             return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('common.validate_error_exists'));
         }
 
-        return $this->returnJson(Constant::HTTP_CODE_SUCCESS);
+        return $this->returnJson(Constant::HTTP_CODE_SUCCESS, trans('common.messages.m039_action_was_executed'));
     }
 
     /**
@@ -173,6 +171,6 @@ class CompanyServiceController extends Controller
             return $this->returnJson(Constant::HTTP_CODE_ERROR_500, [$e->getMessage()]);
         }
 
-        return $this->returnJson(Constant::HTTP_CODE_SUCCESS);
+        return $this->returnJson(Constant::HTTP_CODE_SUCCESS, trans('common.messages.m039_action_was_executed'));
     }
 }
