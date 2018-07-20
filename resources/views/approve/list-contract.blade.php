@@ -13,19 +13,19 @@
     <table class="table table-blue table-contract">
         <thead>
             <tr>
-                <th class="custom-checkbox">
+                <th class="custom-checkbox" style="width:5%;">
                     @if(count($datas) > 0)
                     <input class="hidden" id="chk_ct_full" name="n" type="checkbox">
                     <label for="chk_ct_full"></label>
                     @endif
                 </th>
-                <th>{{__('approve.lbl_contract_id')}}</th>
-                <th>{{__('approve.lbl_contract_ship')}}</th>
-                <th>{{__('approve.lbl_contract_service')}}</th>
-                <th>{{__('approve.lbl_contract_status')}}</th>
-                <th>{{__('approve.lbl_contract_ope')}}</th>
-                <th>{{__('approve.lbl_date_create')}}</th>
-                <th>{{__('approve.lbl_creator')}}</th>
+                <th style="width:7%;">{{__('approve.lbl_contract_id')}}</th>
+                <th style="width:20%;">{{__('approve.lbl_contract_ship')}}</th>
+                <th style="width:20%;">{{__('approve.lbl_contract_service')}}</th>
+                <th style="width:7%;">{{__('approve.lbl_contract_status')}}</th>
+                <th style="width:7%;">{{__('approve.lbl_contract_ope')}}</th>
+                <th style="width:16%;">{{__('approve.lbl_date_create')}}</th>
+                <th style="width:10%;">{{__('approve.lbl_creator')}}</th>
                 <th></th>
             </tr>
         </thead>
@@ -43,7 +43,7 @@
                         <td>{{$contract->data_update->contract_service_name}}</td>
                         <td>{{\App\Common\Constant::CONTRACT_O[$contract->data_update->contract_status]}}</td>
                         <td>{{$contract->request_operation??null}}</td>
-                        <td>{{$contract->data_update->contract_created_at}}</td>
+                        <td>{{\Carbon\Carbon::parse($contract->data_update->contract_date_request)->format('Y/m/d H:i:s')}}</td>
                         <td>{{$contract->data_update->contract_user_name}}</td>
                         <td><div class="btn btn-blue-dark btn-custom-sm btn-detail" data-type="0" data-item="{{$contract->contract_id}}">{{__('approve.btn_detail')}}</div></td>
                     </tr>
@@ -58,7 +58,7 @@
                             <td>{{$contract->contract_service_name}}</td>
                             <td>{{\App\Common\Constant::CONTRACT_O[$contract->contract_status]}}</td>
                             <td>{{$contract->request_operation??null}}</td>
-                            <td>{{$contract->contract_created_at}}</td>
+                            <td>{{\Carbon\Carbon::parse($contract->contract_date_request)->format('Y/m/d H:i:s')}}</td>
                             <td>{{$contract->contract_user_name}}</td>
                             <td><div class="btn btn-blue-dark btn-custom-sm btn-detail" data-type="0" data-item="{{$contract->contract_id}}">{{__('approve.btn_detail')}}</div></td>
                         </tr>

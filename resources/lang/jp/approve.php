@@ -6,7 +6,9 @@ return [
     'lbl_creator' => '起案者',
     'lbl_type' => '承認種類',
     'lbl_status' => '承認状況',
-
+    'lbl_old_content' => '現在の内容',
+    'lbl_new_content' => '更新する内容',
+    
     'header_contract' => '契約',
     'header_pop_contract_detail' => '契約詳細ポップアップ',
     'lbl_contract_id' => '契約ID',
@@ -20,12 +22,13 @@ return [
     'lbl_contract_start' => '契約開発年月日',
     'lbl_contract_end' => '契約終了年月日',
     'lbl_contract_note' => '補足情報',
-
+    
     'header_spot' => 'スポット費用',
     'header_pop_spot_detail' => 'スポット費用詳細ポップアップ',
     'lbl_spot_id' => 'スポット費ID',
     'lbl_spot_ship' => '船舶',
     'lbl_spot_type' => '課金種別名',
+    'lbl_spot_monnth_usage' => '発生年月',
     'lbl_spot_ope' => '操作',
     'lbl_spot_date' => '操作日',
     'lbl_spot_company' => '会社名',
@@ -34,9 +37,9 @@ return [
     'lbl_spot_cost_edit' => '更新課金額',
     'lbl_spot_creator' => '作成者',
     'lbl_spot_note' => '補足情報',
-
+    
     'header_billing' => '請求書',
-
+    
     'lbl_billing_id' => '請求書ID',
     'lbl_billing_company' => '会社名',
     'lbl_billing_date_create' => '請求年月日',
@@ -44,37 +47,37 @@ return [
     'lbl_billing_money' => '総請求額',
     'lbl_billing_creator' => '作成者',
     'lbl_billing_date' => '承認依頼日',
-
+    
     'lbl_page_text' => '合計:total件',
-    'lbl_no_record' => 'Chưa có request approve',
+    'lbl_no_record' => '承認するリクエストがありません。',
     
     'header_pop_approve' => '承認確認ポップアップ',
     'header_pop_reject' => '拒絶確認ポップアップ',
     'lbl_pop_reason' => '拒絶理由',
     'msg_pop_approve_contract' => '選択している契約を承認してもよろしいですか?',
     'msg_pop_reject_contract' => '選択している契約を拒絶してもよろしいですか?',
-    'msg_approve_contract_sucess' => 'Các hợp đồng :id đã được approve',
-    'msg_approve_contract_no' => 'Không có hợp đồng nào được approve',
-    'msg_reject_contract_sucess' => 'Các hợp đồng :id đã bị reject',
-    'msg_reject_contract_no' => 'Không có hợp đồng nào bị reject',
+    'msg_approve_contract_sucess' => '契約:idが承認しました。',
+    'msg_approve_contract_no' => '承認した契約がありません。',
+    'msg_reject_contract_sucess' => '契約:idが却下しました。',
+    'msg_reject_contract_no' => '却下した契約がありません。',
     
     'msg_pop_approve_spot' => '選択しているスポット費用を承認してもよろしいですか?',
     'msg_pop_reject_spot' => '選択しているスポット費用を拒絶してもよろしいですか?',
-    'msg_approve_spot_sucess' => 'Các phí spot :id đã được approve',
-    'msg_approve_spot_no' => 'Không có phí spot nào được approve',
-    'msg_approve_spot_sucess' => 'Các phí spot :id đã bị reject',
-    'msg_approve_spot_no' => 'Không có phí spot nào bị reject',
+    'msg_approve_spot_sucess' => 'スポット費用:idが承認しました。',
+    'msg_approve_spot_no' => '承認したスポット費用がありません。',
+    'msg_reject_spot_sucess' => 'スポット費用:idが却下しました。',
+    'msg_reject_spot_no' => '却下したスポット費用がありません。',
     
     'msg_pop_approve_billing' => '選択している請求書を承認してもよろしいですか?',
     'msg_pop_reject_billing' => '選択している請求書を拒絶してもよろしいですか?',
-    'msg_approve_billing_sucess' => 'Các giấy yêu cầu :id đã được approve',
-    'msg_approve_billing_no' => 'Không có giấy yêu cầu nào được approve',
-    'msg_approve_billing_sucess' => 'Các giấy yêu cầu :id đã bị reject',
-    'msg_approve_billing_no' => 'Không có giấy yêu cầu nào bị reject',
+    'msg_approve_billing_sucess' => '請求書:idが承認しました。',
+    'msg_approve_billing_no' => '承認した請求書がありません。',
+    'msg_reject_billing_sucess' => '請求書:idが却下しました。',
+    'msg_reject_billing_no' => '却下した請求書がありません。',
     
-    'msg_error_approve' => 'Lỗi không thể xử lý approve',
-    'msg_error_reject' => 'Lỗi không thể xử lý reject',
-    'msg_error_uncheck' => 'Vui lòng chọn request approve/reject',
+    'msg_error_approve' => '承認処理エラーになっています。',
+    'msg_error_reject' => '却下処理エラーになっています。',
+    'msg_error_uncheck' => '承認／却下するリクエストを選択してください。',
     
     'btn_search' => '検索',
     'btn_approve' => '承認',

@@ -5,7 +5,7 @@
  *
  * Handle business billing method
  * @package App\Business
- * @author Rikkei.trihnm
+ * @author Rikkei.Trihnm
  * @date 2018/07/10
  */
 
@@ -31,14 +31,11 @@ class BillingMethodBusiness
     public function getAllBillingMethodForCompany($currencyId)
     {
         return $this->billingMethodRepository
-            ->select([
+            ->getBillingMethodByCurrency($currencyId, [
                 'id',
                 'name_jp',
                 'name_en',
-            ])
-            ->where('currency_id', $currencyId)
-            ->where('del_flag', Constant::DELETE_FLAG_FALSE)
-            ->get();
+            ]);
     }
 
     /**

@@ -163,7 +163,8 @@
         modalCommon: {
             title_approve: "{{__('approve.header_pop_approve')}}",
             title_reject: "{{__('approve.header_pop_reject')}}",
-            message_error_require: "{{__('approve.msg_error_uncheck')}}"
+            message_error_require: "{{__('approve.msg_error_uncheck')}}",
+            placeholder_reason: "{{__('approve.lbl_pop_reason')}}"
         },
         
         modalContract: {

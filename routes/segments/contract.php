@@ -4,6 +4,6 @@ Route::group(['middleware' => 'auth', 'prefix' => 'ship', 'as' => 'contract'], f
    Route::get('/{idShip}/contract/create', 'ContractController@initCreate')->name('.init.create') ;
    Route::post('/contract/create', 'ContractController@create')->name('.create') ;
    
-   Route::get('/{idShip}/edit', 'ContractController@edit')->name('.edit');
+   Route::get('/{idShip}/contract/edit', 'ContractController@edit')->name('.edit');
    Route::get('/{idShip}/restore', 'ContractController@restore')->name('.restore') ;
 });

@@ -5,7 +5,7 @@
  *
  * Handle business related to company with service
  * @package App\Business
- * @author Rikkei.trihnm
+ * @author Rikkei.Trihnm
  * @date 2018/07/11
  */
 
@@ -113,7 +113,7 @@ class CompanyServiceBusiness
      * @param int companyId
      * @param array serviceExists
      * @throws Exception
-     * @return boolean
+     * @return boolean|null
      */
     public function deleteService($serviceIds, $companyId, $serviceExists)
     {
@@ -129,7 +129,7 @@ class CompanyServiceBusiness
 
         // Check if not have service id
         if (empty($serviceIds)) {
-            return true;
+            return null;
         }
 
         // Get instance object from service container
@@ -187,16 +187,16 @@ class CompanyServiceBusiness
         ])->toArray();
 
         // Detech get service id to array
-        $serviceExists = array_column($serviceExists, 'service_id');
+        $serviceIdsExists = array_column($serviceExists, 'service_id');
 
         // Delete service id in company
-        return $this->deleteService($serviceIds, $companyId, $serviceExists);
+        return $this->deleteService($serviceIds, $companyId, $serviceIdsExists);
     }
 
     /**
      * Function delete all service in company
      * @param int companyId
-     * @return boolean
+     * @return boolean|null
      */
     public function deleteAllService($companyId)
     {
@@ -207,14 +207,19 @@ class CompanyServiceBusiness
             'm_contract.service_id',
         ])->toArray();
 
+        // Check if not have service id
+        if (empty($serviceExists)) {
+            return null;
+        }
+
         // Detech get service id to array
-        $serviceExists = array_column($serviceExists, 'service_id');
+        $serviceIdsExists = array_column($serviceExists, 'service_id');
 
         // Check can delete contract
-        $this->_checkCanDeleteServices($companyId, $serviceExists);
+        $this->_checkCanDeleteServices($companyId, $serviceIdsExists);
 
         // Delete all service
-        return $this->deleteService($serviceExists, $companyId, $serviceExists);
+        return $this->deleteService($serviceIdsExists, $companyId, $serviceIdsExists);
     }
 
     /**

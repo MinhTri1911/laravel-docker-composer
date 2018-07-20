@@ -100,7 +100,8 @@ class Constant
     const FORMAT_DATE_TIME = [
         'd'     => 'Y/m/d',
         'dt'    => 'Y/m/d H:i:s',
-        't'     => 'H:i:s'
+        't'     => 'H:i:s',
+        'ym'     => 'Y/m'
     ];
     
     // Config type approve are contract, spot, billing
@@ -108,9 +109,9 @@ class Constant
     
     // Config type operation
     const TYPE_OPE = [
-        'create'    => 'CREATE',
-        'edit'      => 'EDIT',
-        'delete'    => 'DELETE',
+        'create'    => '作成',
+        'edit'      => '修正',
+        'delete'    => '削除',
         'reactive'    => 'REACTIVE',
         'restore'    => 'RESTORE'
     ];

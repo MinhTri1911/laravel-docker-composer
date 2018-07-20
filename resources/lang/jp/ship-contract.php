@@ -12,7 +12,6 @@ return [
     | these language lines according to your application's requirements.
     |
     */
-
     'detail' => [
         'title_ship_contract' => '船舶管理',
         'header_ship_contract' => '船舶管理',
@@ -36,9 +35,9 @@ return [
         'lbl_ship_url1' => '関連情報URL1',
         'lbl_ship_url2' => '関連情報URL2',
         'lbl_ship_url3' => '関連情報URL3',
-
+        
         'btn_edit_ship' => '編集',
-
+        
         'lbl_ship_contract' => '契約',
         'lbl_no_ship_contract' => '合計:number件',
         'lbl_contract_id' => '契約ID',
@@ -50,13 +49,14 @@ return [
         'lbl_contract_approve' => '承認',
         'lbl_contract_date_create' => '作成日',
         'lbl_contract_date_update' => '更新日',
-
+        'lbl_contract_no' => 'Chưa có hợp đồng nào được tạo',
+        
         'btn_contract_create' => '作成',
         'btn_contract_disable' => '中断',
         'btn_contract_delete' => '削除',
         'btn_contract_edit' => '編集',
         'btn_contract_restore' => 'Restore',
-
+        
         'lbl_ship_spot' => 'スポット費用',
         'lbl_no_ship_spot' => '合計:number件',
         'lbl_spot_id' => 'スポットID',
@@ -67,6 +67,8 @@ return [
         'lbl_spot_date_create' => '作成日',
         'lbl_spot_date_update' => '更新日',
         'lbl_limit' => '表示件数',
+        'lbl_error_contract_pending' => '表示件数',
+        'lbl_spot_no' => 'Chưa có phí spot nào được tạo',
        
         'btn_back' => '戻る',
         'btn_create' => '作成',
@@ -100,7 +102,7 @@ return [
         
         'pop_auth_delete_ship' => '船舶削除確認ポップアップ',
         'lbl_input_pw' => 'パスワード入力',
-
+        
         'lbl_popup_del_contract' => '契約を削除確認',
         'lbl_popup_del_contract_msg' => '選択した契約を削除してもよろしいですか?',
         

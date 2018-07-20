@@ -1,7 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * File company general js
+ *
+ * @package resources\assets\js
+ * @author Rikkei.Trihnm
+ * @date 2018/07/11
  */
 
 const HTTP_SUCCESS = 200;
@@ -38,6 +40,7 @@ var company = new function () {
         lableNameBillingMethod: '#lbl-billing-method-id',
         labelError: '.alert-danger',
         labelSuccess: '.alert-success',
+        labelInfo: '.alert-info',
         labelShowMessage: '.lbl-error-message',
         lblDeleteService: '.delete-service-label',
 
@@ -46,6 +49,11 @@ var company = new function () {
         slbServiceId: '#slb-service-id',
         contractStartDate: '#contract-start-date',
         contractEndDate: '#contract-end-date',
+
+        // Type message
+        typeError: 'error',
+        typeSuccess: 'success',
+        typeInfo: 'info',
     }
 
     // Url hanlde
@@ -74,7 +82,7 @@ var company = new function () {
                 'company-id' : company.model.companyId,
             }
 
-            $.get(url, param,function (res) {
+            $.get(url, param, function (res) {
                 if (res.code === HTTP_SUCCESS) {
                     event.data.companyObject.appendData(res.data.view);
                     event.data.companyObject.initSelect2();
@@ -369,6 +377,12 @@ var company = new function () {
             // Hidden label error
             $(company.model.labelError).css({'display': 'none'});
 
+            // Hidden label success
+            $(company.model.labelSuccess).css({'display': 'none'});
+
+            // Hidden label info
+            $(company.model.labelInfo).css({'display': 'none'});
+
             $(company.model.popupDeleteAllService).modal('show');
         });
     }
@@ -390,17 +404,18 @@ var company = new function () {
                 $.post(url, param, function (res) {
                     if (res.code === HTTP_SUCCESS) {
                         // Show message success
-                        $(company.model.labelSuccess).find('label').empty();
-                        $(company.model.labelSuccess).find('label').append(res.message);
-                        $(company.model.labelSuccess).css({'display': 'block'});
+                        if (res.data.typeMessage == company.model.typeSuccess) {
+                            $(company.model.labelSuccess).find('label').empty();
+                            $(company.model.labelSuccess).find('label').append(res.message);
+                            $(company.model.labelSuccess).css({'display': 'block'});
+                        }
 
-                        // Setting after 5 seconds do actions
-                        window.setTimeout(function () {
-                            $(company.model.labelSuccess).css({'display': 'none'});
-
-                            // Close popup
-                            $(company.model.popupDeleteAllService).modal('toggle');
-                        }, 5000);
+                        // Show message info
+                        if (res.data.typeMessage == company.model.typeInfo) {
+                            $(company.model.labelInfo).find('label').empty();
+                            $(company.model.labelInfo).find('label').append(res.message);
+                            $(company.model.labelInfo).css({'display': 'block'});
+                        }
                     } else {
                         //Append error message
                         for (var error in res.message) {
@@ -531,6 +546,24 @@ var company = new function () {
             $(company.model.labelError).css({'display': 'none'});
         });
     }
+
+    /**
+     * Function focus enter password
+     */
+    this.focusEnterPassword = function () {
+        $(company.model.txtPassword).on('change', function () {
+            let input = document.getElementById('pw-user');
+
+            input.addEventListener("keyup", function (event) {
+                event.preventDefault();
+
+                // Check event enter
+                if (event.keyCode === 13) {
+                    document.getElementById('modalBtnOKAuth').click();
+                }
+            });
+        });
+    }
 };
 
 $(document).ready(function () {
@@ -548,4 +581,5 @@ $(document).ready(function () {
     company.showPopupEnterPassword();
     company.enterPasswordDeleteCompany();
     company.hiddenModalAuth();
+    company.focusEnterPassword();
 });

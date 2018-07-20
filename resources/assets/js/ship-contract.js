@@ -307,7 +307,7 @@ var Handler = {
         });
         
         // When check item with status checked and check all
-        $(elementItemCheck).on('change', function(e) {
+        $(document).on('change', elementItemCheck, function(e) {
            if (!$(this).is(':checked')) {
                $(elementAllCheck).prop('checked', false);
                if (vThis.checkList.length > 0) {
@@ -393,15 +393,16 @@ var Handler = {
      * @returns {undefined}
      */
     errorHandler: function(error){
-        console.log(error);
-        $('#modalTitleDone').text("Error");
-        $('#modalMessageDone').text(error.responseText);
-        $("#modal-done").modal("show");
-        $("#modal-done").on('shown.bs.modal', function() {
-            if (!$("body").hasClass('modal-open')) {
-                $("body").addClass("modal-open").attr('style', $("body").attr('style')+" padding-right: 17px;");
-            }
-        });
+//        $('#modalTitleDone').text("Error");
+//        $('#modalMessageDone').text(error.responseText);
+//        $("#modal-done").modal("show");
+//        $("#modal-done").on('shown.bs.modal', function() {
+//            if (!$("body").hasClass('modal-open')) {
+//                $("body").addClass("modal-open").attr('style', $("body").attr('style')+" padding-right: 17px;");
+//            }
+//        });
+        $('.modal').modal('hide');
+//        window.location.reload();
     },
     
     /**
@@ -430,7 +431,13 @@ var Handler = {
             }
         });
     },
-        
+    reloadContract: function() {
+        $.pjax({
+            url: window.location.href,
+            container: '.content-contract'
+        });
+    },
+    
     /**
      * Ajax handle restore contracts
      * 
@@ -476,9 +483,11 @@ var Handler = {
      * @returns {undefined}
      */
     uiAfterRestoreContract: function(res){
-//        $('.restore-contract-'+res.contract).remove();
+        $('.restore-contract-'+res.contract).remove();
+        $('.edit-contract-'+res.contract).remove();
         $('.status-contract-'+res.contract).text(this.typo.stt_active);
         $('.approve-contract-'+res.contract).text(this.typo.apv_pending);
+        this.reloadContract();
     },
     
     /**
@@ -563,6 +572,7 @@ var Handler = {
                 $('.status-contract-'+res.contracts[i]).text(this.typo.stt_pending);
                 $('.approve-contract-'+res.contracts[i]).text(this.typo.apv_pending);
             }
+            this.reloadContract();
         }
     },
     
@@ -634,12 +644,17 @@ var Handler = {
      * @return void
      */
     uiAfterDeleteContract: function(res) {
-        if (typeof res.contracts != typeof undefined){
-            for (var i = 0; i < res.contracts.length; i++) {
-                $('.status-contract-'+res.contracts[i]).text(this.typo.stt_finish);
-                $('.approve-contract-'+res.contracts[i]).text(this.typo.apv_pending);
-            }
+        if (typeof res.contracts != typeof undefined || typeof res.contractDelete != typeof undefined
+                || typeof res.contractRemove != typeof undefined){
+            this.reloadContract();
         }
+    },
+    
+    reloadSpot: function() {
+        $.pjax({
+            url: window.location.href,
+            container: '.spot-block'
+        });
     },
     
     /**
@@ -711,6 +726,7 @@ var Handler = {
     uiAfterDeleteSpot: function(res) {
         if (typeof res.spot != typeof undefined) {
             $('.approve-spot-'+res.spot).text(this.typo.apv_pending);
+            this.reloadSpot();
         }
     },
     

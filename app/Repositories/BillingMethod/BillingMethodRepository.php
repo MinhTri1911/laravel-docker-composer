@@ -13,11 +13,30 @@ namespace App\Repositories\BillingMethod;
 
 use App\Repositories\EloquentRepository;
 use App\Models\MBillingMethod;
+use App\Common\Constant;
 
 class BillingMethodRepository extends EloquentRepository implements BillingMethodInterface
 {
     public function getModel()
     {
         return MBillingMethod::class;
+    }
+
+    /**
+     * Function get billing method by currency
+     * @param int currencyId
+     * @param array columns
+     * @return Collection
+     */
+    public function getBillingMethodByCurrency($currencyId, $columns = ['*'])
+    {
+        return $this->select([
+                'id',
+                'name_jp',
+                'name_en',
+            ])
+            ->where('currency_id', $currencyId)
+            ->where('del_flag', Constant::DELETE_FLAG_FALSE)
+            ->get();
     }
 }

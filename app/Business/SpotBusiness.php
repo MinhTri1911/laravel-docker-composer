@@ -83,7 +83,7 @@ class SpotBusiness
                 return abort(404);
             }
             $data['spotNameSelect'] = array_column($data['spotName']->toArray(), 'name_jp', 'id');
-            $data['amountCharge'] = (string) $data['spotName'][0]->charge;
+            $data['amountCharge'] =  $data['spotName'][0]->charge.'.00';
             $data['currencyCode'] = $this->_mCurrency->getMCurrencyByCurrencyId($currency_id);
             return $data;
         } catch (Exception $ex) {
@@ -102,7 +102,7 @@ class SpotBusiness
     public function getCharge($currency_id, $spot_id) {
         try {
             $amountCharge = $this->_mSpotInterface->getCharge($currency_id, $spot_id);
-            return (string) $amountCharge->charge;
+            return $amountCharge->charge;
         } catch (Exception $ex) {
             Log::info($ex);
             return abort(500,Constant::ID_SCREEN['SMB0009']);

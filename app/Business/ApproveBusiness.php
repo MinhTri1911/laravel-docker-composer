@@ -31,9 +31,9 @@ class ApproveBusiness
     
     const REQ_TYPE_APPROVE = 0;
     const REQ_TYPE_REJECT = 1;
-
+    
     /**
-     * Initial interface execute query sql
+     * Initial interface execute query SQL
      * 
      * @access public
      * @param App\Repositories\Approve\ApproveInterface $approveInterface
@@ -57,7 +57,7 @@ class ApproveBusiness
             'limit' => request()->filled('limit')?request()->get('limit'):self::RECORD_PER_PAGE,
             'm_contract.approved_flag' => Constant::STATUS_WAITING_APPROVE
         ];
-  
+        
         return $this->convertDataApproveContract($this->approveInterface->getListContract($config));
     }
     
@@ -103,16 +103,20 @@ class ApproveBusiness
                             'contract_remark'           => $obj->remark ?? $contract->contract_remark,
                             'contract_deleted_at'       => $obj->deleted_at ?? $contract->contract_deleted_at,
                             'contract_pending_at'       => $obj->pending_at ?? $contract->contract_pending_at,
+                            'contract_date_request'     => $obj->updated_at ?? $contract->contract_updated_at,
                         ];
                     } else {
                         $contract->data_update = null;
                     }
                 }
+                // Set datetime send request
+                $contract->contract_date_request = is_null($contract->contract_updated_at)?$contract->contract_created_at:$contract->contract_updated_at;
+
                 // Set request approve type
                 $contract = $this->setOperationType($contract);
             }
         }
-
+        
         return $approves;
     }
     
@@ -158,11 +162,15 @@ class ApproveBusiness
                             'spot_updated_at'       => $obj->updated_at ?? $spot->spot_updated_at,
                             'spot_updated_by'       => $obj->updated_by ?? $spot->spot_updated_by,
                             'spot_del_flag'         => $obj->del_flag ?? $spot->spot_del_flag,
+                            'spot_date_request'     => $obj->updated_at ?? $spot->spot_updated_at,
                         ];
                     } else {
                        $spot->data_update = null;
                     }
                 }
+                // Set datetime send request
+                $spot->spot_date_request = is_null($spot->spot_updated_at)?$spot->spot_created_at:$spot->spot_updated_at;
+                
                 // Set property type of request (operation) for spot
                 $spot = $this->setOperationType($spot);
             }
@@ -186,25 +194,29 @@ class ApproveBusiness
             if (!is_null($object->contract_created_at) && is_null($object->contract_updated_at)) {
                 $ope = Constant::TYPE_OPE['create'];
             } else {
-                switch ($object->data_update->contract_status) {
-                    case Constant::STATUS_CONTRACT_ACTIVE:
-                    case Constant::STATUS_CONTRACT_PENDING:
-                        $ope = Constant::TYPE_OPE['edit'];
-                        break;
-                    case Constant::STATUS_CONTRACT_DELETED:
-                        $ope = Constant::TYPE_OPE['delete'];
-                        break;
-                    default:
-                        $ope = Constant::TYPE_OPE['create'];
-                        break;
+                if (!is_null($object->data_update)) {
+                    switch ($object->data_update->contract_status) {
+                        case Constant::STATUS_CONTRACT_ACTIVE:
+                        case Constant::STATUS_CONTRACT_PENDING:
+                            $ope = Constant::TYPE_OPE['edit'];
+                            break;
+                        case Constant::STATUS_CONTRACT_DELETED:
+                            $ope = Constant::TYPE_OPE['delete'];
+                            break;
+                        default:
+                            $ope = Constant::TYPE_OPE['create'];
+                            break;
+                    }
                 }
             }
+         
         // If current object is spot
         } elseif (property_exists($object, 'spot_created_at')) {
             if (!is_null($object->spot_created_at) && is_null($object->spot_updated_at) ) {
                 $ope = Constant::TYPE_OPE['create'];
             } else {
-                if (!is_null($object->spot_updated_at) && optional($object->data_update)->spot_del_flag == Constant::DELETE_FLAG_FALSE) {
+                if (!is_null($object->spot_updated_at) 
+                        && optional($object->data_update)->spot_del_flag == Constant::DELETE_FLAG_FALSE) {
                     $ope = Constant::TYPE_OPE['edit'];
                 } else {
                     $ope = Constant::TYPE_OPE['delete'];
@@ -268,7 +280,7 @@ class ApproveBusiness
                 $config['idBilling'] = $request->filled('id')?$request->get('id'):null;
                 return $this->searchBilling($config);
                 break;
-
+            
             default:
                 $config['idContract'] = $request->filled('id')?$request->get('id'):null;
                 return $this->searchContract($config);
@@ -285,7 +297,8 @@ class ApproveBusiness
      * @param Illuminate\Support\Facades\Request $request
      * @return Array
      */
-    public function configRequestCondition($request = null) {
+    public function configRequestCondition($request = null)
+    {
         $condition = [];
         if ($request->filled('date_from') && preg_match('/^[0-9]{4}\/[0-9]{2}\/[0-9]{2}$/', $request->get('date_from'))) {
             $condition['date']['date_from'] = $request->get('date_from');
@@ -299,9 +312,22 @@ class ApproveBusiness
             $condition['user'] = $request->get('sender');
         }
         
-        $condition['type'] = $request->filled('setting_type')?$request->get('setting_type'):self::TYPE_APPROVE_CONTRACT;
-        $condition['status'] = $request->filled('setting_status')?$request->get('setting_status'):Constant::STATUS_WAITING_APPROVE;
-        $condition['limit'] = $request->filled('limit')?$request->get('limit'):self::RECORD_PER_PAGE;
+        // Config type of request approve is contract(0), spot(1) or billing(2)
+        $condition['type'] = ($request->filled('setting_type') 
+                && in_array($request->get('setting_type'), [self::TYPE_APPROVE_CONTRACT, self::TYPE_APPROVE_SPOT, self::TYPE_APPROVE_BILLING]))
+                ?(int)$request->get('setting_type')
+                :self::TYPE_APPROVE_CONTRACT;
+        
+        // Config status of request approve is waiting approve (2) or rejected (3)
+        $condition['status'] = ($request->filled('setting_status') && in_array($request->get('setting_status'), [Constant::STATUS_WAITING_APPROVE, Constant::STATUS_REJECT_APPROVE]))
+                ?(int)$request->get('setting_status')
+                :Constant::STATUS_WAITING_APPROVE;
+        
+        // Config limit record show on per page [10, 25, 50]
+        $condition['limit'] = ($request->filled('limit') 
+                && in_array($request->get('limit'), Constant::ARY_PAGINATION_PER_PAGE))
+                ?(int)$request->get('limit')
+                :self::RECORD_PER_PAGE;
         
         return $condition;
     }
@@ -320,7 +346,7 @@ class ApproveBusiness
         }
         
         $spots = $this->convertDataApproveSpot($this->approveInterface->getListSpot($condition));
-
+        
         return $spots;
     }
     
@@ -336,9 +362,9 @@ class ApproveBusiness
         if (isset($condition['status'])) {
             $condition['m_contract.approved_flag'] = $condition['status'];
         }
-        
+       
         $contracts = $this->convertDataApproveContract($this->approveInterface->getListContract($condition));
-
+        
         return $contracts;
     }
     
@@ -356,7 +382,7 @@ class ApproveBusiness
         }
         
         $billings = $this->approveInterface->getListBilling($condition);
-
+        
         return $billings;
     }
     
@@ -398,7 +424,7 @@ class ApproveBusiness
     }
     
     /**
-     * Convert request ajax to array config
+     * Convert request Ajax to array config
      * 
      * @access public
      * @param Illuminate\Support\Facades\Request $request
@@ -449,9 +475,8 @@ class ApproveBusiness
                     // If accept approve contract with request create
                     if (isset($groupContract['create']) && count($groupContract['create']) > 0) {
                         $arrId = array_column($groupContract['create'], 'contract_id');
-                        DB::table('m_contract')
-                                ->whereIn('m_contract.id', $arrId)
-                                ->update([
+                        $this->approveInterface->updateContract(
+                                $arrId, [
                                     'm_contract.approved_flag' => Constant::STATUS_APPROVED,
                                     'm_contract.updated_at' => null,
                                     'm_contract.updated_by' => null
@@ -472,7 +497,7 @@ class ApproveBusiness
                                 'm_contract.reason_reject' => null,
                                 'm_contract.approved_flag' => Constant::STATUS_APPROVED
                             ];
-
+                            
                             // Config data update column deleted_at
                             if (isset($uContract->data_update->contract_deleted_at)) {
                                 if (is_null($uContract->data_update->contract_deleted_at)) {
@@ -481,7 +506,7 @@ class ApproveBusiness
                                     $dataU['m_contract.deleted_at'] = date('Y-m-d H:i:s');
                                 }
                             }
-
+                            
                             // Config data update column pending_at
                             if (isset($uContract->data_update->contract_pending_at)) {
                                 if (is_null($uContract->data_update->contract_pending_at)) {
@@ -490,11 +515,8 @@ class ApproveBusiness
                                     $dataU['m_contract.pending_at'] = date('Y-m-d H:i:s');
                                 }
                             }
-
-                            DB::table('m_contract')
-                                ->where('m_contract.id', $uContract->contract_id)
-                                ->update($dataU);
-
+                            
+                            $this->approveInterface->updateContract($uContract->contract_id, $dataU);
                         }
                     // If accept approve contract with request delete
                     } elseif (isset($groupContract['delete']) && count($groupContract['delete']) > 0) {
@@ -505,15 +527,13 @@ class ApproveBusiness
                                 'm_contract.deleted_at' => date('Y-m-d H:i:s'),
                                 'm_contract.reason_reject' => null
                             ];
-
+                            
                             // Config data update column updated_by
                             if(isset($delContract->data_update->contract_updated_by) && !is_null($delContract->data_update->contract_updated_by)) {
                                 $dataDel['m_contract.updated_by'] = $delContract->data_update->contract_updated_by;
                             }
-
-                            DB::table('m_contract')
-                                ->where('m_contract.id', $delContract->contract_id)
-                                ->update($dataDel);
+                            
+                            $this->approveInterface->updateContract($delContract->contract_id, $dataDel);
                         }
                     }
                 }); // End transaction
@@ -600,14 +620,13 @@ class ApproveBusiness
                     // If accept approve contract with request create
                     if (isset($groupSpot['create']) && count($groupSpot['create']) > 0) {
                         $arrId = array_column($groupSpot['create'], 'spot_id');
-                        DB::table('t_ship_spot')
-                                ->whereIn('t_ship_spot.id', $arrId)
-                                ->update([
+                        $this->approveInterface->updateSpot(
+                                $arrId, [
                                     't_ship_spot.approved_flag' => Constant::STATUS_APPROVED,
                                     't_ship_spot.updated_at' => null,
                                     't_ship_spot.updated_by' => null
                                 ]);
-
+                     
                     // If accept approve spot with request update
                     } elseif (isset($groupSpot['update']) && count($groupSpot['update']) > 0) {
                         foreach ($groupSpot['update'] as $uSpot) {
@@ -622,10 +641,8 @@ class ApproveBusiness
                                 't_ship_spot.reason_reject' => null,
                                 't_ship_spot.approved_flag' => Constant::STATUS_APPROVED
                             ];
-
-                            DB::table('t_ship_spot')
-                                ->where('t_ship_spot.id', $uSpot->spot_id)
-                                ->update($dataU);
+                            
+                            $this->approveInterface->updateSpot($uSpot->spot_id, $dataU);
                         }
                     // If accept approve spot with request delete
                     } elseif (isset($groupSpot['delete']) && count($groupSpot['delete']) > 0) {
@@ -635,15 +652,13 @@ class ApproveBusiness
                                 't_ship_spot.del_flag' => $delSpot->data_update->spot_del_flag,
                                 't_ship_spot.reason_reject' => null
                             ];
-
+                            
                             // Config data update column updated_by
                             if(isset($delSpot->data_update->spot_updated_by) && !is_null($delSpot->data_update->spot_updated_by)) {
                                 $dataDel['t_ship_spot.updated_by'] = $delSpot->data_update->spot_updated_by;
                             }
-
-                            DB::table('t_ship_spot')
-                                ->where('t_ship_spot.id', $delSpot->spot_id)
-                                ->update($dataDel);
+                            
+                            $this->approveInterface->updateSpot($delSpot->spot_id, $dataDel);
                         }
                     }
                 }); // End transaction
@@ -694,9 +709,8 @@ class ApproveBusiness
                 DB::transaction(function() use ($billings){
                     // If accept approve contract with request create
                     $arrId = array_column($billings->toArray(), 'billing_id');
-                    DB::table('t_history_billing')
-                            ->whereIn('t_history_billing.id', $arrId)
-                            ->update([
+                    $this->approveInterface->updateBilling(
+                            $arrId, [
                                 't_history_billing.approved_flag' => Constant::STATUS_APPROVED,
                                 't_history_billing.updated_at' => null,
                                 't_history_billing.updated_by' => null
@@ -794,15 +808,14 @@ class ApproveBusiness
                     // If accept approve contract with request create
                     if (isset($groupContract['create']) && count($groupContract['create']) > 0) {
                         $arrId = array_column($groupContract['create'], 'contract_id');
-                        DB::table('m_contract')
-                                ->whereIn('m_contract.id', $arrId)
-                                ->update([
+                        $this->approveInterface->updateContract(
+                                $arrId, [
                                     'm_contract.reason_reject' => $config['reason-reject']??null,
                                     'm_contract.approved_flag' => Constant::STATUS_REJECT_APPROVE,
                                     'm_contract.updated_at' => null,
                                     'm_contract.updated_by' => null
                                 ]);
-
+                    
                     // If accept approve contract with request update
                     } elseif (isset($groupContract['update']) && count($groupContract['update']) > 0) {
                         foreach ($groupContract['update'] as $uContract) {
@@ -810,10 +823,8 @@ class ApproveBusiness
                                 'm_contract.reason_reject' => $config['reason-reject']??null,
                                 'm_contract.approved_flag' => Constant::STATUS_REJECT_APPROVE
                             ];
-   
-                            DB::table('m_contract')
-                                ->where('m_contract.id', $uContract->contract_id)
-                                ->update($dataU);
+                            
+                            $this->approveInterface->updateContract($uContract->contract_id, $dataU);
                         }
                     // If accept approve contract with request delete
                     } elseif (isset($groupContract['delete']) && count($groupContract['delete']) > 0) {
@@ -822,10 +833,8 @@ class ApproveBusiness
                                 'm_contract.approved_flag' => Constant::STATUS_REJECT_APPROVE,
                                 'm_contract.reason_reject' => $config['reason-reject']??null
                             ];
-
-                            DB::table('m_contract')
-                                ->where('m_contract.id', $delContract->contract_id)
-                                ->update($dataDel);
+                            
+                            $this->approveInterface->updateContract($delContract->contract_id, $dataDel);
                         }
                     }
                 }); // End transaction
@@ -857,10 +866,10 @@ class ApproveBusiness
     }
     
     /**
-     * Execute Sql query to reject request approve spot
+     * Execute SQL query to reject request approve spot
      * 
      * @access public
-     * @param Array $config [List param config after convert from request ajax]
+     * @param Array $config [List param config after convert from request Ajax]
      * @return Array [List param reponse to ajax]
      */
     public function rejectApproveSpot($config = [])
@@ -883,15 +892,14 @@ class ApproveBusiness
                     // If accept approve spot with request create
                     if (isset($groupSpot['create']) && count($groupSpot['create']) > 0) {
                         $arrId = array_column($groupSpot['create'], 'spot_id');
-                        DB::table('t_ship_spot')
-                                ->whereIn('t_ship_spot.id', $arrId)
-                                ->update([
+                        $this->approveInterface->updateSpot(
+                                $arrId, [
                                     't_ship_spot.reason_reject' => $config['reason-reject']??null,
                                     't_ship_spot.approved_flag' => Constant::STATUS_REJECT_APPROVE,
                                     't_ship_spot.updated_at' => null,
                                     't_ship_spot.updated_by' => null
                                 ]);
-
+                    
                     // If accept approve spot with request update
                     } elseif (isset($groupSpot['update']) && count($groupSpot['update']) > 0) {
                         foreach ($groupSpot['update'] as $uSpot) {
@@ -899,10 +907,8 @@ class ApproveBusiness
                                 't_ship_spot.reason_reject' => $config['reason-reject']??null,
                                 't_ship_spot.approved_flag' => Constant::STATUS_REJECT_APPROVE
                             ];
-   
-                            DB::table('t_ship_spot')
-                                ->where('t_ship_spot.id', $uSpot->spot_id)
-                                ->update($dataU);
+                            
+                            $this->approveInterface->updateSpot($uSpot->spot_id, $dataU);
                         }
                     // If accept approve spot with request delete
                     } elseif (isset($groupSpot['delete']) && count($groupSpot['delete']) > 0) {
@@ -911,10 +917,8 @@ class ApproveBusiness
                                 't_ship_spot.approved_flag' => Constant::STATUS_REJECT_APPROVE,
                                 't_ship_spot.reason_reject' => $config['reason-reject']??null
                             ];
-
-                            DB::table('t_ship_spot')
-                                ->where('t_ship_spot.id', $delSpot->spot_id)
-                                ->update($dataDel);
+                            
+                            $this->approveInterface->updateSpot($delSpot->spot_id, $dataDel);
                         }
                     }
                 }); // End transaction
@@ -928,7 +932,7 @@ class ApproveBusiness
                 
                 return [
                     'status' => true,
-                    'message' => __('approve.msg_reject_contract_sucess', ['id' => implode($config['id'], ',')])
+                    'message' => __('approve.msg_reject_spot_sucess', ['id' => implode($config['id'], ',')])
                 ];
             } catch (\Exception $exc) {
                return [
@@ -941,16 +945,16 @@ class ApproveBusiness
         
         return [
             'status' => false,
-            'message' => __('approve.msg_reject_contract_no')
+            'message' => __('approve.msg_reject_spot_no')
         ];
     }
     
     /**
-     * Execute sql query reject request approve billing
+     * Execute SQL query reject request approve billing
      * 
      * @access public
-     * @param Array $config [List param after convert from request ajax]
-     * @return Array [List param response to ajax]
+     * @param Array $config [List parameter after convert from request Ajax]
+     * @return Array [List parameter response to Ajax]
      */
     public function rejectApproveBilling($config = [])
     {
@@ -958,25 +962,24 @@ class ApproveBusiness
             'idBilling' => $config['id'],
             't_history_billing.approved_flag' => Constant::STATUS_WAITING_APPROVE
         ];
-      
+        
         // Get list billing need to accept approve
         $billings = $this->approveInterface->getListBilling($condition);
-     
+        
         if (count($billings) > 0) {
             try {
                 // Execute update spot in transaction
                 DB::transaction(function() use ($config, $billings){
                     // If accept approve spot with request create
                     $arrId = array_column($billings->toArray(), 'billing_id');
-                    DB::table('t_history_billing')
-                            ->whereIn('t_history_billing.id', $arrId)
-                            ->update([
+                    $this->approveInterface->updateBilling
+                            ($arrId, [
                                 't_history_billing.reason_reject' => $config['reason-reject']??null,
                                 't_history_billing.approved_flag' => Constant::STATUS_REJECT_APPROVE,
                                 't_history_billing.updated_at' => null,
                                 't_history_billing.updated_by' => null
                             ]);
-
+                
                 }); // End transaction
                 
                 // Log info approve

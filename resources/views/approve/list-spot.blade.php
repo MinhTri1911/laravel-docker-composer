@@ -12,18 +12,18 @@
     <table class="table table-blue table-contract">
         <thead>
             <tr>
-                <th class="custom-checkbox">
+                <th class="custom-checkbox"  style="width:5%;">
                     @if(count($datas) > 0)
-                    <input class="hidden" id="chk_spt_full" name="n" type="checkbox">
-                    <label for="chk_spt_full"></label>
+                    <input class="hidden" id="chk_ct_full" name="n" type="checkbox">
+                    <label for="chk_ct_full"></label>
                     @endif
                 </th>
-                <th>{{__('approve.lbl_spot_id')}}</th>
-                <th>{{__('approve.lbl_spot_ship')}}</th>
-                <th>{{__('approve.lbl_spot_type')}}</th>
-                <th>{{__('approve.lbl_spot_ope')}}</th>
-                <th>{{__('approve.lbl_date_create')}}</th>
-                <th>{{__('approve.lbl_creator')}}</th>
+                <th style="width:7%;">{{__('approve.lbl_spot_id')}}</th>
+                <th style="width:23%;">{{__('approve.lbl_spot_ship')}}</th>
+                <th style="width:22%;">{{__('approve.lbl_spot_type')}}</th>
+                <th style="width:10%;">{{__('approve.lbl_spot_ope')}}</th>
+                <th style="width:15%;">{{__('approve.lbl_date_create')}}</th>
+                <th style="width:10%;">{{__('approve.lbl_creator')}}</th>
                 <th></th>
             </tr>
         </thead>
@@ -33,28 +33,28 @@
                     @if(property_exists($spot, 'data_update') && !is_null($spot->data_update))
                     <tr id="item-approve-{{$spot->spot_id}}">
                         <td class="custom-checkbox">
-                            <input class="hidden" id="chk_c_{{$spot->spot_id}}" name="chk_spot" type="checkbox">
+                            <input class="hidden" id="chk_c_{{$spot->spot_id}}" name="chk_contract" type="checkbox">
                             <label for="chk_c_{{$spot->spot_id}}"></label>
                         </td>
                         <td>{{$spot->data_update->spot_id}}</td>
                         <td>{{$spot->data_update->spot_ship_name}}</td>
                         <td>{{$spot->data_update->spot_spot_name}}</td>
                         <td>{{$spot->request_operation}}</td>
-                        <td>{{$spot->data_update->spot_created_at}}</td>
+                        <td>{{\Carbon\Carbon::parse($spot->data_update->spot_date_request)->format('Y/m/d H:i:s')}}</td>
                         <td>{{$spot->data_update->spot_user_name}}</td>
                         <td><div class="btn btn-blue-dark btn-custom-sm btn-detail" data-type="1" data-item="{{$spot->data_update->spot_id}}">{{__('approve.btn_detail')}}</div></td>
                     </tr>
                    @else
                         <tr id="item-approve-{{$spot->spot_id}}">
                             <td class="custom-checkbox">
-                                <input class="hidden" id="chk_c_{{$spot->spot_id}}" name="chk_spot" type="checkbox">
+                                <input class="hidden" id="chk_c_{{$spot->spot_id}}" name="chk_contract" type="checkbox">
                                 <label for="chk_c_{{$spot->spot_id}}"></label>
                             </td>
                             <td>{{$spot->spot_id}}</td>
                             <td>{{$spot->spot_ship_name}}</td>
                             <td>{{$spot->spot_spot_name}}</td>
                             <td>{{$spot->request_operation}}</td>
-                            <td>{{$spot->spot_created_at}}</td>
+                            <td>{{\Carbon\Carbon::parse($spot->spot_date_request)->format('Y/m/d H:i:s')}}</td>
                             <td>{{$spot->spot_user_name}}</td>
                             <td><div class="btn btn-blue-dark btn-custom-sm btn-detail" data-type="1" data-item="{{$spot->spot_id}}">{{__('approve.btn_detail')}}</div></td>
                         </tr>

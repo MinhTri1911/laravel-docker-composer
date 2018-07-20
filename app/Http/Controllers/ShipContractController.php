@@ -15,6 +15,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Business\ShipContractBusiness;
 use Exception;
+use App\Common\Constant;
+use Illuminate\Support\Facades\Log;
 
 class ShipContractController extends Controller
 {
@@ -51,11 +53,14 @@ class ShipContractController extends Controller
             $ship = $this->_shipContractBusiness->getShipContractById($id, $request);
             
             // If ship not exists, show not found page
-            if (is_null($ship->detail_ship) || empty($ship->detail_ship))
-                return 'Not exists';
+            if (is_null($ship->detail_ship) || empty($ship->detail_ship)) {
+                return view('exception.404');
+            }
+            
             return view('ship.contract.detail')->with('ship', $ship);
         } catch (Exception $exc) {
-            echo $exc->getTraceAsString();
+            Log::error($exc->getFile() .' on '. $exc->getLine().'\n'.$exc->getMessage());
+            abort(Constant::HTTP_CODE_ERROR_500, "Not found 456");
         }
     }
     
@@ -71,7 +76,8 @@ class ShipContractController extends Controller
         try {
             return response()->json($this->_shipContractBusiness->restoreContract($request));
         } catch (Exception $exc) {
-            echo $exc->getTraceAsString();
+            Log::error($exc->getFile() .' on '. $exc->getLine());
+            abort(Constant::HTTP_CODE_ERROR_500, $exc->getMessage());
         }
     }
     
@@ -85,9 +91,10 @@ class ShipContractController extends Controller
     public function disableContract(Request $request)
     {
         try {
-             return response()->json($this->_shipContractBusiness->disableContract($request));
+            return response()->json($this->_shipContractBusiness->disableContract($request));
         } catch (Exception $exc) {
-            echo $exc->getTraceAsString();
+            Log::error($exc->getFile() .' on '. $exc->getLine());
+            abort(Constant::HTTP_CODE_ERROR_500, $exc->getMessage());
         }
     }
     
@@ -103,7 +110,8 @@ class ShipContractController extends Controller
         try {
             return response()->json($this->_shipContractBusiness->deleteContract($request));
         } catch (Exception $exc) {
-            echo $exc->getTraceAsString();
+            Log::error($exc->getFile() .' on '. $exc->getLine());
+            abort(Constant::HTTP_CODE_ERROR_500, $exc->getMessage());
         }
     }
     
@@ -119,7 +127,8 @@ class ShipContractController extends Controller
         try {
             return response()->json($this->_shipContractBusiness->deleteSpot($request));
         } catch (Exception $exc) {
-            echo $exc->getTraceAsString();
+            Log::error($exc->getFile() .' on '. $exc->getLine());
+            abort(Constant::HTTP_CODE_ERROR_500, $exc->getMessage());
         }
     }
     
@@ -135,7 +144,8 @@ class ShipContractController extends Controller
         try {
             return response()->json($this->_shipContractBusiness->getReasonReject($request));
         } catch (Exception $exc) {
-            echo $exc->getTraceAsString();
+            Log::error($exc->getFile() .' on '. $exc->getLine());
+            abort(Constant::HTTP_CODE_ERROR_500, $exc->getMessage());
         }
     }
     
@@ -151,7 +161,8 @@ class ShipContractController extends Controller
         try {
             return response()->json($this->_shipContractBusiness->deleteShip($request));
         } catch (Exception $exc) {
-            echo $exc->getTraceAsString();
+            Log::error($exc->getFile() .' on '. $exc->getLine());
+            abort(Constant::HTTP_CODE_ERROR_500, $exc->getMessage());
         }
     }
 }

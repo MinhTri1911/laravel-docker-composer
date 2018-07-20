@@ -36,7 +36,7 @@ class SpotController extends Controller
             return view('spot.create', $data);
         } catch (Exception $ex) {
             Log::info($ex);
-            return abort(404);
+            return abort('NotFound');
         }
     }
 

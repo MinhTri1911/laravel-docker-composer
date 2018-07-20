@@ -4,7 +4,7 @@
  * File company service controller
  *
  * @package App\Http\Controllers
- * @author Rikkei.trihnm
+ * @author Rikkei.Trihnm
  * @date 2018/07/11
  */
 
@@ -163,7 +163,7 @@ class CompanyServiceController extends Controller
         \DB::beginTransaction();
         try {
 
-            $this->_companyServiceBusiness->deleteAllService($request->get('company-id'));
+            $action = $this->_companyServiceBusiness->deleteAllService($request->get('company-id'));
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
@@ -171,6 +171,12 @@ class CompanyServiceController extends Controller
             return $this->returnJson(Constant::HTTP_CODE_ERROR_500, [$e->getMessage()]);
         }
 
-        return $this->returnJson(Constant::HTTP_CODE_SUCCESS, trans('common.messages.m039_action_was_executed'));
+        $message = ($action != null)
+            ? trans('common.messages.m039_action_was_executed')
+            : trans('common.messages.m040_not_have_record_for_delete');
+
+        $typeMessage = ($action != null) ? 'success' : 'info';
+
+        return $this->returnJson(Constant::HTTP_CODE_SUCCESS, $message, ['typeMessage' => $typeMessage]);
     }
 }

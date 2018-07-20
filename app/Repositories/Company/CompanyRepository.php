@@ -41,7 +41,7 @@ class CompanyRepository extends EloquentRepository implements CompanyInterface
                 FROM m_company as company
                 JOIN m_ship as ship ON ship.company_id = company.id
                 JOIN m_contract as contract ON ship.id = contract.ship_id
-                WHERE contract.status = 0 AND ship.del_flag = 0 AND company.del_flag = 0 AND contract.approved_flag = 1
+                WHERE ship.del_flag = 0 AND company.del_flag = 0
                 group by company.id
             ) as sumTotalLicense';
         } else {
@@ -50,7 +50,7 @@ class CompanyRepository extends EloquentRepository implements CompanyInterface
                 JOIN m_ship as ship ON ship.company_id = company.id
                 JOIN m_contract as contract ON ship.id = contract.ship_id
                 JOIN m_service as service on service.id = contract.service_id
-                WHERE contract.status = 0 AND ship.del_flag = 0 AND company.del_flag = 0 AND contract.approved_flag = 1
+                WHERE ship.del_flag = 0 AND company.del_flag = 0
                 group by service.id
             ) as sumTotalLicense';
         }
@@ -78,14 +78,14 @@ class CompanyRepository extends EloquentRepository implements CompanyInterface
             ->join('m_company_operation', 'm_company.ope_company_id', 'm_company_operation.id')
             ->join('m_nation', 'm_nation.id', 'm_company.nation_id')
             ->join('m_ship','m_ship.company_id', 'm_company.id')
-            ->join('m_contract', 'm_ship.id', 'm_contract.ship_id')
-            ->join('m_service', 'm_contract.service_id', 'm_service.id')
-            ->join(\DB::raw($subQuery), function($join) use ($groupType) {
+            ->leftJoin('m_contract', 'm_ship.id', 'm_contract.ship_id')
+            ->leftJoin('m_service', function ($join) {
+                $join->on( 'm_contract.service_id', 'm_service.id')
+                    ->where('m_service.del_flag', 0);
+            })
+            ->leftJoin(\DB::raw($subQuery), function($join) use ($groupType) {
                 $join->on('sumTotalLicense.id', '=', $groupType ? 'm_service.id' : 'm_company.id');
             })
-            ->where('m_contract.status', 0)
-            ->where('m_contract.approved_flag', 1)
-            ->where('m_service.del_flag', 0)
             ->where('m_nation.del_flag', 0)
             ->where('m_ship.del_flag', 0)
             ->where('m_company.del_flag', 0)
@@ -165,8 +165,8 @@ class CompanyRepository extends EloquentRepository implements CompanyInterface
             ->join('m_contract', 'm_ship.id', 'm_contract.ship_id')
             ->join('m_service', 'm_service.id', 'm_contract.service_id')
             ->where(!$type ? 'm_company.id' : 'm_service.id', $id)
-            ->where('m_contract.status', 0)
-            ->where('m_contract.approved_flag', 1)
+            // ->where('m_contract.status', 0)
+            // ->where('m_contract.approved_flag', 1)
             ->where('m_service.del_flag', 0)
             ->where('m_ship.del_flag', 0)
             ->where('m_company.del_flag', 0)
@@ -191,35 +191,31 @@ class CompanyRepository extends EloquentRepository implements CompanyInterface
      * @param int id
      * @param array columns
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
-     * @return array
+     * @return Model
      */
     public function getDetailCompanyWithRelation($id, $columns = ['*'])
     {
-        $company = $this->where('del_flag', Constant::DELETE_FLAG_FALSE)->findOrFail($id, $columns = ['*']);
+        $company = $this
+            ->join('m_nation', function ($join) {
+                $join->on('m_nation.id', 'm_company.nation_id')
+                    ->where('m_nation.del_flag', Constant::DELETE_FLAG_FALSE);
+            })
+            ->join('m_company_operation', function ($join) {
+                $join->on('m_company_operation.id', 'm_company.ope_company_id')
+                    ->where('m_company_operation.del_flag', Constant::DELETE_FLAG_FALSE);
+            })
+            ->join('m_billing_method', function ($join) {
+                $join->on('m_billing_method.id', 'm_company.billing_method_id')
+                    ->where('m_billing_method.del_flag', Constant::DELETE_FLAG_FALSE);
+            })
+            ->join('m_currency', function ($join) {
+                $join->on('m_currency.id', 'm_company.currency_id')
+                    ->where('m_currency.del_flag', Constant::DELETE_FLAG_FALSE);
+            })
+            ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->findOrFail($id, $columns);
 
-        $nationOfCompany = $company->nation()
-            ->where('m_nation.del_flag', Constant::DELETE_FLAG_FALSE)
-            ->firstOrFail(['m_nation.name_jp', 'm_nation.name_en']);
-
-        $companyOperation = $company->companyOperation()
-            ->where('del_flag', Constant::DELETE_FLAG_FALSE)
-            ->firstOrFail(['name']);
-
-        $billingMethod = $company->billingMethod()
-            ->where('del_flag', Constant::DELETE_FLAG_FALSE)
-            ->firstOrFail(['m_billing_method.name_jp', 'm_billing_method.name_en', 'm_billing_method.id']);
-
-        $currency = $company->currency()
-            ->where('del_flag', Constant::DELETE_FLAG_FALSE)
-            ->firstOrFail(['code']);
-
-        return [
-            'company' => $company,
-            'nation' => $nationOfCompany,
-            'companyOperation' => $companyOperation,
-            'billingMethod' => $billingMethod,
-            'currency' => $currency,
-        ];
+        return $company;
     }
 
     /**

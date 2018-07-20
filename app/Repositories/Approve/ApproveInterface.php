@@ -38,4 +38,31 @@ interface ApproveInterface
      * @return Illuminate\Support\Collection
      */
     public function getListBilling($paramCondition);
+    
+    /**
+     * Execute query update data contract
+     * 
+     * @access public
+     * @param int|array $id
+     * @return int
+     */
+    public function updateContract($id, $dataUpdate);
+    
+    /**
+     * Execute query update data spot
+     * 
+     * @access public
+     * @param int|array $id
+     * @return int
+     */
+    public function updateSpot($id, $dataUpdate);
+    
+    /**
+     * Execute query update data billing
+     * 
+     * @access public
+     * @param int|array $id
+     * @return int
+     */
+    public function updateBilling($id = '', $dataUpdate = []);
 }

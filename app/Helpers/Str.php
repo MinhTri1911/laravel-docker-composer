@@ -32,4 +32,22 @@ class Str
         else
             return false;
     }
+    
+    /**
+     * Format string to money with format x,xxx,xxx.00
+     * 
+     * @access public
+     * @param Numeric $point
+     * @return String
+     */
+    public static function convertMoneyComma($money = 1) {
+        if (is_null($money) || empty($money)) {
+            return '';
+        }
+        
+        $money = (int)str_replace(',', '', $money);
+        $money = preg_replace('/\B(?=(\d{3})+(?!\d)\.?)/', ",", $money).'.00';
+        
+        return $money;
+    }
 }

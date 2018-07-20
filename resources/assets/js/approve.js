@@ -60,11 +60,13 @@ $(function(){
                 Handler.modal.title = Approve.modalBilling.title_reject || "";
                 Handler.modal.message = Approve.modalBilling.message_confirm_approve || "";
             }
-
+            
             Handler.showModalConfirm();
         }
     });
-    
+    /**
+     * Handle event when click button ok on modal confirm
+     */
     $(document).on("click",".btn-ok", function(e){
         if (Handler.checkList.length == 0) {
             Handler.modal.title = Approve.modalCommon.title_reject || "";
@@ -109,10 +111,11 @@ var Handler = {
     /**
      * Initialize controls and lib need to use for script file
      * Reset lib and initial lib
+     * Config pjax process
      */
     initial: function(){
         var vThis = this;
-        
+        vThis.modal.placeholder_reason = Approve.modalCommon.placeholder_reason;
         vThis.initialChecked();
         
         // Pjax when click paginate of spot
@@ -160,11 +163,13 @@ var Handler = {
         
         // Message default of modal
         message: "This is message",
+        
+        placeholder_reason: ""
     },
     
     /**
-     * 
-     * @returns {undefined}
+     * Initialize checkbox
+     * @returns void
      */
     initialChecked: function() {
         var vThis = this;
@@ -181,6 +186,7 @@ var Handler = {
      * 
      * @param element elementAllCheck
      * @param element elementItemCheck
+     * @return void
      */
     handleCheckList: function(elementAllCheck, elementItemCheck) {
         // Check all checkbox
@@ -245,7 +251,7 @@ var Handler = {
     
     /**
      * Display modal confirm to approve/reject
-     * @returns {undefined}
+     * @returns void
      */
     showModalConfirm: function(){
         var isClick = true;
@@ -258,7 +264,7 @@ var Handler = {
                     $("#modal-confirm").find('.modal-title').text(vThis.modal.title);
                     $("#modal-confirm").find('.modal-message').text(vThis.modal.message);
                     if (vThis.modal.type_req_approve == vThis.TYPE_REQ_REJECT) {
-                        $("#modal-confirm").find('.modal-message').append('<textarea class="form-control" id="modal-reason-reject" rows="4" placeholder="Nhập nguyên nhân reject..."></textarea>');
+                        $("#modal-confirm").find('.modal-message').append('<textarea class="form-control" id="modal-reason-reject" rows="4" placeholder="'+vThis.modal.placeholder_reason+'..."></textarea>');
                     }
                     $("#modal-confirm").modal("show");
                     isClick = false;
@@ -268,15 +274,15 @@ var Handler = {
             $("#modal-confirm").find('.modal-title').text(vThis.modal.title);
             $("#modal-confirm").find('.modal-message').text(vThis.modal.message);
             if (vThis.modal.type_req_approve == vThis.TYPE_REQ_REJECT) {
-                $("#modal-confirm").find('.modal-message').append('<textarea class="form-control" id="modal-reason-reject" rows="4" placeholder="Nhập nguyên nhân reject..."></textarea>');
+                $("#modal-confirm").find('.modal-message').append('<textarea class="form-control" id="modal-reason-reject" rows="4" placeholder="'+vThis.modal.placeholder_reason+'..."></textarea>');
             }
             $("#modal-confirm").modal("show");
         }
     },
     
     /**
-     * 
-     * @returns {undefined}
+     * Show modal detail of request approve
+     * @return void
      */
     showModalService: function(){
         $('#modal-confirm').modal('hide');
@@ -285,7 +291,7 @@ var Handler = {
     
     /**
      * Show modal alert error or response from server
-     * @returns {undefined}
+     * @returns void
      */
     showModalAlert: function(){
         var isClick = true;
@@ -311,8 +317,8 @@ var Handler = {
     
     /**
      * Config type of request send to server to load detail
-     * @param {type} el
-     * @returns {Handler.configDataDetail.data}
+     * @param element el [DOM where click on]
+     * @return {Handler.configDataDetail.data}
      */
     configDataDetail: function(el){
         var type = $(el).data('type');
@@ -341,7 +347,8 @@ var Handler = {
     
     /**
      * Load detail page of request approve
-     * @returns {undefined}
+     * @param {Window.Object} data
+     * @return {void}
      */
     loadDetail: function(data) {
         var vThis = this;
@@ -387,8 +394,8 @@ var Handler = {
    
    /**
     * Handle refresh content load pjax after process flow
-    * @param {type} limit
-    * @returns {undefined}
+    * @param {Element.value} limit
+    * @returns {void}
     */
    loadPage: function(limit) {
         var targetUrl = decodeURIComponent(window.location.protocol + "//" + window.location.host  + window.location.pathname);
@@ -414,7 +421,7 @@ var Handler = {
    
    /**
     * Clear checked checkbox and remove item after approve/reject
-    * @returns {undefined}
+    * @return {Clear checkbox}
     */
    resetAfterApprove: function() {
        var vThis = this;
@@ -435,6 +442,7 @@ var Handler = {
     */
    handleError: function(err) {
        console.log(err);
+       window.location.reload();
    },
    
    /**
@@ -444,11 +452,12 @@ var Handler = {
     */
    handleApprove: function(data) {
        var vThis = this;
-       if (data.type && data.type == vThis.TYPE_CONTRACT) {
+       console.log(vThis.TYPE_CONTRACT, data, data.type);
+       if (typeof data.type !== "undefined" && data.type == vThis.TYPE_CONTRACT) {
            vThis.modal.title = Approve.modalContract.title_approve || "";
-       } else if (data.type && data.type == vThis.TYPE_SPOT) {
+       } else if (typeof data.type !== "undefined" && data.type == vThis.TYPE_SPOT) {
            vThis.modal.title = Approve.modalSpot.title_approve || "";
-       } else if (data.type && data.type == vThis.TYPE_BILLING) {
+       } else if (typeof data.type !== "undefined" && data.type == vThis.TYPE_BILLING) {
            vThis.modal.title = Approve.modalBilling.title_approve || "";
        } else {
            vThis.modal.title = "Header default";
@@ -488,7 +497,7 @@ var Handler = {
        } else {
            vThis.modal.title = "Header default";
        }
-
+       
        $.ajax({
            type: "POST",
            url: '/approve/reject-approve',

@@ -363,7 +363,8 @@
                                             {{ Form::button(trans('company.btn_setting_billing_method'), [
                                                     'class' => 'btn btn-green-dark btn-w150',
                                                     'id' => 'btn-setting-billing',
-                                                    'data-url' => route('billing.method.show', ['billing-method' => $billingMethod ? $billingMethod->id : 0]),
+                                                    'data-url' => route('billing.method.show', ['billing-method' => $company->billing_method_id]),
+                                                    'tabindex' => 1,
                                                 ])
                                             }}
                                         </div>
@@ -384,6 +385,7 @@
                                                     'class' => 'btn btn-green-dark btn-w150',
                                                     'id' => 'btn-add-service-for-all-ship',
                                                     'data-url' => route('company.service.create'),
+                                                    'tabindex' => 2,
                                                 ])
                                             }}
                                         </div>
@@ -392,6 +394,7 @@
                                                     'class' => 'btn btn-green-dark btn-w150',
                                                     'id' => 'btn-show-popup-delete-service-in-all-ship',
                                                     'data-url' => route('company.service.index'),
+                                                    'tabindex' => 3,
                                                 ])
                                             }}
                                         </div>
@@ -412,7 +415,9 @@
                                     </div>
                                     <div class="col-md-12">
                                         <div class="col-md-6">
-                                            <a href="{{ route('ship.createShipContract', ['company-id' => $company->id]) }}" class="btn btn-green-dark btn-w150">
+                                            <a href="{{ route('ship.createShipContract', ['company-id' => $company->id]) }}"
+                                                class="btn btn-green-dark btn-w150"
+                                                tabindex="4">
                                                 {{ trans('company.btn_create') }}
                                             </a>
                                         </div>
@@ -432,6 +437,7 @@
                                             {{ Form::button(trans('company.btn_delete'), [
                                                     'class' => 'btn btn-green-dark btn-w150',
                                                     'id' => 'btn-show-popup-delete-all-service',
+                                                    'tabindex' => 5,
                                                 ])
                                             }}
                                         </div>
@@ -445,20 +451,21 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="block-detail block-center">
-                            <a href="{{ route('company.index') }}" class="btn btn-blue-light btn-w150">
+                            <a href="{{ route('company.index') }}" class="btn btn-blue-light btn-w150" tabindex="6">
                                 {{ trans('company.btn_back_to_list_company') }}
                             </a>
 
                             {{ Form::button(trans('company.btn_delete_company'), [
                                     'class' => 'btn btn-red btn-w150',
                                     'id' => 'btn-show-popup-confirm-delete-company',
+                                    'tabindex' => 7,
                                 ])
                             }}
 
-                            <a href="{{ route('company.edit', ['id' => $company->id]) }}" class="btn btn-green-dark btn-w150">
+                            <a href="{{ route('company.edit', ['id' => $company->id]) }}" class="btn btn-green-dark btn-w150" tabindex="8">
                                 {{ trans('company.btn_edit_company') }}
                             </a>
-                            <a href="{{ route('ship.index', ['company-id' => $company->id]) }}" class="btn btn-green-dark btn-w150">
+                            <a href="{{ route('ship.index', ['company-id' => $company->id]) }}" class="btn btn-green-dark btn-w150" tabindex="9">
                                 {{ trans('company.btn_go_to_list_ship') }}
                             </a>
                         </div>
@@ -517,6 +524,17 @@
                         <div class="col-md-12">
                             <div class="alert alert-success">
                                 <div class="block-success">
+                                    <i class="fa fa-check" aria-hidden="true"></i>
+                                    <label></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-content">
+                        <div class="col-md-12">
+                            <div class="alert alert-info">
+                                <div class="block-info">
                                     <i class="fa fa-check" aria-hidden="true"></i>
                                     <label></label>
                                 </div>

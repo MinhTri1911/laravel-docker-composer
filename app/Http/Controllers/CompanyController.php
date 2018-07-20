@@ -4,7 +4,7 @@
  * File company controller
  *
  * @package App\Http\Controllers
- * @author Rikkei.trihnm
+ * @author Rikkei.Trihnm
  * @date 2018/06/19
  */
 
@@ -245,7 +245,7 @@ class CompanyController extends Controller
         try {
             $data = $this->_companyBusiness->getDetailCompany($id);
         } catch (\Exception $e) {
-            return abort(500);
+            return abort('NotFound');
         }
 
         return view('company.detail', [

@@ -110,7 +110,7 @@ class ApproveRepository implements ApproveInterface
         
         // Remove condition if not in query string sql
         $paramCondition = $this->removeConfigConditionNotFilter($paramCondition);
-
+        
         // Check date to
         if (isset($paramCondition['date'])) {
             $date_from = $paramCondition['date']['date_from']??null;
@@ -122,7 +122,7 @@ class ApproveRepository implements ApproveInterface
                     );
             unset($paramCondition['date']);
         }
-       
+        
         // Check if filter user
         if (isset($paramCondition['user'])) {
             $user = $paramCondition['user']??null;
@@ -154,7 +154,7 @@ class ApproveRepository implements ApproveInterface
         
         return $contracts->get();
     }
-
+    
     /* 
      * Handle remove index from condition don't use in clause condition of query SQL
      * 
@@ -164,17 +164,42 @@ class ApproveRepository implements ApproveInterface
      */
     public function removeConfigConditionNotFilter($paramCondition = null)
     {
+        // Remove index type of request approve
         if (isset($paramCondition['type'])) {
             unset($paramCondition['type']);
         }
         
+        // Remove status of request approve
         if (isset($paramCondition['status'])) {
             unset($paramCondition['status']);
         
-        }    
+        }
         
         return $paramCondition;
+    }
+    
+    /**
+     * Execute query update data contract
+     * 
+     * @access public
+     * @param int|array $id
+     * @return int
+     */
+    public function updateContract($id = '', $dataUpdate = [])
+    {
+        if(!is_null($id) && !is_null($dataUpdate)) {
+            if (is_array($id) && count($id) > 0) {
+                return DB::table('m_contract')
+                    ->whereIn('m_contract.id', $id)
+                    ->update($dataUpdate);
+            }
+            
+            return DB::table('m_contract')
+                        ->where('m_contract.id', $id)
+                        ->update($dataUpdate);
+        }
         
+        return null;
     }
     
     /**
@@ -277,8 +302,8 @@ class ApproveRepository implements ApproveInterface
             $date_from = $paramCondition['date']['date_from']??null;
             $date_to = $paramCondition['date']['date_to']??null;
             
-            $spots->whereRaw("((m_contract.updated_at IS NULL AND (? IS NULL OR m_contract.created_at >= ?) AND (? IS NULL OR m_contract.created_at <= ?)) 
-                        OR ((? IS NULL OR m_contract.updated_at >= ?) AND (? IS NULL OR m_contract.updated_at <= ?)))", 
+            $spots->whereRaw("((t_ship_spot.updated_at IS NULL AND (? IS NULL OR t_ship_spot.created_at >= ?) AND (? IS NULL OR t_ship_spot.created_at <= ?)) 
+                        OR ((? IS NULL OR t_ship_spot.updated_at >= ?) AND (? IS NULL OR t_ship_spot.updated_at <= ?)))", 
                         [$date_from, $date_from, $date_to, $date_to, $date_from, $date_from, $date_to, $date_to ]
                     );
             unset($paramCondition['date']);
@@ -314,6 +339,30 @@ class ApproveRepository implements ApproveInterface
         }
         
         return $spots->get();
+    }
+    
+    /**
+     * Execute query update data spot
+     * 
+     * @access public
+     * @param int|array $id
+     * @return int
+     */
+    public function updateSpot($id = '', $dataUpdate = [])
+    {
+        if(!is_null($id) && !is_null($dataUpdate)) {
+            if (is_array($id) && count($id) > 0) {
+                return DB::table('t_ship_spot')
+                    ->whereIn('t_ship_spot.id', $id)
+                    ->update($dataUpdate);
+            }
+            
+            return DB::table('t_ship_spot')
+                        ->where('t_ship_spot.id', $id)
+                        ->update($dataUpdate);
+        }
+        
+        return null;
     }
     
     /**
@@ -402,7 +451,7 @@ class ApproveRepository implements ApproveInterface
                     );
             unset($paramCondition['date']);
         }
-       
+        
         // Check if filter user
         if (isset($paramCondition['user'])) {
             $user = $paramCondition['user']??null;
@@ -433,5 +482,29 @@ class ApproveRepository implements ApproveInterface
         }
         
         return $billings->get();
+    }
+    
+    /**
+     * Execute query update data billing
+     * 
+     * @access public
+     * @param int|array $id
+     * @return int
+     */
+    public function updateBilling($id = '', $dataUpdate = [])
+    {
+        if(!is_null($id) && !is_null($dataUpdate)) {
+            if (is_array($id) && count($id) > 0) {
+                return DB::table('t_history_billing')
+                    ->whereIn('t_history_billing.id', $id)
+                    ->update($dataUpdate);
+            }
+            
+            return DB::table('t_history_billing')
+                        ->where('t_history_billing.id', $id)
+                        ->update($dataUpdate);
+        }
+        
+        return null;
     }
 }

@@ -66,6 +66,11 @@ class Handler extends ExceptionHandler {
                     return \Response::view('exception.403');
                     break;
                 
+                case 'NotFound' :
+                    $data['message'] = $exception->getMessage();
+                    return \Response::view('exception.notfound',$data);
+                    break;
+                
                 default:
                     return \Response::view('exception.404');
                     break;

@@ -33,12 +33,12 @@ class ContractController extends Controller
             $data['ship'] = $this->_contractBusiness->initCreate($idShip);
 
             if ($data['ship'] == null) {
-                return abort(404);
+                return abort('NotFound');
             }
             return view('contract.create', $data);
         } catch (Exception $ex) {
             Log::info($ex);
-            return abort(404);
+            return abort('NotFound');
         }
     }
 

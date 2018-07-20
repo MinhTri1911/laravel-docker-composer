@@ -5,7 +5,7 @@
  *
  * Handle business related to company
  * @package App\Business
- * @author Rikkei.trihnm
+ * @author Rikkei.Trihnm
  * @date 2018/06/19
  */
 
@@ -194,19 +194,47 @@ class CompanyBusiness
     /**
      * Function get detail company by id
      * @param int id
-     * @param array colums
+     * @param array columns
      * @return array
      */
     public function getDetailCompany($id, $columns = ['*'])
     {
-        $company = $this->companyRepository->getDetailCompanyWithRelation($id, $columns = ['*']);
+        $company = $this->companyRepository->getDetailCompanyWithRelation($id, [
+            'm_company.*',
+            'm_nation.name_jp as nation_name_jp',
+            'm_nation.name_en as nation_name_en',
+            'm_company_operation.name as ope_company_name',
+            'm_billing_method.name_jp as billing_name_jp',
+            'm_billing_method.name_en as billing_name_en',
+            'm_billing_method.id as billing_id',
+            'm_currency.code as currency_code',
+        ]);
 
         return [
-            'company' => $company['company'],
-            'nation' => $company['nation'],
-            'companyOperation' => $company['companyOperation'],
-            'billingMethod' => $company['billingMethod'],
-            'currency' => $company['currency'],
+            'company' => $company,
+
+            // Cast to model MNation
+            'nation' => new \App\Models\MNation([
+                'name_jp' => $company->nation_name_jp,
+                'name_en' => $company->nation_name_en
+            ]),
+
+            // Cast to model MCompanyOperation
+            'companyOperation' => new \App\Models\MCompanyOperation([
+                'name' => $company->ope_company_name,
+            ]),
+
+            // Cast to model MBillingMethod
+            'billingMethod' => new \App\Models\MBillingMethod([
+                'name_jp' => $company->billing_name_jp,
+                'name_en' => $company->billing_name_en,
+                'id' => $company->billing_id,
+            ]),
+
+            // Cast to model MCurrency
+            'currency' => new \App\Models\MCurrency([
+                'code' => $company->currency_code,
+            ]),
         ];
     }
 
@@ -274,6 +302,7 @@ class CompanyBusiness
                 'reason_reject' => null,
                 'updated_at' => $updatedAt,
                 'updated_by' => auth()->id(),
+                'status' => Constant::STATUS_CONTRACT_DELETED,
             ], 'ship_id');
 
         return $this->companyRepository->update($companyId, [

@@ -15,6 +15,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use App\Repositories\MSpot\MSpotInterface;
 use App\Repositories\MCurrency\MCurrencyInterface;
 use App\Repositories\Company\CompanyInterface;
+use App\Common\Common;
 
 class SpotRequest extends FormRequest {
 
@@ -49,7 +50,7 @@ class SpotRequest extends FormRequest {
         $rules = [
             'spotId' => 'required',
             'dateStart' => 'required|date_format:Y/m/d|after_or_equal:' . $now,
-            'amountCharge' => 'required|numeric|min:0',
+            'amountCharge' => 'required|min:0',
         ];
 
         return $rules;
@@ -60,7 +61,6 @@ class SpotRequest extends FormRequest {
             'dateStart.required' => __('spot.error.E003', ['item' => __('spot.lbl_spot_month_usage')]),
             'dateStart.date_format' => __('spot.error.E005', ['item' => __('spot.lbl_spot_month_usage')]),
             'dateStart.after_or_equal' => __('spot.error.E020', ['item' => __('spot.lbl_spot_month_usage'), 'value' => date('Y/m/d')]),
-            'amountCharge.numeric' => __('spot.error.E008', ['value' => __('spot.lbl_spot_amount_charge')]),
             'amountCharge.min' => __('spot.error.E020', ['item' => __('spot.lbl_spot_amount_charge'), 'value' => '0']),
             'amountCharge.required' => __('spot.error.E003', ['item' => __('spot.lbl_spot_amount_charge')]),
         ];
@@ -105,6 +105,15 @@ class SpotRequest extends FormRequest {
         if (!$this->_mCurrencyInterface->checkExits($currencyId) || !$this->_companyInterface->checkExits($currencyId)) {
             $validator->after(function ($validator) {
                 $validator->errors()->add('spotId', __('spot.spot_not_exits', ['value' => __('spot.lbl_spot_amount_charge')]));
+            });
+        }
+        
+        $amountCharge = Common::foramtNumber($this->get('amountCharge'));
+        
+         // Check format number
+        if (preg_match('/^[0-9]+$/', $amountCharge) == 0) {
+            $validator->after(function ($validator) {
+                $validator->errors()->add('amountCharge', __('spot.error.E008', ['value' => __('spot.lbl_spot_amount_charge')]));
             });
         }
     }

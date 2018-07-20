@@ -14,8 +14,8 @@
             <tr>
                 <th class="custom-checkbox">
                     @if(count($datas) > 0)
-                    <input class="hidden" id="chk_bill_full" name="n" type="checkbox">
-                    <label for="chk_bill_full"></label>
+                    <input class="hidden" id="chk_ct_full" name="n" type="checkbox">
+                    <label for="chk_ct_full"></label>
                     @endif
                 </th>
                 <th>{{__('approve.lbl_billing_id')}}</th>
@@ -33,15 +33,15 @@
                 @foreach($datas as $billing)
                     <tr id="item-approve-{{$billing->billing_id}}">
                         <td class="custom-checkbox">
-                            <input class="hidden" id="chk_c_{{$billing->billing_id}}" name="chk_billing" type="checkbox">
+                            <input class="hidden" id="chk_c_{{$billing->billing_id}}" name="chk_contract" type="checkbox">
                             <label for="chk_c_{{$billing->billing_id}}"></label>
                         </td>
                         <td>{{$billing->billing_id}}</td>
                         <td>{{$billing->billing_company_name}}</td>
-                        <td>{{$billing->billing_claim_date}}</td>
-                        <td>{{$billing->billing_payment_due_date}}</td>
-                        <td>{{$billing->billing_total_amount_billing}}</td>
-                        <td>{{$billing->billing_created_at}}</td>
+                        <td>{{!is_null($billing->billing_claim_date)?\Carbon\Carbon::parse($billing->billing_claim_date)->format('Y/m/d'):''}}</td>
+                        <td>{{!is_null($billing->billing_payment_due_date)?\Carbon\Carbon::parse($billing->billing_payment_due_date)->format('Y/m/d'):''}}</td>
+                        <td>{{Str::convertMoneyComma($billing->billing_total_amount_billing)}}</td>
+                        <td>{{!is_null($billing->billing_created_at)?\Carbon\Carbon::parse($billing->billing_created_at)->format('Y/m/d H:i:s'):''}}</td>
                         <td>{{$billing->billing_user_name}}</td>
                         <td><a class="btn btn-blue-dark btn-custom-sm" target="_blank" href="{{$billing->billing_pdf_original_link}}">{{__('approve.btn_detail')}}</a></td>
                     </tr>

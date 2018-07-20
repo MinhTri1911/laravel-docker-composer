@@ -130,6 +130,7 @@ class ContractRepository extends EloquentRepository implements ContractInterface
         return $this->selectContractIdsNotYetDelete($companyId, $serviceIds)
             ->whereIn('m_contract.approved_flag', [Constant::STATUS_APPROVED, Constant::STATUS_REJECT_APPROVE])
             ->whereIn('m_contract.status', [Constant::STATUS_CONTRACT_ACTIVE, Constant::STATUS_CONTRACT_PENDING])
+            ->whereNotNull('m_contract.updated_at')
             ->get()
             ->toArray();
     }
@@ -163,6 +164,7 @@ class ContractRepository extends EloquentRepository implements ContractInterface
         return $this
             ->whereIn('approved_flag', [Constant::STATUS_APPROVED, Constant::STATUS_REJECT_APPROVE])
             ->whereIn('status', [Constant::STATUS_CONTRACT_ACTIVE, Constant::STATUS_CONTRACT_PENDING])
+            ->whereNotNull('m_contract.updated_at')
             ->multiUpdate($ids, $data, $column);
     }
 
