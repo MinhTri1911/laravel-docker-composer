@@ -177,4 +177,38 @@ class ShipBusiness
         return $dataQuery;
     }
 
+    /*
+     *
+     */
+    public function initCreateShipContract($companyId)
+    {
+        // $data = $this->_shipRepository
+        //     ->getDataCreateShipContract($companyId);
+
+        $company = app(\App\Repositories\Company\CompanyInterface::class);
+        $company = $company->where('del_flag', 0)
+            ->get(['id', 'name_jp', 'name_en']);
+
+        $nation = app(\App\Repositories\Nation\NationInterface::class);
+        $nation = $nation->where('del_flag', 0)->get(['id', 'code', 'name_jp', 'name_en']);
+
+        $classification = app(\App\Repositories\Classification\ClassificationInterface::class);
+        $classification = $classification->where('del_flag', 0)->get(['id', 'code', 'name_jp', 'name_en']);
+
+        $shipType = app(\App\Repositories\ShipType\ShipTypeInterface::class);
+        $shipType = $shipType->where('del_flag', 0)->get();
+
+        $service = app(\App\Repositories\Service\ServiceInterface::class);
+        $service = $service->join('t_price_service', 'm_service.id', 't_price_service.service_id')
+            ->join('m_company', function ($join) use ($companyId) {
+                $join->on('m_company.currency_id', 't_price_service.currency_id')
+                    ->where('m_company.id', $companyId);
+            })
+            ->where('m_company.del_flag', 0)
+            ->where('t_price_service.del_flag', 0)
+            ->where('m_service.del_flag', 0)
+            ->get();
+
+        // dd($shipType);
+    }
 }
