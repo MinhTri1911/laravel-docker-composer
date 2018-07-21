@@ -174,11 +174,17 @@ class ShipController extends Controller
 
     /**
      * Show page create ship contract
-     *
+     * @param Illuminate\Http\Request request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function createShipContract()
+    public function createShipContract(Request $request)
     {
+        if (!$request->get('company-id')) {
+            abort(404);
+        }
+        
+        $shipContract = $this->_shipBusiness->initCreateShipContract($request->get('company-id'));
+
         return view('ship.create-ship-contract');
     }
 
