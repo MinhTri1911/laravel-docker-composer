@@ -19,6 +19,9 @@ use App\Business\ShipBusiness;
  */
 class ShipController extends Controller
 {
+    // Call roles trait to handel check permission
+    use RolesController;
+
     /**
      * @var ShipBusiness
      */
@@ -45,6 +48,9 @@ class ShipController extends Controller
      */
     public function index(Request $request)
     {
+        // Check permission
+        $this->checkPermission(Constant::ALLOW_SHIP_VIEW, Constant::IS_CHECK_SCREEN);
+
         // Get sort request data
         $data = [
             'companyId' => $request->get('company-id'), // Company id
@@ -61,11 +67,7 @@ class ShipController extends Controller
             return response()->json([
                 'code' => Constant::HTTP_CODE_SUCCESS,
                 // Send list ship table data to view
-                'table' => view('ship.component.list.table-data',
-                    [
-                        'ships' => $shipData,
-                        'contractStatus' => Constant::CONTRACT_O
-                    ]
+                'table' => view('ship.component.list.table-data', ['ships' => $shipData]
                 )->render(),
                 'paginate' => view('ship.component.paginate', [
                     'pagination' => $shipData,
@@ -80,7 +82,6 @@ class ShipController extends Controller
         $viewData = [
             'ships' => $shipData,
             'url' => route('ship.index') . '?page=',
-            'contractStatus' => Constant::CONTRACT_O,
             'companyId' => $data['companyId'],
             // Get back button route and send to view
             'backButton' => !$request->has('company-id')
@@ -141,10 +142,8 @@ class ShipController extends Controller
         }
 
         // Render data result after filter
-        $viewData = view('ship.component.list.table-data', [
-            'ships' => $ships,
-            'contractStatus' => Constant::CONTRACT_O
-        ] )->render();
+        $viewData = view('ship.component.list.table-data', ['ships' => $ships])
+            ->render();
 
         // Render data pagination after filter
         $paginationView = view('ship.component.paginate',
@@ -170,16 +169,6 @@ class ShipController extends Controller
     public function create()
     {
         return view('ship.create');
-    }
-
-    /**
-     * Show page create ship contract
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function createShipContract()
-    {
-        return view('ship.create-ship-contract');
     }
 
     /**

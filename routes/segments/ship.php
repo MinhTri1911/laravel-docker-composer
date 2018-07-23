@@ -16,7 +16,7 @@ Route::group(['middleware' => 'auth'], function() {
 
     Route::group(['prefix' => 'ship', 'as' => 'ship.'], function () {
         Route::get('/filter', 'ShipController@filterShip')->name('filter');
-        Route::get('/create-ship-contract', 'ShipController@createShipContract')->name('createShipContract');
+        Route::get('/create-ship-contract', 'ShipContractController@create')->name('contract.create');
 
         Route::get('/{id}/edit', 'ShipController@edit')->name('edit');
 

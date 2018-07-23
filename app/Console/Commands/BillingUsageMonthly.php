@@ -5,7 +5,7 @@
  * @package App\Console\Commands
  * @author Rikkei.quangpm
  * @date 2018/06/19
-*/
+ */
 
 namespace App\Console\Commands;
 
@@ -15,19 +15,19 @@ use DB;
 use App\Common\LoggingCommon as Log;
 use App\Common\Constant;
 
-class BillingUsageMonthly extends Command 
+class BillingUsageMonthly extends Command
 {
     // The name and signature of the console command.
-    protected $signature        = 'batch:billingUsageMonthly';
+    protected $signature = 'batch:billingUsageMonthly';
 
     // The console command description.
-    protected $description      = 'Calculate billing usage monthly of ship';
+    protected $description = 'Calculate billing usage monthly of ship';
 
     // The Object log.
-    private $_log      = null;
+    private $_log = null;
 
-    private $_monthUsage   = '';
-    private $_now          = '';
+    private $_monthUsage = '';
+    private $_now = '';
     private $_rateCurrency = 1;
 
     /**
@@ -36,7 +36,7 @@ class BillingUsageMonthly extends Command
      * @access public
      * @return void
      */
-    public function __construct ()
+    public function __construct()
     {
         parent::__construct();
         $this->_log = Log::BBA0005Log();
@@ -48,7 +48,7 @@ class BillingUsageMonthly extends Command
      * @access public
      * @return void
      */
-    public function handle ()
+    public function handle()
     {
         $isException = 0;
 
@@ -77,7 +77,7 @@ class BillingUsageMonthly extends Command
 
         // Get information of contract, charge service, total license, discount individual
         $listContract = $this->_getInforContract();
-        if ($listContract === null ) {
+        if ($listContract === null) {
             return 0;
         }
 
@@ -101,7 +101,7 @@ class BillingUsageMonthly extends Command
             $cLNumber = $contract->license_count;
             $discountIndividual = $contract->discount_individual === null ? 0 : $contract->discount_individual;
 
-             // Case: First record of every Company
+            // Case: First record of every Company
             if ($companyIdTempl != $companyId) {
 
                 // Set parameter
@@ -169,13 +169,13 @@ class BillingUsageMonthly extends Command
             }
 
             // Get list ID of contract expired
-            $now = date('Y-m-d',strtotime($this->_now));
+            $now = date('Y-m-d', strtotime($this->_now));
             if ($contract->end_date < $now) {
                 $listExpiredContract[] = $contract->contract_id;
             }
 
             // Check is last record OR last record of company OR last record of ship
-            if ($i == count($listContract) - 1 || 
+            if ($i == count($listContract) - 1 ||
                 ($companyIdTempl != $listContract[$i + 1]->company_id) ||
                 ($shipIdTempl != $listContract[$i + 1]->ship_id)) {
 
@@ -213,7 +213,7 @@ class BillingUsageMonthly extends Command
 
     /**
      * Process for loop company: First record of every company
-     * 
+     *
      * @param int $companyId Company ID
      * @param int $currencyId Currency ID
      * @return null|float $discountCommon
@@ -239,7 +239,7 @@ class BillingUsageMonthly extends Command
 
     /**
      * Get discount common of company
-     * 
+     *
      * @access private
      * @param int $companyId Company ID
      * @param int $currencyId Currency ID
@@ -249,13 +249,13 @@ class BillingUsageMonthly extends Command
     {
         try {
             return DB::table('t_discount_common')
-                    ->select('money_discount')
-                    ->where([
-                        ['company_id', '=', $companyId],
-                        ['setting_month', '=', $this->_monthUsage],
-                        ['currency_id', '=', $currencyId],
-                        ['del_flag', '=', Constant::DELETE_FLAG_FALSE]])
-                    ->get();
+                ->select('money_discount')
+                ->where([
+                    ['company_id', '=', $companyId],
+                    ['setting_month', '=', $this->_monthUsage],
+                    ['currency_id', '=', $currencyId],
+                    ['del_flag', '=', Constant::DELETE_FLAG_FALSE]])
+                ->get();
 
         } catch (Exception $ex) {
             $this->_log->err('Get discount common of company fail: ' . $ex->getMessage());
@@ -343,7 +343,7 @@ class BillingUsageMonthly extends Command
 
     /**
      * Process for loop ship: First record of every Ship
-     * 
+     *
      * @param int $shipId Ship ID
      * @param int $currencyId Currency ID
      * @param float $totalMoneyBilling Total money billing
@@ -371,7 +371,7 @@ class BillingUsageMonthly extends Command
             return null;
         }
 
-         return $historyUsageId;
+        return $historyUsageId;
     }
 
     /**
@@ -387,10 +387,10 @@ class BillingUsageMonthly extends Command
         try {
             // Add value insert
             $arrDataInsert = [
-                'ship_id'            => $shipId,
-                'month_usage'        => $this->_monthUsage,
-                'currency_id'        => $currencyId,
-                'created_at'         => date('Y-m-d H:i:s')
+                'ship_id' => $shipId,
+                'month_usage' => $this->_monthUsage,
+                'currency_id' => $currencyId,
+                'created_at' => date('Y-m-d H:i:s')
             ];
 
             return DB::table('t_history_usage')->insertGetId($arrDataInsert);
@@ -414,23 +414,23 @@ class BillingUsageMonthly extends Command
     {
         try {
             return DB::table('t_ship_spot AS SP')
-                    ->select('SP.ship_id'
-                            ,'SP.spot_id'
-                            ,'SP.currency_id'
-                            ,'SP.amount_charge'
-                            ,'SP.remark'
-                            ,'S.name_jp')
-                    ->join('m_spot AS S', function($join){
-                      $join->on('S.id', '=', 'SP.spot_id')
-                            ->where('S.del_flag', '=', Constant::DELETE_FLAG_FALSE);
-                    })
-                    ->where([['SP.ship_id', '=', $shipId],
-                            ['SP.currency_id', '=', $currencyId],
-                            ['SP.month_usage', '=', $this->_monthUsage],
-                            ['SP.del_flag', '=', Constant::DELETE_FLAG_FALSE]])
-                    ->whereRaw("(SP.approved_flag = ? OR ((SP.approved_flag = ? OR SP.approved_flag = ?) AND SP.updated_at IS NOT NULL))"
-                                , [Constant::STATUS_APPROVED, Constant::STATUS_WAITING_APPROVE, Constant::STATUS_REJECT_APPROVE])
-                    ->get();
+                ->select('SP.ship_id'
+                    , 'SP.spot_id'
+                    , 'SP.currency_id'
+                    , 'SP.amount_charge'
+                    , 'SP.remark'
+                    , 'S.name_jp')
+                ->join('m_spot AS S', function ($join) {
+                    $join->on('S.id', '=', 'SP.spot_id')
+                        ->where('S.del_flag', '=', Constant::DELETE_FLAG_FALSE);
+                })
+                ->where([['SP.ship_id', '=', $shipId],
+                    ['SP.currency_id', '=', $currencyId],
+                    ['SP.month_usage', '=', $this->_monthUsage],
+                    ['SP.del_flag', '=', Constant::DELETE_FLAG_FALSE]])
+                ->whereRaw("(SP.approved_flag = ? OR ((SP.approved_flag = ? OR SP.approved_flag = ?) AND SP.updated_at IS NOT NULL))"
+                    , [Constant::STATUS_APPROVED, Constant::STATUS_WAITING_APPROVE, Constant::STATUS_REJECT_APPROVE])
+                ->get();
 
         } catch (Exception $ex) {
             $this->_log->err('Get list charge spot fail: ' . $ex->getMessage());
@@ -458,15 +458,15 @@ class BillingUsageMonthly extends Command
                 // Add value insert
                 if ($spot->amount_charge != 0) {
                     $arrListInsert[] = [
-                        'history_usage_id'       => $historyUsageId,
-                        'charge_type_id'         => Constant::CHARGE_SPOT_ID,
-                        'detail_charge_type_id'  => $spot->spot_id,
-                        'month_usage'            => $this->_monthUsage,
-                        'description'            => $spot->name_jp,
-                        'currency_id'            => $spot->currency_id,
-                        'money_billing'          => $spot->amount_charge,
-                        'money'                  => $spot->amount_charge * $this->_rateCurrency,
-                        'created_at'             => date('Y-m-d H:i:s')
+                        'history_usage_id' => $historyUsageId,
+                        'charge_type_id' => Constant::CHARGE_SPOT_ID,
+                        'detail_charge_type_id' => $spot->spot_id,
+                        'month_usage' => $this->_monthUsage,
+                        'description' => $spot->name_jp,
+                        'currency_id' => $spot->currency_id,
+                        'money_billing' => $spot->amount_charge,
+                        'money' => $spot->amount_charge * $this->_rateCurrency,
+                        'created_at' => date('Y-m-d H:i:s')
                     ];
                 }
                 $totalMoneySpot += $spot->amount_charge;
@@ -495,14 +495,14 @@ class BillingUsageMonthly extends Command
     {
         try {
             $currency = DB::table('m_currency')
-                        ->select('id', 'rate')
-                        ->where([
-                            ['id', '=', $currencyId],
-                            ['del_flag', '=', Constant::DELETE_FLAG_FALSE]])
-                        ->get();
+                ->select('id', 'rate')
+                ->where([
+                    ['id', '=', $currencyId],
+                    ['del_flag', '=', Constant::DELETE_FLAG_FALSE]])
+                ->get();
 
             if (count($currency) > 0) {
-                 return $currency[0]->rate;
+                return $currency[0]->rate;
             }
 
             return 1;
@@ -551,14 +551,14 @@ class BillingUsageMonthly extends Command
     {
         try {
             return DB::table('t_volume_discount')
-                    ->select('service_id'
-                            ,'money_discount'
-                            ,'cl_number')
-                    ->where([
-                        ['service_id', '=', $serviceId],
-                        ['del_flag', '=', Constant::DELETE_FLAG_FALSE]])
-                    ->orderBy('cl_number', 'desc')
-                    ->get();
+                ->select('service_id'
+                    , 'money_discount'
+                    , 'cl_number')
+                ->where([
+                    ['service_id', '=', $serviceId],
+                    ['del_flag', '=', Constant::DELETE_FLAG_FALSE]])
+                ->orderBy('cl_number', 'desc')
+                ->get();
 
         } catch (Exception $ex) {
             $this->_log->err('Get list charge spot fail: ' . $ex->getMessage());
@@ -580,16 +580,16 @@ class BillingUsageMonthly extends Command
         try {
             // Add value insert
             $arrDataInsert = [
-                'history_usage_id'      => $historyUsageId,
-                'charge_type_id'        => Constant::CHARGE_SERVICE_ID,
+                'history_usage_id' => $historyUsageId,
+                'charge_type_id' => Constant::CHARGE_SERVICE_ID,
                 'detail_charge_type_id' => $contract->service_id,
-                'month_usage'           => $this->_monthUsage,
-                'description'           => $contract->name_short . '利用料',
-                'currency_id'           => $contract->currency_id,
-                'money_billing'         => $contract->price_service,
-                'money'                 => $contract->price_service * $this->_rateCurrency,
-                'created_at'            => date('Y-m-d H:i:s')
-                ];
+                'month_usage' => $this->_monthUsage,
+                'description' => $contract->name_short . '利用料',
+                'currency_id' => $contract->currency_id,
+                'money_billing' => $contract->price_service,
+                'money' => $contract->price_service * $this->_rateCurrency,
+                'created_at' => date('Y-m-d H:i:s')
+            ];
 
             return DB::table('t_detail_history_usage')->insert($arrDataInsert);
 
@@ -602,7 +602,7 @@ class BillingUsageMonthly extends Command
 
     /**
      * Register money discount into table t_detail_history_usage
-     * 
+     *
      * @access private
      * @param int $historyUsageId History usage ID
      * @param object $contract object contract
@@ -616,16 +616,16 @@ class BillingUsageMonthly extends Command
             if ($moneyDiscount != 0) {
                 // Add value insert
                 $arrDataInsert = [
-                    'history_usage_id'      => $historyUsageId,
-                    'charge_type_id'        => Constant::CHARGE_DISCOUNT_ID,
+                    'history_usage_id' => $historyUsageId,
+                    'charge_type_id' => Constant::CHARGE_DISCOUNT_ID,
                     'detail_charge_type_id' => $discountId,
-                    'month_usage'           => $this->_monthUsage,
-                    'description'           => $contract->service_id,
-                    'currency_id'           => $contract->currency_id,
-                    'money_billing'         => -$moneyDiscount,
-                    'money'                 => -$moneyDiscount * $this->_rateCurrency,
-                    'created_at'            => date('Y-m-d H:i:s')
-                    ];
+                    'month_usage' => $this->_monthUsage,
+                    'description' => $contract->service_id,
+                    'currency_id' => $contract->currency_id,
+                    'money_billing' => -$moneyDiscount,
+                    'money' => -$moneyDiscount * $this->_rateCurrency,
+                    'created_at' => date('Y-m-d H:i:s')
+                ];
                 return DB::table('t_detail_history_usage')->insert($arrDataInsert);
             }
             return 1;
@@ -639,7 +639,7 @@ class BillingUsageMonthly extends Command
 
     /**
      *  Update total money of table t_history_usage
-     * 
+     *
      * @access private
      * @param int $historyUsageId History usage ID
      * @param float $totalMoneyBilling Total money billing
@@ -647,13 +647,13 @@ class BillingUsageMonthly extends Command
      */
     private function _updateTotalMoneyHistoryUsage($historyUsageId, $totalMoneyBilling)
     {
-         try {
-           return DB::table('t_history_usage')
+        try {
+            return DB::table('t_history_usage')
                 ->where('id', '=', $historyUsageId)
                 ->update([
-                    'total_amount_billing'   => $totalMoneyBilling,
-                    'total_money'           => $totalMoneyBilling * $this->_rateCurrency
-                    ]);
+                    'total_amount_billing' => $totalMoneyBilling,
+                    'total_money' => $totalMoneyBilling * $this->_rateCurrency
+                ]);
 
         } catch (Exception $ex) {
             $this->_log->err('Update total money of table t_history_usage fail: ' . $ex->getMessage());
@@ -664,20 +664,20 @@ class BillingUsageMonthly extends Command
 
     /**
      * Update status of expired contract
-     * 
+     *
      * @access private
      * @param array $listExpiredContract List array ID contract
      * @return null|int
      */
-    private function  _updateStatusOfExpiredContract($listExpiredContract)
+    private function _updateStatusOfExpiredContract($listExpiredContract)
     {
-         try {
+        try {
             if (count($listExpiredContract) > 0) {
                 return DB::table('m_contract')
-                    ->whereRaw('id IN (?)', [implode(', ' ,$listExpiredContract)])
+                    ->whereRaw('id IN (?)', [implode(', ', $listExpiredContract)])
                     ->update([
-                        'status'   => Constant::STATUS_CONTRACT_EXPIRED
-                        ]);
+                        'status' => Constant::STATUS_CONTRACT_EXPIRED
+                    ]);
             }
 
             return 1;

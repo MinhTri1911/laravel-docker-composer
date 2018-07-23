@@ -6,14 +6,6 @@
         $number = 1;
         // Initial tracker empty array
         $tracker = [];
-
-        // Contract btn class
-        $contractClass = [
-            0 => 'btn-green-dark',
-            1 => 'btn-orange',
-            2 => 'btn-red-dark',
-            3 => 'btn-gray-dark',
-        ]
     @endphp
 
     {{-- loop list ship data --}}
@@ -51,7 +43,12 @@
                 </td>
                 <td class="col-action contract-status">
                     @if ($ship->status !== null)
-                        <label class="btn btn-custom-sm {{ $contractClass[$ship->status] }}">{{ $contractStatus[$ship->status] }}</label>
+                        {{ @Constant::CONTRACT_O[$ship->status] }}
+                    @endif
+                </td>
+                <td class="col-action approve-status">
+                    @if ($ship->approved_flag !== null)
+                        {{ @Constant::APPROVED_O[$ship->approved_flag] }}
                     @endif
                 </td>
                 <td class="col-action" rowspan="{{ $number }}">
@@ -67,7 +64,12 @@
                 </td>
                 @if ($ship->status !== null)
                     <td class="col-action contract-status">
-                        <label class="btn btn-custom-sm {{ $contractClass[$ship->status] }}">{{ $contractStatus[$ship->status] }}</label>
+                        {{ @Constant::CONTRACT_O[$ship->status] }}
+                    </td>
+                @endif
+                @if ($ship->approved_flag !== null)
+                    <td class="col-action approve-status">
+                        {{ @Constant::APPROVED_O[$ship->approved_flag] }}
                     </td>
                 @endif
             </tr>

@@ -22,6 +22,7 @@ class CreateTUserLoginTable extends Migration
             $table->boolean('auth_create')->default(0);
             $table->boolean('auth_approve')->default(0);
             $table->boolean('auth_reference')->default(0);
+            $table->boolean('auth_operation')->default(0);
             $table->boolean('auth_admin')->default(0);
             $table->string('login_id', 150);
             $table->string('password', 256);

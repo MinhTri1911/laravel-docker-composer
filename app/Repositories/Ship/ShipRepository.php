@@ -303,7 +303,8 @@ class ShipRepository extends EloquentRepository implements ShipInterface
             'm_ship_classification.name_en AS ship_classification_name_en',
             'm_company.name_jp AS company_name_jp',
             'm_company.name_en AS company_name_en',
-            'm_contract.status'
+            'm_contract.status',
+            'm_contract.approved_flag'
         ])
             // Left join with m_contract
             ->leftJoin('m_contract', 'm_contract.ship_id', '=', 'm_ship.id')

@@ -22,7 +22,7 @@ var spotCreate = new function () {
 
         setValueAmountCharge: function (id) {
 
-            var url = location.protocol + "//" + location.host + '/spot/search/amount';
+            var url = location.protocol + "//" + location.host + '/ship/spot/search/amount';
 
             var currencyId = $(spotCreate.models.currencyId).val();
 

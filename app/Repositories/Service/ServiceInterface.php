@@ -58,4 +58,11 @@ interface ServiceInterface
      */
     public function checkCurrencyService($serviceId, $currencyId);
 
+    /**
+     * Function get list service have same currency id with company
+     * @param int companyId
+     * @return Collection
+     */
+    public function getServiceValidWithCompany($companyId);
+
 }

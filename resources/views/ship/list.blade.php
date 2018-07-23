@@ -96,9 +96,11 @@
                 <div class="col-md-12">
                     <div class="block-list-ship-bottom">
                         <div class="block-button block-button-right">
-                            <a href="{{ route('ship.create') }}" class="btn btn-blue-dark btn-w150" tabindex="12">
-                                {{ trans('ship.btn_create_ship') }}
-                            </a>
+                            @if (Roles::checkPermission(Constant::ALLOW_SHIP_CREATE, Constant::IS_CHECK_BUTTON))
+                                <a href="{{ route('ship.create') }}" class="btn btn-green-dark btn-w150" tabindex="12">
+                                    {{ trans('ship.btn_create_ship') }}
+                                </a>
+                            @endif
                             <a href="{{ $backButton }}" class="btn btn-gray btn-w150" tabindex="11">{{ trans('ship.btn_back') }}</a>
                         </div>
                     </div>

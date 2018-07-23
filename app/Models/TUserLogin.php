@@ -86,6 +86,7 @@ class TUserLogin extends Authenticatable
         'auth_create',
         'auth_approve',
         'auth_reference',
+        'auth_operation',
         'auth_admin',
         'login_id',
         'password',

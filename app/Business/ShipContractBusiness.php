@@ -21,16 +21,16 @@ use Illuminate\Support\Facades\Log;
 
 class ShipContractBusiness
 {
-   
+
     // Property contain interface App\Repositories\Ship\ShipInterface
     protected $shipContract;
-    
+
     // Number record per page
     const N_RECORD_PAGE = 10;
-     
+
     /**
      * Inject dependency to Interface and repository
-     * 
+     *
      * @access public
      * @param App\Repositories\Ship\ShipInterface $shipContract
      * @return Object
@@ -39,10 +39,10 @@ class ShipContractBusiness
     {
         $this->shipContract = $shipContract;
     }
-    
+
     /**
      * Get ship contract by id ship
-     * 
+     *
      * @access public
      * @param integer $id
      * @param Illuminate\Support\Facades\Request $request
@@ -58,17 +58,17 @@ class ShipContractBusiness
                 'spots' => $this->applyReasonRejectSpot($this->shipContract->getSpot($idShip, null, $request->get('limit')))
             ];
         }
-        
+
         return (object)[
             'detail_ship' => $this->shipContract->getShip($idShip),
             'contracts' => $this->applyReasonRejectContract($this->shipContract->getContract($idShip)),
             'spots' => $this->applyReasonRejectSpot($this->shipContract->getSpot($idShip, null, self::N_RECORD_PAGE)),
         ];
     }
-    
+
     /**
      * Apply data from reason reject to collection
-     * 
+     *
      * @access public
      * @param Illuminate\Support\Collection $contract
      * @return Illuminate\Support\Collection
@@ -99,14 +99,14 @@ class ShipContractBusiness
                 $contracts->contract_date_end = $obj->end_date ?? $contracts->contract_date_end;
             }
         }
-        
+
         return $contracts;
-        
+
     }
-    
+
     /**
      * Apply data from reason reject to collection
-     * 
+     *
      * @access public
      * @param Illuminate\Support\Collection $spots
      * @return Illuminate\Support\Collection
@@ -136,14 +136,14 @@ class ShipContractBusiness
                 $spots->spot_amount_charge = $obj->amount_charge ?? $spots->spot_amount_charge;
             }
         }
-        
+
         return $spots;
-        
+
     }
-    
+
     /**
      * Restore contract with data inside request
-     * 
+     *
      * @access public
      * @param Illuminate\Support\Facades\Request $request
      * @return array
@@ -153,25 +153,25 @@ class ShipContractBusiness
         // Get ID contract and ID ship from request
         $idShip = $request->filled('ship_id')?$request->get('ship_id'):null;
         $idContract = $request->filled('contract_id')?$request->get('contract_id'):null;
-        
+
         // Get contract need to restore
         $contract = $this->shipContract->getContract($idShip, $idContract);
-        
+
         // Check status restore is change status or recover new update
         // If status is recover new, redirect to page recover, else show response
         $statusContract = $this->checkStatusContract($contract);
 
         if (isset($statusContract['restore']) && $statusContract['restore'])
             return [
-                'status' => true, 
+                'status' => true,
                 'redirectTo' => $statusContract['redirectTo']];
-        
+
         return $this->processRestoreContract($this->applyReasonRejectContract($contract));
     }
-    
+
     /**
      * Check status restore is change status or recover new
-     * 
+     *
      * @access public
      * @param Illuminate\Support\Collection $contract
      * @return array
@@ -179,24 +179,24 @@ class ShipContractBusiness
     public function checkStatusContract($contract = null)
     {
         // When contract not exists
-        if (empty($contract) || is_null($contract)) 
+        if (empty($contract) || is_null($contract))
             return ['restore' => false];
-        
+
         // Case 1: Status contract is pending, only restore and return response
-        if ($contract->contract_status == Constant::STATUS_CONTRACT_PENDING) 
+        if ($contract->contract_status == Constant::STATUS_CONTRACT_PENDING)
             return ['restore' => false];
-        
+
         // Case 2: Status contract is stop, redirect to recover page
-        if ($contract->contract_status == Constant::STATUS_CONTRACT_EXPIRED 
-                || $contract->contract_status == Constant::STATUS_CONTRACT_DELETED) 
+        if ($contract->contract_status == Constant::STATUS_CONTRACT_EXPIRED
+                || $contract->contract_status == Constant::STATUS_CONTRACT_DELETED)
             return [
-                'restore' => true, 
+                'restore' => true,
                 'redirectTo' => route('contract.restore', $contract->contract_id)];
     }
-    
+
     /**
      * Process restoring contract of a ship
-     * 
+     *
      * @access public
      * @param Illuminate\Support\Collection $contract
      * @return array [Contain status response and id of contract]
@@ -207,11 +207,11 @@ class ShipContractBusiness
         if (is_null($contract) || empty($contract))
              return [
                 'status' => false,
-                'title' => __('ship-contract.detail.res_tit_restore_contract'), 
+                'title' => __('ship-contract.detail.res_tit_restore_contract'),
                 'message' => __('ship-contract.detail.msg_restore_failed')];
-        
+
         // Set data to update contract
-        // Run query Sql to update info contract 
+        // Run query Sql to update info contract
         $dataUpdate = [
           'reason_reject' => json_encode(
                   [
@@ -222,7 +222,7 @@ class ShipContractBusiness
             'updated_at' => date('Y-m-d H:i:s'),
             'approved_flag' => Constant::STATUS_WAITING_APPROVE
         ];
-        
+
         /**
          * The cases that contracts may be restore:
          * 1. Approve flag is approved and status of contract are disable/pending and deleted, not is created
@@ -230,7 +230,7 @@ class ShipContractBusiness
          */
         if (($contract->contract_approved_flag == Constant::STATUS_APPROVED && $contract->contract_status != Constant::STATUS_CONTRACT_ACTIVE && !is_null($contract->contract_updated_at))
                 || ($contract->contract_approved_flag == Constant::STATUS_REJECT_APPROVE && $contract->contract_status != Constant::STATUS_CONTRACT_ACTIVE && !is_null($contract->contract_updated_at))) {
-            
+
             // Execute Sql restore contract
             $contractUpdate = DB::table('m_contract')
                 ->where('id', $contract->contract_id)
@@ -239,22 +239,22 @@ class ShipContractBusiness
             // When update success, return success else return failed
             if ($contractUpdate)
                 return [
-                    'status' => true, 
-                    'title' => __('ship-contract.detail.res_tit_restore_contract'), 
+                    'status' => true,
+                    'title' => __('ship-contract.detail.res_tit_restore_contract'),
                     'message' => __('ship-contract.detail.msg_restore_success'),
                     'contract' => $contract->contract_id];
         }
-        
+
         // When update failed
         return [
             'status' => false,
-            'title' => __('ship-contract.detail.res_tit_restore_contract'), 
+            'title' => __('ship-contract.detail.res_tit_restore_contract'),
             'message' => __('ship-contract.detail.msg_restore_failed')];
     }
-    
+
     /**
      * Disable contract fro request Ajax
-     * 
+     *
      * @access public
      * @param Illuminate\Support\Facades\Request $request
      * @return array [Method disable contract]
@@ -264,16 +264,16 @@ class ShipContractBusiness
         // Get ID contract and ID ship from request
         $idShip = $request->filled('ship_id')? $request->get('ship_id'):null;
         $idContract = $request->filled('contract_id')?explode(":", $request->get('contract_id')):null;
-        
+
         // Get contract need to restore
         $contracts = $this->applyReasonRejectContract($this->shipContract->getContract($idShip, $idContract));
 
         return $this->processDisableContract($contracts);
     }
-    
+
     /**
      * Processing disable contract from ajax and return response
-     * 
+     *
      * @access public
      * @param Illuminate\Support\Collection $contracts
      * @return array [Status of handle update and ID contract was updated]
@@ -281,13 +281,13 @@ class ShipContractBusiness
     public function processDisableContract($contracts)
     {
         // When contract wasn't exists, don't update
-        if (is_null($contracts) || empty($contracts)) 
+        if (is_null($contracts) || empty($contracts))
             return [
                 'status' => false,
-                'title' => __('ship-contract.detail.res_tit_disable_contract'), 
+                'title' => __('ship-contract.detail.res_tit_disable_contract'),
                 'message' => __('ship-contract.detail.msg_disable_failed')
             ];
-        
+
         // Get list Id of contract from collection
         // Set data to update database
         // Execute sql query to update info contract
@@ -300,45 +300,45 @@ class ShipContractBusiness
                 array_filter($contracts->toArray(), function($a){
                     return ($a->contract_approved_flag == Constant::STATUS_APPROVED && $a->contract_status == Constant::STATUS_CONTRACT_ACTIVE)
                         || ($a->contract_approved_flag == Constant::STATUS_REJECT_APPROVE && $a->contract_status == Constant::STATUS_CONTRACT_ACTIVE && !is_null($a->contract_updated_at));
-                }), 
+                }),
                 "contract_id");
 
         $dataUpdate = [
           'reason_reject' => json_encode(
                   [
-                      'status' => Constant::STATUS_CONTRACT_PENDING, 
+                      'status' => Constant::STATUS_CONTRACT_PENDING,
                       'updated_by' => auth()->user()->id,
                       'pending_at' => date('Y-m-d H:i:s')
                   ]),
             'updated_at' => date('Y-m-d H:i:s'),
             'approved_flag' => Constant::STATUS_WAITING_APPROVE
         ];
-        
+
         // If has any contract need to update, else don't update
         if (count($idContracts) > 0) {
             $contractUpdate = DB::table('m_contract')
                 ->whereIn('id', $idContracts)
                 ->update($dataUpdate);
-            
+
             // Update success
             if ($contractUpdate)
                 return [
                     'status' => true,
-                    'title' => __('ship-contract.detail.res_tit_disable_contract'), 
+                    'title' => __('ship-contract.detail.res_tit_disable_contract'),
                     'message' => __('ship-contract.detail.msg_disable_success', ['contract' => implode($idContracts, ",")]),
                     "contracts" => $idContracts];
         }
-        
+
         // Update failed
         return [
             'status' => false,
-            'title' => __('ship-contract.detail.res_tit_disable_contract'), 
+            'title' => __('ship-contract.detail.res_tit_disable_contract'),
             'message' => __('ship-contract.detail.msg_disable_failed')];
     }
-    
+
     /**
      * Delete contract from request ajax and return response
-     * 
+     *
      * @access public
      * @param Illuminate\Support\Facades\Request $request
      * @return array [Status and id of condtract delete from method process]
@@ -348,16 +348,16 @@ class ShipContractBusiness
         // Get ID contract and ID ship from request
         $idShip = $request->filled('ship_id')? $request->get('ship_id'):null;
         $idContract = $request->filled('contract_id')?explode(":", $request->get('contract_id')):null;
-        
+
         // Get contract need to restore
         $contracts = $this->applyReasonRejectContract($this->shipContract->getContract($idShip, $idContract));
-        
+
         return $this->processDeleteContract($contracts);
     }
-    
+
     /**
      * Processing delete contract from request
-     * 
+     *
      * @access public
      * @param Illuminate\Support\Collection $contract
      * @return array [Status of processing delete contract and id contract]
@@ -365,12 +365,12 @@ class ShipContractBusiness
     public function processDeleteContract($contracts)
     {
         // Check if param contracts is null
-        if (is_null($contracts) || empty($contracts)) 
+        if (is_null($contracts) || empty($contracts))
             return [
                 'status' => false,
-                'title' => __('ship-contract.detail.res_tit_delete_contract'), 
+                'title' => __('ship-contract.detail.res_tit_delete_contract'),
                 'message' => __('ship-contract.detail.msg_delete_failed')];
-        
+
         // Get list id contract fromt collection contract
         // Set data to update database
         // Execute sql to update info contract
@@ -386,18 +386,18 @@ class ShipContractBusiness
                              || ($a->contract_approved_flag == Constant::STATUS_REJECT_APPROVE && ($a->contract_status == Constant::STATUS_CONTRACT_ACTIVE ||$a->contract_status == Constant::STATUS_CONTRACT_PENDING ) && !is_null($a->contract_updated_at));
                 })
         , "contract_id");
-                
+
         $idContractRemoves =  array_column(
                 array_filter($contracts->toArray(), function($a){
                      return ($a->contract_approved_flag == Constant::STATUS_WAITING_APPROVE && $a->contract_status == Constant::STATUS_CONTRACT_ACTIVE && is_null($a->contract_updated_at))
                              || ($a->contract_approved_flag == Constant::STATUS_REJECT_APPROVE && ($a->contract_status == Constant::STATUS_CONTRACT_ACTIVE ||$a->contract_status == Constant::STATUS_CONTRACT_PENDING ) && is_null($a->contract_updated_at));
                 })
         , "contract_id");
-        
+
         $dataUpdate = [
           'reason_reject' => json_encode(
                   [
-                      'status' => Constant::STATUS_CONTRACT_DELETED, 
+                      'status' => Constant::STATUS_CONTRACT_DELETED,
                       'updated_by' => auth()->user()->id,
                       'deleted_at' => date('Y-m-d H:i:s')
                   ]),
@@ -411,21 +411,21 @@ class ShipContractBusiness
             $contractUpdate = DB::table('m_contract')
                 ->whereIn('id', $idContracts)
                 ->update($dataUpdate);
-            
+
         }
-        
+
         // If has any contract to remove, else ignore
         if (count($idContractRemoves) > 0) {
             $contractDelete = DB::table('m_contract')
                 ->whereIn('id', $idContractRemoves)
                 ->delete();
         }
-        
+
         // Update success
         if ($contractUpdate || $contractDelete) {
             return [
-                    'status' => true, 
-                    'title' => __('ship-contract.detail.res_tit_delete_contract'), 
+                    'status' => true,
+                    'title' => __('ship-contract.detail.res_tit_delete_contract'),
                     'message' => __('ship-contract.detail.msg_delete_success', ['contract' => implode(array_merge($idContracts, $idContractRemoves), ",")]),
                     "contractDelete" => $idContracts,
                     "contractRemove" => $idContractRemoves];
@@ -433,13 +433,13 @@ class ShipContractBusiness
         // Update failed
         return [
             'status' => false,
-            'title' => __('ship-contract.detail.res_tit_delete_contract'), 
+            'title' => __('ship-contract.detail.res_tit_delete_contract'),
             'message' => __('ship-contract.detail.msg_delete_failed')];
     }
-    
+
     /**
      * Delete spot of ship from request ajax
-     * 
+     *
      * @access public
      * @param Illuminate\Support\Facades\Request $request
      * @return array [Status delete spot and id spot from method processing]
@@ -449,16 +449,16 @@ class ShipContractBusiness
         // Get ID contract and ID ship from request
         $idShip = $request->filled('ship_id')? $request->get('ship_id'):null;
         $idSpot = $request->filled('spot_id')?explode(":", $request->get('spot_id')):null;
-        
+
         // Get contract need to restore
         $spot = $this->shipContract->getSpot($idShip, $idSpot);
 
         return $this->processDeleteSpot($spot);
     }
-    
+
     /**
      * Processing delete spot of ship from request
-     * 
+     *
      * @access public
      * @param Illuminate\Support\Collection $spot
      * @return array [Status of delete processing spot and Id]
@@ -466,12 +466,12 @@ class ShipContractBusiness
     public function processDeleteSpot($spot = null)
     {
         // When no thing  to update
-        if (is_null($spot) || empty($spot)) 
+        if (is_null($spot) || empty($spot))
             return [
                 'status' => false,
-                'title' => __('ship-contract.detail.res_tit_delete_spot'), 
+                'title' => __('ship-contract.detail.res_tit_delete_spot'),
                 'message' => __('ship-contract.detail.msg_delete_spot_failed')];
-        
+
         // If exists spot, check month setting of spot equal now month/year
         // Set data to update database
         // Excecute sql to update info spot to database
@@ -487,9 +487,9 @@ class ShipContractBusiness
                     $spot->spot_approved_flag == Constant::STATUS_APPROVED
                         || ($spot->spot_approved_flag == Constant::STATUS_WAITING_APPROVE && is_null($spot->spot_updated_at))
                         || $spot->spot_approved_flag == Constant::STATUS_REJECT_APPROVE)){
-            
-            
-            
+
+
+
             if (($spot->spot_approved_flag == Constant::STATUS_WAITING_APPROVE && is_null($spot->spot_updated_at))
                     || ($spot->spot_approved_flag == Constant::STATUS_WAITING_APPROVE && is_null($spot->spot_updated_at))) {
                 // Handle update spot
@@ -501,7 +501,7 @@ class ShipContractBusiness
                 $dataUpdate = [
                    'reason_reject' => json_encode(
                            [
-                               'del_flag' => Constant::DELETE_FLAG_TRUE, 
+                               'del_flag' => Constant::DELETE_FLAG_TRUE,
                                'updated_by' => auth()->user()->id
                            ]),
                      'updated_at' => date('Y-m-d H:i:s'),
@@ -518,22 +518,22 @@ class ShipContractBusiness
             if ($spotUpdate) {
                 return [
                     'status'    => true,
-                    'title'     => __('ship-contract.detail.res_tit_delete_spot'), 
+                    'title'     => __('ship-contract.detail.res_tit_delete_spot'),
                     'message'   => __('ship-contract.detail.msg_delete_spot_success', ['spot' => $spot->spot_id]),
                     "spot"      => $spot->spot_id];
             }
         }
-        
+
         // Update failed
         return [
             'status'    => false,
-            'title'     => __('ship-contract.detail.res_tit_delete_spot'), 
+            'title'     => __('ship-contract.detail.res_tit_delete_spot'),
             'message'   => __('ship-contract.detail.msg_delete_spot_failed')];
     }
-    
+
     /**
      * Get reason reject of request approved
-     * 
+     *
      * @access public
      * @param Illuminate\Support\Facades\Request $request
      * @return array [Reason reject approve]
@@ -543,33 +543,33 @@ class ShipContractBusiness
         // Initial andget data from request
         $type = $request->filled('type')?$request->get('type'):null;
         $id = $request->filled('id')?$request->get('id'):null;
-        
+
         // If not request get reason reject
-        if (is_null($type) || is_null($id)) 
+        if (is_null($type) || is_null($id))
             return ['status' => false];
-        
+
         // When get reason reject approve of contract
         if ($type == "contract"){
             $contract = $this->shipContract->getContract(null, $id);
             if (!is_null($contract))
                 return [
-                    'status' => true, 
+                    'status' => true,
                     'reason' => $contract->contract_reason_reject];
         }
-        
+
         // When get reason reject approve of spot
         if ($type == "spot") {
             $spot = $this->shipContract->getSpot(null, $id);
             if (!is_null($spot))
                 return [
-                    'status' => true, 
+                    'status' => true,
                     'reason' => $spot->spot_reason_reject];
         }
     }
-    
+
     /**
      * Delete ship from request ajax and return response
-     * 
+     *
      * @access public
      * @param Illuminate\Support\Facades\Request $request
      * @return array [Status delete ship and id ship]
@@ -579,89 +579,89 @@ class ShipContractBusiness
         // Set and initial data from request
         $pw = $request->filled('pw')?$request->get('pw'):null;
         $id = $request->filled('ship_id')?$request->get('ship_id'):null;
-        
+
         // When not have info to delete ship
         if (is_null($pw) || is_null($id)) {
             return [
-                'status'    => false, 
-                'title'     => __('ship-contract.detail.res_tit_delete_ship'), 
+                'status'    => false,
+                'title'     => __('ship-contract.detail.res_tit_delete_ship'),
                 'message'   => __('ship-contract.detail.msg_delete_ship_failed')];
         }
-        
+
         // 1. Get ship need to delete, then check exists ship
         // 2. Authenticate password user to delete ship
         // 3. Proccess delete ship
         // 4. Return response
         $ship = $this->shipContract->getShip($id);
-        
+
         if (is_null($ship)) {
             return [
                 'status'    => false,
-                'title'     => __('ship-contract.detail.res_tit_delete_ship'), 
+                'title'     => __('ship-contract.detail.res_tit_delete_ship'),
                 'message'   => __('ship-contract.detail.msg_delete_ship_failed')];
         }
-        
+
         // Get user info
         $user = DB::table('t_user_login')
                 ->where('id', auth()->user()->id)
                 ->first();
-        
+
         // Verify password user to delete
         if (is_null($user) || !Hash::check($pw, $user->password)) {
             return [
                 'status'    => false,
-                'title'     => __('ship-contract.detail.res_tit_delete_ship'), 
+                'title'     => __('ship-contract.detail.res_tit_delete_ship'),
                 'message'   => __('ship-contract.detail.msg_delete_ship_failed_auth')];
         }
-        
+
         // Check contract is waiting approve
         if ($this->checkExistContractWaitingApprove($ship)) {
             return [
                 'status'    => false,
-                'title'     => __('ship-contract.detail.res_tit_delete_ship'), 
+                'title'     => __('ship-contract.detail.res_tit_delete_ship'),
                 'message'   => __('error.w005_have_contract_watting_approve')];
         }
-        
-       
+
+
         // Process delete ship
         $delShip = $this->processDeleteShip($ship);
-        
+
         // When delete success
         if ($delShip)
             return [
                 'status' => true,
-                'title' => __('ship-contract.detail.res_tit_delete_ship'), 
+                'title' => __('ship-contract.detail.res_tit_delete_ship'),
                 'message' => __('ship-contract.detail.msg_delete_ship_success', ['ship' => $id])];
-        
+
         // When delete failed
         return [
-            'status'    => false, 
-            'title'     => __('ship-contract.detail.res_tit_delete_ship'), 
+            'status'    => false,
+            'title'     => __('ship-contract.detail.res_tit_delete_ship'),
             'message'   => __('ship-contract.detail.msg_delete_ship_failed')];
     }
-    
+
     /**
-     * 
+     *
      * @param type $ship
      */
     public function checkExistContractWaitingApprove($ship = null) {
         $contracts = $this->shipContract
             ->join('m_contract', "m_contract.ship_id", "=", "m_ship.id")
              ->where([
-            'm_contract.approved_flag' => Constant::STATUS_WAITING_APPROVE, 
+            'm_contract.approved_flag' => Constant::STATUS_WAITING_APPROVE,
             'm_contract.ship_id' => $ship->ship_id])
              ->select(['*'])
             ->first();
         if (is_null($contracts)) {
             return false;
         }
-        
+
         return true;
     }
-    
+
     /**
      * Process delete ship from request ajax
-     * 
+     *
      * @access public
      * @param Illuminate\Support\Collection $ship
      * @return boolean
@@ -671,32 +671,32 @@ class ShipContractBusiness
         // 1. Set data to update database
         // 2. Execute update database
         $data = [
-          'del_flag' => Constant::DELETE_FLAG_TRUE  
+          'del_flag' => Constant::DELETE_FLAG_TRUE
         ];
-        
+
         // Begin transaction, if delete contract failed then rollback
         DB::beginTransaction();
         // Handle revert contract of ship
         $revertContract = $this->revertContractWithShip($ship);
-        
+
         // If revert contract success, return true commit transaction else return false and rollback data
         if ($revertContract) {
             DB::table('m_ship')
                 ->where('id', $ship->ship_id)
                 ->update($data);
-            
+
             DB::commit();
             Log::info('Ship '.$ship->ship_id .' was deleted by '.auth()->user()->login_id);
             return true;
         }
-        
+
         DB::rollBack();
         return false;
     }
-    
+
     /**
      * Process reverting contract of ship
-     * 
+     *
      * @access public
      * @param Illuminate\Support\Collection $ship
      * @return boolean [The result in revert contract]
@@ -706,12 +706,12 @@ class ShipContractBusiness
         if (is_null($ship)) {
             return false;
         }
-        
+
         $contracts = $this->shipContract->getContract($ship->ship_id);
-        
+
         $dataIdDelete = [];
         $dataIdRemove = [];
-        
+
         if (count($contracts) > 0) {
             foreach ($contracts as $contract) {
 //                if ($contract->contract_status == Constant::STATUS_CONTRACT_ACTIVE) {
@@ -726,11 +726,11 @@ class ShipContractBusiness
                 }
             }
         }
-        
+
         // Initial response
         $updateDelete = 0;
         $updateRemove = 0;
-        
+
         // Start transaction
         DB::beginTransaction();
         if (count($dataIdDelete) > 0) {
@@ -743,20 +743,65 @@ class ShipContractBusiness
                     'm_contract.approved_flag'  => Constant::STATUS_APPROVED
                 ]);
         }
-   
+
         if (count($dataIdRemove) > 0) {
             $updateRemove =  DB::table('m_contract')
                 ->where('m_contract.ship_id', $ship->ship_id)
                 ->whereIn('m_contract.id', $dataIdRemove)
                 ->delete();
         }
-        
+
         if ($updateDelete || $updateRemove) {
             DB::commit();
         } else {
              DB::rollBack();
         }
-       
+
         return true;
+    }
+
+    /**
+     * Function init page create ship contract
+     * @param int companyId
+     * @throws Exception
+     * @return array
+     */
+    public function initCreateShipContract($companyId)
+    {
+        $companyRepository = app(\App\Repositories\Company\CompanyInterface::class);
+        $companyData = $companyRepository->findOrFail($companyId, ['id', 'name_en', 'name_jp']);
+
+        $shipTypeRepository = app(\App\Repositories\ShipType\ShipTypeInterface::class);
+        $shipTypes = $shipTypeRepository->getAllShipType([
+            'id',
+            'code',
+            'type',
+        ]);
+
+        $classificationRepository = app(\App\Repositories\Classification\ClassificationInterface::class);
+        $classificationies = $classificationRepository->getAllShipClassification([
+            'id',
+            'code',
+            'name_en',
+            'name_jp',
+        ]);
+
+        $nationRepository = app(\App\Repositories\Nation\NationInterface::class);
+        $nations = $nationRepository->getNationByIdOrName(0, '', [
+            'id',
+            'name_jp',
+            'name_en',
+        ]);
+
+        $serviceRepository = app(\App\Repositories\Service\ServiceInterface::class);
+        $services = $serviceRepository->getServiceValidWithCompany($companyId);
+
+        return [
+            'company' => $companyData,
+            'shipTypes' => $shipTypes,
+            'classificationies' => $classificationies,
+            'nations' => $nations,
+            'services' => $services,
+        ];
     }
 }

@@ -32,13 +32,16 @@
                     </td>
                     <td class="tbl-row-no">{{ $loop->iteration}}</td>
                     <td class="tbl-row-company-name">{{ $row->company_name }}</td>
-                    <td class="tbl-row-date">{{ $row->payment_deadline_date }}</td>
+                    <td class="tbl-row-date">{{ $row->payment_deadline_month }}</td>
                     <td class="tbl-row-method">{{ $row->method_name }}</td>
                     <td class="tbl-row-ope-name">{{ $row->ope_person_name_1 }}</td>
                     <td class="tbl-row-ope-phone">{{ $row->ope_phone_1 }}</td>
                     <td class="tbl-row-ope-email">{{ $row->ope_email_1 }}</td>
                     <td class="tbl-row-money">{{ $row->total_money_yen }}</td>
-                    <td class="tbl-row-status">{{ $row->statusString }}</td>
+                    <td class="tbl-row-status">
+                        {{ $row->statusString }}
+                        {{ Form::hidden('status', $row->status, [ 'id' => 'hidden-status-' . $row->company_id]) }}
+                    </td>
                     <td class="tbl-row-approve">
                         @if ($row->approved_flag == Constant::STATUS_REJECT_APPROVE)
                             <a href="#" id-for='#reason-reject-{{$row->company_id}}' class='link-reason-reject'>{{ $row->approveString }}</a>
@@ -71,7 +74,7 @@
             </div>
             <div class="right-side">
                 <div class="custom-select">
-                    {!! Form::textarea('remark', null, ['size' => '30x3', 'class' => 'form-control', 'placeholder' => __('billing.lbl_remark'), 'id' => 'remark']) !!}
+                    {!! Form::textarea('remark', null, ['size' => '30x3', 'class' => 'form-control', 'placeholder' => __('billing.lbl_remark'), 'id' => 'txt-remark']) !!}
                 </div>
             </div>
         </div>
@@ -81,8 +84,8 @@
             </div>
             <div class="right-side">
                 <div class="custom-checkbox">
-                    <input class="hidden" id="is_detail" name="is_detail" type="checkbox">
-                    <label for="is_detail"></label>
+                    {{ Form::checkbox('is_detail', 1, false, ['class' => 'hidden', 'id' => 'chk-detail']) }}
+                    <label for="chk-detail"></label>
                 </div>
             </div>
         </div>

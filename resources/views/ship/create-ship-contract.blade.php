@@ -69,10 +69,10 @@
                             </label>
                         </div>
                         <div class="col-md-8 custom-select">
-                            <!-- <label class="lbl-title">
-                                Company A
-                            </label> -->
-                            {{ Form::select('slb-company', [1 => 'Company A', 2 => 'Company B'], 2, ['class' => 'form-control']) }}
+                            <label class="lbl-title">
+                                {{ $company->name_jp }}
+                            </label>
+                            <!-- {{ Form::select('slb-company', [1 => 'Company A', 2 => 'Company B'], 2, ['class' => 'form-control']) }} -->
                         </div>
                     </div>
 
@@ -117,8 +117,21 @@
                                 {{ trans('ship.icon_title') }}
                             </label>
                         </div>
-                        <div class="col-md-8 custom-select">
-                            {{ Form::select('slb-nation', [1 => 'VN', 2 => 'JP', 3 => 'USA'], 1, ['class' => 'form-control', 'tabindex' => 5]) }}
+
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                {{ Form::text('nation', null, [
+                                        'class' => 'form-control',
+                                        'placeholder' => trans('ship.lbl_title_nation'),
+                                        'readonly' => 'readonly',
+                                        'id' => 'nation',
+                                        'tabindex' => 5,
+                                    ])
+                                }}
+                                <div class="input-group-addon show-modal-service" id="search-nation"><i class="fa fa-search"></i></div>
+                            </div>
+
+                            {{ Form::hidden('nation-id', null, ['id' => 'nation-id']) }}
                         </div>
                     </div>
 
@@ -130,7 +143,15 @@
                             </label>
                         </div>
                         <div class="col-md-8 custom-select">
-                            {{ Form::select('slb-classification', [0 => 'Please select', 1 => '54', 2 => '123123'], 0, [
+                            @php
+                                $dataClassification = [];
+                                $firstValue = $classificationies->first() ? $classificationies->first()->id : 0;
+
+                                foreach ($classificationies as $class) {
+                                    $dataClassification[$class->id] = $class->name_jp . ' (' . $class->code . ')';
+                                }
+                            @endphp
+                            {{ Form::select('slb-classification', $dataClassification, $firstValue, [
                                     'class' => 'form-control',
                                     'tabindex' => 6,
                                 ])
@@ -162,7 +183,15 @@
                             </label>
                         </div>
                         <div class="col-md-8 custom-select">
-                            {{ Form::select('slb-ship-type', [0 => 'Please select', 1 => '123345', 2 => '123456234'], 0, [
+                            @php
+                                $dataShipType = [];
+                                $firstValueShipType = $shipTypes->first() ? $shipTypes->first()->id : 0;
+
+                                foreach ($shipTypes as $type) {
+                                    $dataShipType[$type->id] = $type->type . ' (' . $type->code . ')';
+                                }
+                            @endphp
+                            {{ Form::select('slb-ship-type', $dataShipType, $firstValueShipType, [
                                     'class' => 'form-control',
                                     'tabindex' => 8,
                                 ])
@@ -402,10 +431,10 @@
         </div>
     </div>
 
-    <div class="modal modal-protector modal-normal fade" id="popup-add-service" tabindex="-1" role="dialog" style="display: none;">
+    <div class="modal modal-protector modal-normal fade" id="popup-add-service" tabindex="-1" role="dialog">
         <div class="modal-close">
-            <button class="btn-close-modal" style="background-image: url('https://mufmgr.schl.jp/images/common/modals_close.png')" data-dismiss="modal"></button>
-            <label>閉じる</label>
+            <button class="btn-close-modal" data-dismiss="modal"></button>
+            <label>{{ trans('common.btn_close_modal') }}</label>
         </div>
         <div class="modal-dialog">
             <!-- Modal content-->
@@ -444,11 +473,27 @@
                                     </label>
                                 </div>
                                 <div class="col-md-6 custom-select">
-                                    {{ Form::select('slb-service', [ 1 => 'A', 2 => 'B', 3 => 'C'], 1, [
+                                    @php
+                                        $servicesData = [];
+                                        $servicesPrice = [];
+                                        $firstServiceData = $services->first() ? $services->first()->id : 0;
+
+                                        foreach ($services as $service) {
+                                            $servicesData[$service->id] = $service->name_jp;
+                                            $servicesPrice[$service->id] = [
+                                                'price' => $service->price,
+                                                'chargeRegister' => $service->charge_register,
+                                                'chargeCreateData' => $service->charge_create_data,
+                                            ];
+                                        }
+                                    @endphp
+                                    {{ Form::select('slb-service', $servicesData, $firstServiceData, [
                                             'class' => 'form-control',
+                                            'id' => 'slb-service',
                                         ])
                                     }}
                                 </div>
+                                {{ Form::hidden('service-price', json_encode($servicesPrice), ['id' => 'service-price']) }}
                             </div>
 
                             <div class="col-md-12">
@@ -456,7 +501,7 @@
                                     <label>{{ trans('ship.lbl_service_version') . trans('ship.icon_title') }}</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="lbl-title">1.0</label>
+                                    <label class="lbl-title">{{ number_format(1, 2) }}</label>
                                 </div>
                             </div>
 
@@ -465,7 +510,9 @@
                                     <label>{{ trans('ship.lbl_service_price') . trans('ship.icon_title') }}</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="lbl-title">100000</label>
+                                    <label class="lbl-title" id="lbl-price-service">
+                                        {{ number_format($services->first()->price, 2) }}
+                                    </label>
                                 </div>
                             </div>
 
@@ -477,7 +524,7 @@
                                     <div class="group-datepicker">
                                         {{ Form::text('service-start-date', null, [
                                                 'class' => 'form-control custom-datepicker',
-                                                'id' => 'datetime',
+                                                'id' => 'service-start-date',
                                                 'placeholder' => trans('ship.lbl_start_date'),
                                             ])
                                         }}
@@ -494,7 +541,7 @@
                                     <div class="group-datepicker">
                                         {{ Form::text('service-end-date', null, [
                                                 'class' => 'form-control custom-datepicker',
-                                                'id' => 'datetime',
+                                                'id' => 'service-end-date',
                                                 'placeholder' => trans('ship.lbl_end_date'),
                                             ])
                                         }}
@@ -526,14 +573,31 @@
                                             <td>1</td>
                                             <td>初期登録費</td>
                                             <td>
-                                                {{ Form::text('price-1', '5000', ['class' => 'form-control']) }}
+                                                @php
+                                                    $priceRegister = $services->first()
+                                                        ? $services->first()->charge_register
+                                                        : 0;
+
+                                                    $priceCreateData = $services->first()
+                                                        ? $services->first()->charge_create_data
+                                                        : 0;
+                                                @endphp
+                                                {{ Form::text('charge-register', number_format($priceRegister, 2), [
+                                                        'class' => 'form-control',
+                                                        'id' => 'charge-register',
+                                                    ])
+                                                }}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>2</td>
                                             <td>データ作成費</td>
                                             <td>
-                                                {{ Form::text('price-2', '6000', ['class' => 'form-control']) }}
+                                                {{ Form::text('charge-create-data', number_format($priceCreateData, 2), [
+                                                        'class' => 'form-control',
+                                                        'id' => 'charge-create-data',
+                                                    ])
+                                                }}
                                             </td>
                                         </tr>
                                     </tbody>
@@ -550,21 +614,12 @@
         </div>
     </div>
 
+    <div class="modal modal-protector modal-normal fade" id="popup-search-nation" tabindex="-1" role="dialog">
+        @include('common.popup-search-nation')
+    </div>
 
 @endsection
 
 @section('javascript')
-    <script type="text/javascript" src="{{ asset('js/ship-general.js') }}"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            const table = document.querySelector('.tbody-scroll');
-            const ps = new PerfectScrollbar(table, function () {
-                table.style.height = '50px'
-            });
-
-            $('.custom-datepicker').datepicker({
-                dateFormat: "yy.mm.dd"
-            });
-        });
-    </script>
+    <script type="text/javascript" src="{{ asset('js/create-ship-contract.js') }}"></script>
 @endsection

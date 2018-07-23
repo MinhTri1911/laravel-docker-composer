@@ -241,6 +241,7 @@ return [
         'Html' => Collective\Html\HtmlFacade::class,
         // Helper
         'Str' => App\Helpers\Str::class,
+        'Roles' => App\Helpers\Roles::class,
         //'Debugbar' => Barryvdh\Debugbar\Facade::class,
 
         // Constant

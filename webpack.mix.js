@@ -87,6 +87,9 @@ mix.babel([
         .babel([
             'resources/assets/js/spot-create.js'
         ], 'public/js/spot-create.js')
+        .babel([
+            'resources/assets/js/create-ship-contract.js'
+        ], 'public/js/create-ship-contract.js')
         .sass('resources/assets/sass/vendor.scss', 'public/css')
         .sass('resources/assets/sass/auth.scss', 'public/css')
         .sass('resources/assets/sass/user-general.scss', 'public/css')

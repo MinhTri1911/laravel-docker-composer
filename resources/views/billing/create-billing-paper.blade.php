@@ -22,7 +22,10 @@
             {!!Form::open(['method' => 'GET'])!!}
 
             <!-- Url Search-->
-            {{ Form::hidden('url-search', route('billing.search.billing.paper'), ['id' => 'url-search']) }}
+            {{ Form::hidden('url_search', route('billing.search.billing.paper'), ['id' => 'url-search']) }}
+            {{ Form::hidden('url_create', route('billing.create.billing.paper'), ['id' => 'url-create']) }}
+            {{ Form::hidden('url_delivery', route('billing.delivery.billing.paper'), ['id' => 'url-delivery']) }}
+            {{ Form::hidden('url_export_csv', route('billing.export.billing.paper'), ['id' => 'url-export-csv']) }}
 
                 <div class="content-form">
                     <div class="form-group">
@@ -88,6 +91,7 @@
             <div class="block-title-tbl">
                 <div class="left-side">
                     <label class="label-control">{{__('billing.lbl_count_record_1') . $model['resultSearch']->total() . __('billing.lbl_count_record_2')}}</label>
+                    {{ Form::hidden('total_record', $model['resultSearch']->total(), [ 'id' => 'total-record'])}}
                 </div>
                 <div class="right-side">
                     <div class="form-group">
@@ -113,7 +117,7 @@
     <div class="modal modal-protector fade" id="modal-reason-reject" tabindex="-1" role="dialog" style="display: none;">
         <div class="modal-close">
             <button class="btn-close-modal" data-dismiss="modal"></button>
-            <label>閉じる</label>
+            <label>{{__('billing.lbl_close_popup')}}</label>
         </div>
         <div class="modal-dialog">
             <div class="modal-content">
@@ -122,7 +126,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group" style="text-align: center;">
-                        <label id='popup-reason-reject-text' class="label-control">{{__('billing.title_popup_reason_reject')}}</label>
+                        <label id='popup-reason-reject-text' class="label-control"></label>
                     </div>
 
                     <div class="form-btn">
@@ -133,8 +137,64 @@
         </div>
     </div>
 
+    <!--Popup alert error-->
+    <div class="modal modal-protector fade" id="modal-inform" tabindex="-1" role="dialog" style="display: none;">
+        <div class="modal-close">
+            <button class="btn-close-modal" data-dismiss="modal"></button>
+            <label>{{__('billing.lbl_close_popup')}}</label>
+        </div>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="popup-title">
+                    <h2 id='title-popup-inform'></h2>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" style="text-align: center;">
+                        <label id='popup-inform-message' class="label-control"></label>
+                    </div>
+
+                    <div class="form-btn">
+                        {!! Form::button( __('billing.btn_Ok'), ["class"=>"btn btn-blue-light btn-w150", 'id' => 'btn-Ok', 'data-dismiss' => 'modal']) !!}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Popup Confirm-->
+    <div class="modal modal-protector fade" id="modal-confirm" tabindex="-1" role="dialog" style="display: none;">
+        <div class="modal-close">
+            <button class="btn-close-modal" data-dismiss="modal"></button>
+            <label>{{__('billing.lbl_close_popup')}}</label>
+        </div>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="popup-title">
+                    <h2 id='title-popup-confirm'></h2>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" style="text-align: center;">
+                        <label id='popup-confirm-text' class="label-control"></label>
+                    </div>
+
+                    <div class="form-btn">
+                        {!! Form::button( __('billing.btn_cancel'), ["class"=>"btn btn-blue-light btn-w150", 'id' => 'btn-confirm-cancel', 'data-dismiss' => 'modal']) !!}
+                        {!! Form::button( __('billing.btn_Ok'), ["class"=>"btn btn-blue-dark btn-w150", 'id' => 'btn-confirm-ok']) !!}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @section('javascript')
+    <script>
+        var message = {
+            'msg_confirm_delivery_again' : "{{__('billing.message.confirm_delivery_again')}}",
+            'popup_confirm_title' : "{{__('billing.title_popup_delivery')}}",
+        };
+        console.log(message.msg_confirm_delivery_again);
+    </script>
     <script type="text/javascript" src="{{ asset('js/create-billing-paper.js') }}"></script>
 @endsection

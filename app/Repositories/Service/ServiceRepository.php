@@ -14,6 +14,7 @@ namespace App\Repositories\Service;
 use App\Repositories\EloquentRepository;
 use App\Models\MService;
 use Illuminate\Support\Facades\DB;
+use app\Common\Constant;
 
 class ServiceRepository extends EloquentRepository implements ServiceInterface {
 
@@ -136,5 +137,29 @@ class ServiceRepository extends EloquentRepository implements ServiceInterface {
             ->where('m_service.id', $serviceId)
             ->where('t_price_service.currency_id', $currencyId)
             ->exists();
+    }
+
+    /**
+     * Function get list service have same currency id with company
+     * @param int companyId
+     * @return Collection
+     */
+    public function getServiceValidWithCompany($companyId)
+    {
+        return $this->select([
+                'm_service.id',
+                'm_service.name_jp',
+                'm_service.name_en',
+                'price',
+                'charge_register',
+                'charge_create_data',
+            ])
+            ->join('t_price_service', 'm_service.id', 't_price_service.service_id')
+            ->join('m_company', 'm_company.currency_id', 't_price_service.currency_id')
+            ->where('m_company.id', $companyId)
+            ->where('t_price_service.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->where('m_service.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->get();
     }
 }

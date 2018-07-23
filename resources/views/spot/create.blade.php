@@ -1,6 +1,6 @@
 @extends('layouts.white')
 
-@section('title', trans('company.title_head_create_company'))
+@section('title', trans('spot.title_heade_create_spot'))
 
 @section('style')
 <link rel="stylesheet" href="{{ asset("/css/spot.css") }}">
@@ -15,7 +15,7 @@
 @section('content')
 <div class="main-content">
     <h1 class="main-heading">{{ trans('spot.title_heade_create_spot') }}</h1>
-    {!! Form::open(['route' => 'spot.create']) !!}
+    {!! Form::open(['route' => 'ship.spot.create']) !!}
     <div class="main-summary">
         <!-- begin alert errors -->
         @if($errors->all())
@@ -52,7 +52,7 @@
                     </label>
                 </div>
                 <div class="col-md-6 custom-select">
-                    {{ Form::select('spotId', $spotNameSelect, null, ['class' => 'form-control', 'id' => 'spot-id']) }}
+                    {{ Form::select('spotId', $spotNameSelect, null, ['class' => 'form-control', 'id' => 'spot-id', 'tabindex' => '1']) }}
                 </div>
             </div>
         </div>
@@ -65,7 +65,7 @@
                         <span class="require">{{ trans('spot.icon_require') }}</span>
                     </label>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6 {{ $errors->has('dateStart') ? ' has-error' : '' }}">
                     <div class="group-datepicker">
                         {{ Form::text('dateStart', null, [
                                     'class' => 'form-control custom-datepicker',
@@ -87,7 +87,7 @@
                         <span class="require">{{ trans('spot.icon_require') }}</span>
                     </label>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6 {{ $errors->has('amountCharge') ? ' has-error' : '' }}">
                     {{ Form::text('amountCharge', old('amountCharge',$amountCharge), [
                                 'class' => 'form-control',
                                 'placeholder' => trans('spot.lbl_spot_amount_charge'),
@@ -114,7 +114,7 @@
                 <div class="col-md-3">
                     <label>{{ trans('spot.lbl_spot_remark') }}</label>
                 </div>
-                <div class="col-md-8">
+                <div class="col-md-8 {{ $errors->has('remark') ? ' has-error' : '' }}">
                     {{ Form::textarea('remark', null, [
                                 'class' => 'form-control',
                                 'placeholder' => trans('company.lbl_contract_start_date'),
@@ -133,13 +133,14 @@
                     {{ Form::button(trans('spot.btn_create_spot'), [
                                 'class' => 'btn btn-blue-dark btn-w150',
                                 'tabindex' => 6,
-                                'type'=>'submit'
+                                'type'=>'submit',
+                                'tabindex' => 6,
                             ])
                     }}
                      <a href="{{ route('ship.contract.detail', $ship->id) }}">
                     {{ Form::button(trans('spot.btn_back'), [
                                 'class' => 'btn btn-gray btn-w150',
-                                'tabindex' => 5,
+                                'tabindex' =>5,
                             ])
                     }}
                     </a>

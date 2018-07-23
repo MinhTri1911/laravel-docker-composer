@@ -11,7 +11,7 @@
 |
 */
 Route::get('/', function () {
-    return redirect()->route('user.list');
+    return redirect()->route('company.index');
 })->middleware('auth');
 
 // Require if want to split file route to sub multiple file

@@ -66,10 +66,17 @@ return [
     'btn_update' => '更新',
     'btn_delete' => '削除',
     'btn_close_modal' => '閉じる',
+    'btn_search' => '検索',
+    'btn_ok' => 'OK',
 
     'messages' => [
         'm038_delete_watting_approve' => '操作は承認画面に確認されます。',
         'm039_action_was_executed' => '操作は実行されました。',
         'm040_not_have_record_for_delete' => '削除するレコーダーがありません。',
+    ],
+
+    'modal' => [
+        'title_search_nation' => 'Tìm kiếm quốc gia',
+
     ],
 ];

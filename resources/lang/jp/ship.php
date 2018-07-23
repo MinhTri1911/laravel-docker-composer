@@ -40,6 +40,8 @@ return [
     'lbl_head_end_date' => '契約終了年月日',
     'btn_add_ship' => '追加',
     'btn_cancel' => 'システムを追加',
+    'lbl_title_ship_nation_id' => '船籍国ID',
+
 
     // popup add service
     'lbl_head_add_service' => 'サービスを追加',

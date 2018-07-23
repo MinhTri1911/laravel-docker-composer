@@ -1,18 +1,22 @@
 <?php
 
+/**
+ * User Repository Interface
+ *
+ * @package App\Repositories\User
+ * @author Rikkei.QuyenL
+ * @date 2018/07/19
+ */
+
 namespace App\Repositories\User;
 
 interface UserRepositoryInterface
 {
     /**
-     * Get all posts only published
+     * Get user logged data
+     *
+     * @param int $userId
      * @return mixed
      */
-    public function getAllPublished();
- 
-    /**
-     * Get post only published
-     * @return mixed
-     */
-    public function findOnlyPublished($id);
+    public function getUserData($userId);
 }

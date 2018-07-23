@@ -81,15 +81,15 @@ class CompanyRepository extends EloquentRepository implements CompanyInterface
             ->leftJoin('m_contract', 'm_ship.id', 'm_contract.ship_id')
             ->leftJoin('m_service', function ($join) {
                 $join->on( 'm_contract.service_id', 'm_service.id')
-                    ->where('m_service.del_flag', 0);
+                    ->where('m_service.del_flag', Constant::DELETE_FLAG_FALSE);
             })
             ->leftJoin(\DB::raw($subQuery), function($join) use ($groupType) {
                 $join->on('sumTotalLicense.id', '=', $groupType ? 'm_service.id' : 'm_company.id');
             })
-            ->where('m_nation.del_flag', 0)
-            ->where('m_ship.del_flag', 0)
-            ->where('m_company.del_flag', 0)
-            ->where('m_company_operation.del_flag', 0);
+            ->where('m_nation.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->where('m_ship.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->where('m_company_operation.del_flag', Constant::DELETE_FLAG_FALSE);
     }
 
     /**
@@ -165,11 +165,9 @@ class CompanyRepository extends EloquentRepository implements CompanyInterface
             ->join('m_contract', 'm_ship.id', 'm_contract.ship_id')
             ->join('m_service', 'm_service.id', 'm_contract.service_id')
             ->where(!$type ? 'm_company.id' : 'm_service.id', $id)
-            // ->where('m_contract.status', 0)
-            // ->where('m_contract.approved_flag', 1)
-            ->where('m_service.del_flag', 0)
-            ->where('m_ship.del_flag', 0)
-            ->where('m_company.del_flag', 0)
+            ->where('m_service.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->where('m_ship.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE)
             ->groupBy([
                 !$type ? 'm_service.id' : 'm_company.id',
                 'm_ship.id',

@@ -67,6 +67,9 @@
             <th class="col-action contract-status">
                 {{ trans('ship.contract_status') }}
             </th>
+            <th class="col-action approve-status">
+                {{ trans('billing.tbl_list_company_header.status_approve') }}
+            </th>
             <th class="col-action">
                 {{ Form::button(
                     trans('ship.btn_filter'),

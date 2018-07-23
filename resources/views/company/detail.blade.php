@@ -415,7 +415,7 @@
                                     </div>
                                     <div class="col-md-12">
                                         <div class="col-md-6">
-                                            <a href="{{ route('ship.createShipContract', ['company-id' => $company->id]) }}"
+                                            <a href="{{ route('ship.contract.create', ['company-id' => $company->id]) }}"
                                                 class="btn btn-green-dark btn-w150"
                                                 tabindex="4">
                                                 {{ trans('company.btn_create') }}

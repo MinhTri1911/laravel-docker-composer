@@ -21,20 +21,20 @@ class Constant
 
     // Approved status text
     const APPROVED_O = [
-      1 =>  "承認済",
-      2 =>  "承認待ち",
-      3 =>  "却下",
+        1 =>  "承認済",
+        2 =>  "承認待ち",
+        3 =>  "却下",
     ];
 
     // Contract status text
     const CONTRACT_O = [
-      0 =>  "有効",
-      1 =>  "中断",
-      2 =>  "完了",
-      3 =>  "完了"
+        0 =>  "有効",
+        1 =>  "中断",
+        2 =>  "完了",
+        3 =>  "完了"
     ];
 
-    // Arrray billing paper status
+    // Array billing paper status
     const ARR_BILLING_PAPER_STATUS = [
         1 => '未作成',
         2 => '発行待ち',
@@ -74,6 +74,11 @@ class Constant
     const DETAIL_CHARGE_DISCOUNT_COMMON      = 1;
     const DETAIL_CHARGE_DISCOUNT_INDIVIDUAL  = 2;
 
+    // Status of billing method
+    const BILLING_METHOD_MAIL = 0;
+    const BILLING_METHOD_PRINT_SEAL = 1;
+    const BILLING_METHOD_PRINT_NORMAL = 2;
+
     // Default total record per page
     const PAGINATION_PER_PAGE = 10;
 
@@ -86,13 +91,10 @@ class Constant
 
     // Status code OK
     const HTTP_CODE_SUCCESS = 200;
-
     // Status code error 403 Forbidden
     const HTTP_CODE_ERROR_403 = 403;
-
     // Status code error 404 Not Found
     const HTTP_CODE_ERROR_404 = 404;
-
     // Status code error 500 Internal Server Error
     const HTTP_CODE_ERROR_500 = 500;
 
@@ -103,10 +105,10 @@ class Constant
         't'     => 'H:i:s',
         'ym'     => 'Y/m'
     ];
-    
+
     // Config type approve are contract, spot, billing
     const TYPE_APPROVE = ['契約', 'スポット費用', '請求書'];
-    
+
     // Config type operation
     const TYPE_OPE = [
         'create'    => '作成',
@@ -115,7 +117,7 @@ class Constant
         'reactive'    => 'REACTIVE',
         'restore'    => 'RESTORE'
     ];
-    
+
     const ID_SCREEN = [
         // FCM0001
         'SCM0001' => 'SCM0001',
@@ -147,4 +149,96 @@ class Constant
         'SBA0004' => 'SBA0004',
         'BBA0005' => 'BBA0005',
     ];
+
+    // Allow access screen identification
+    const ALLOW_CONTRACT_CREATE = 1;
+    const ALLOW_CONTRACT_EDIT = 2;
+    const ALLOW_CONTRACT_DELETE = 3;
+    const ALLOW_CONTRACT_VIEW = 4;
+    const ALLOW_CONTRACT_CREATE_EDIT = 5;
+    const ALLOW_CONTRACT_FULL = 6;
+    const ALLOW_CONTRACT_APPROVE = 7;
+    const ALLOW_COMPANY_CREATE = 8;
+    const ALLOW_COMPANY_EDIT = 9;
+    const ALLOW_COMPANY_DELETE = 10;
+    const ALLOW_COMPANY_VIEW = 11;
+    const ALLOW_COMPANY_FULL = 12;
+    const ALLOW_BILLING_CREATE = 13;
+    const ALLOW_BILLING_EDIT = 14;
+    const ALLOW_BILLING_DELETE = 15;
+    const ALLOW_BILLING_VIEW = 16;
+    const ALLOW_BILLING_CREATE_EDIT = 17;
+    const ALLOW_BILLING_FULL = 18;
+    const ALLOW_BILLING_APPROVE = 19;
+    const ALLOW_SHIP_CREATE = 20;
+    const ALLOW_SHIP_EDIT = 21;
+    const ALLOW_SHIP_DELETE = 22;
+    const ALLOW_SHIP_VIEW = 23;
+    const ALLOW_SHIP_CREATE_EDIT = 24;
+    const ALLOW_SHIP_FULL = 25;
+    const ALLOW_SPOT_APPROVE = 26;
+    const ALLOW_ROLE_SCREEN = 27;
+
+    // Screens of create role
+    const ROLE_CREATE_OPERATION_SCREEN = [
+        // Contract
+        Constant::ALLOW_CONTRACT_CREATE,
+        Constant::ALLOW_CONTRACT_EDIT,
+        Constant::ALLOW_CONTRACT_DELETE,
+        Constant::ALLOW_CONTRACT_VIEW,
+        Constant::ALLOW_CONTRACT_CREATE_EDIT,
+        Constant::ALLOW_CONTRACT_FULL,
+        // Company
+        Constant::ALLOW_COMPANY_CREATE,
+        Constant::ALLOW_COMPANY_EDIT,
+        Constant::ALLOW_COMPANY_DELETE,
+        Constant::ALLOW_COMPANY_VIEW,
+        Constant::ALLOW_COMPANY_FULL,
+        // Billing
+        Constant::ALLOW_BILLING_CREATE,
+        Constant::ALLOW_BILLING_EDIT,
+        Constant::ALLOW_BILLING_DELETE,
+        Constant::ALLOW_BILLING_VIEW,
+        Constant::ALLOW_BILLING_CREATE_EDIT,
+        Constant::ALLOW_BILLING_FULL,
+        // Ship
+        Constant::ALLOW_SHIP_CREATE,
+        Constant::ALLOW_SHIP_EDIT,
+        Constant::ALLOW_SHIP_DELETE,
+        Constant::ALLOW_SHIP_VIEW,
+        Constant::ALLOW_SHIP_CREATE_EDIT,
+        Constant::ALLOW_SHIP_FULL,
+    ];
+
+    // Screens of approve role
+    const ROLE_APPROVE_SCREEN = [
+        Constant::ALLOW_BILLING_CREATE,
+        Constant::ALLOW_BILLING_EDIT,
+        Constant::ALLOW_BILLING_DELETE,
+        Constant::ALLOW_BILLING_VIEW,
+        Constant::ALLOW_BILLING_CREATE_EDIT,
+        Constant::ALLOW_CONTRACT_APPROVE,
+        Constant::ALLOW_BILLING_APPROVE,
+        Constant::ALLOW_SPOT_APPROVE,
+    ];
+
+    // Screens of reference role
+    const ROLE_REFERENCE_SCREEN = [
+        Constant::ALLOW_CONTRACT_VIEW,
+        Constant::ALLOW_COMPANY_VIEW,
+        Constant::ALLOW_BILLING_VIEW,
+        Constant::ALLOW_SHIP_VIEW
+    ];
+
+    /**
+     * Status depend company
+     * 0. Not depend (IN)
+     * 1. Depend (OUT)
+     */
+    const STATUS_DEPEND_COMPANY_IN = 1;
+    const STATUS_DEPEND_COMPANY_OUT = 0;
+
+    // Check button permission
+    const IS_CHECK_SCREEN = 0;
+    const IS_CHECK_BUTTON = 1;
 }

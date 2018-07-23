@@ -65,6 +65,18 @@ class RepositoryServiceProvider extends ServiceProvider {
             'mcurrency' => [
                 'interface' => \App\Repositories\MCurrency\MCurrencyInterface::class,
                 'repository' => \App\Repositories\MCurrency\MCurrencyRepository::class
+            ],
+            'nation' => [
+                'interface' => \App\Repositories\Nation\NationInterface::class,
+                'repository' => \App\Repositories\Nation\NationRepository::class
+            ],
+            'shipType' => [
+                'interface' => \App\Repositories\ShipType\ShipTypeInterface::class,
+                'repository' => \App\Repositories\ShipType\ShipTypeRepository::class
+            ],
+            'classification' => [
+                'interface' => \App\Repositories\Classification\ClassificationInterface::class,
+                'repository' => \App\Repositories\Classification\ClassificationRepository::class
             ]
         ];
         foreach ($paths as $value) {

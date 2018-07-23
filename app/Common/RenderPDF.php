@@ -4,8 +4,8 @@ namespace App\Common;
 
 use Mpdf;
 
-class RenderPDF {
-    
+class RenderPDF 
+{
     // Set file name of
     public static $pdfFileName = 'CMAXS';
     
@@ -16,7 +16,7 @@ class RenderPDF {
         'save'          => Mpdf\Output\Destination::FILE,
         'string'        => Mpdf\Output\Destination::STRING_RETURN
     ];
-    
+
     /**
      * Config default for template Mpdf
      * Source: https://mpdf.github.io/reference/mpdf-variables/overview.html
@@ -48,6 +48,7 @@ class RenderPDF {
      */
     public static function exportPDFWithView($view = 'demo.template', $data = [], $method = 'download' ) {
         $pdf = new Mpdf\Mpdf();
+
         RenderPDF::configUTF8Japanese($pdf, self::CONFIGS);
         
         // If user want to pass data into view

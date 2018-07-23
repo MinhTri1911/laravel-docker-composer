@@ -6,30 +6,50 @@ var billingPaper = new function () {
   this.models = {
 
     // Button
-    btnCreate : '#btn-create',
-    btnDelivery : '#btn-delivery',
-    btnSearch : '#btn-search',
+    btnCreate: '#btn-create',
+    btnDelivery: '#btn-delivery',
+    btnSearch: '#btn-search',
+    btnRadioCompany: '.btn-radio-company',
+    btnExportCsv: '#btn-export-csv',
 
-    linkReasonReject : '.link-reason-reject',
-    areaInput : '.content-billing',
-    areaResultSearch : '#area-tbl-result',
+    linkReasonReject: '.link-reason-reject',
+    areaInput: '.content-billing',
+    areaResultSearch: '#area-tbl-result',
 
     // Item controll
-    txtCompanyName : '#company-name',
-    sltStatus : '#slt-status',
-    sltApprove : '#slt-approve',
+    txtCompanyName: '#company-name',
+    sltStatus: '#slt-status',
+    sltApprove: '#slt-approve',
     sltStartYear: '#slt-start-year',
     sltEndYear: '#slt-end-year',
     sltStartMonth: '#slt-start-month',
     sltEndMonth: '#slt-end-month',
     sltNumberRecord: '#slt-number-record',
-    popupReasonRejectText : '#popup-reason-reject-text',
-    linkPagination : '.pagination li a',
-    lblRadioCompany : '.lbl-radio-company',
-    btnRadioCompany : '.btn-radio-company',
+    linkPagination: '.pagination li a',
+    lblRadioCompany: '.lbl-radio-company',
+    txtRemark: '#txt-remark',
+    chkDetail: '#chk-detail',
+    statusBilling: '#hidden-status-',
+    totalRecord: '#total-record',
 
     // Url
-    urlSearch : '#url-search'
+    urlSearch: '#url-search',
+    urlCreate: '#url-create',
+    urlDelivery: '#url-delivery',
+    urlExport: '#url-export-csv',
+
+    // Popup
+    popupReasonReject: '#modal-reason-reject',
+    popupReasonRejectText: '#popup-reason-reject-text',
+    popupConfirm: '#modal-confirm',
+    popupConfirmTitle: '#title-popup-confirm',
+    popupConfirmText: '#popup-confirm-text',
+    btnConfirmCancel: '#btn-confirm-cancel',
+    btnConfirmOk: '#btn-confirm-ok',
+    popupInform: '#modal-inform',
+    titlePopupInform: '#title-popup-inform',
+    messagePopupInform: '#popup-inform-message'
+
   };
 
   // Status approve
@@ -45,29 +65,35 @@ var billingPaper = new function () {
   const NO_CREATE = 1;
   const WAITING_DELIVERY = 2;
   const DELIVERIED = 3;
-  
+
+  // Domain
+  const DOMAIN = location.protocol + "//" + location.host + '/';
+
   this.url = {
-    searchBillingPaper: $(this.models.urlSearch).val()
+    searchBillingPaper: $(this.models.urlSearch).val(),
+    createBillingPaper: $(this.models.urlCreate).val(),
+    deliveryBillingPaper: $(this.models.urlDelivery).val(),
+    exportBillingPaper: $(this.models.urlExport).val()
   };
 
   this.init = function () {
 
     // Clear localStorage
     var param = {
-          'conditionSearch' : {
-              'companyName' : null,
-              'status': $(billingPaper.models.sltStatus).val(),
-              'approve': $(billingPaper.models.sltApprove).val(),
-              'startYear': $(billingPaper.models.sltStartYear).val(),
-              'startMonth': $(billingPaper.models.sltStartMonth).val(),
-              'endYear': $(billingPaper.models.sltEndYear).val(),
-              'endMonth': $(billingPaper.models.sltEndMonth).val(),
-              'numberRecord' : $(billingPaper.models.sltNumberRecord).val()
-            }
-        };
+      'conditionSearch': {
+        'companyName': null,
+        'status': $(billingPaper.models.sltStatus).val(),
+        'approve': $(billingPaper.models.sltApprove).val(),
+        'startYear': $(billingPaper.models.sltStartYear).val(),
+        'startMonth': $(billingPaper.models.sltStartMonth).val(),
+        'endYear': $(billingPaper.models.sltEndYear).val(),
+        'endMonth': $(billingPaper.models.sltEndMonth).val(),
+        'numberRecord': $(billingPaper.models.sltNumberRecord).val()
+      }
+    };
     window.localStorage.setItem(ID_SCREEN, JSON.stringify(param));
 
-    //    billingPaper.events.initScrollbar();
+    //  billingPaper.events.initScrollbar();
     billingPaper.events.initPopup();
 
     // Event change combobox
@@ -95,7 +121,7 @@ var billingPaper = new function () {
       var localStorage = JSON.parse(window.localStorage.getItem(ID_SCREEN));
       var btnRadioId = $(this).attr('for');
 
-      localStorage['companyId']  = $('#' + btnRadioId).val();
+      localStorage['companyId'] = $('#' + btnRadioId).val();
       window.localStorage.setItem(ID_SCREEN, JSON.stringify(localStorage));
     });
 
@@ -104,15 +130,30 @@ var billingPaper = new function () {
       billingPaper.events.createBillingPaper();
     });
 
+    // Click button delivery billing paper
+    $(document).on('click', billingPaper.models.btnDelivery, function () {
+      billingPaper.events.deliveryBillingPaper();
+    });
+
+    // Click button ok confirm delivery billing paper
+    $(document).on('click', billingPaper.models.btnConfirmOk, function () {
+      billingPaper.events.deliverySubmit();
+      $(billingPaper.models.popupConfirm).modal('hide');
+    });
+
+    // Export CSV billing paper
+    $(document).on('click', billingPaper.models.btnExportCsv, function () {
+      billingPaper.events.export();
+    });
   };
 
   this.events = {
 
     /**
-    * Init scrollbar
-    * 
-    * @returns void
-    */
+     * Init scrollbar
+     *
+     * @returns void
+     */
     initScrollbar: function () {
       var scroll;
 
@@ -120,36 +161,31 @@ var billingPaper = new function () {
       new PerfectScrollbar(scroll, function () {
         table.style.width = '880px'
       });
-
-      scroll = document.querySelector('.table-list-company tbody');
-      new PerfectScrollbar(scroll, function () {
-        table.style.height = '675px'
-      });
     },
 
     /**
-    * Init popup
-    * 
-    * @returns void
-    */
+     * Init popup
+     *
+     * @returns void
+     */
     initPopup: function () {
       $(document).on('click', billingPaper.models.linkReasonReject, function (e) {
         e.preventDefault();
 
+        // Set reason reject
         idRejectText = $(this).attr('id-for');
         contentReason = $(idRejectText).val();
         $(billingPaper.models.popupReasonRejectText).html(contentReason);
 
-        $('#modal-reason-reject').modal('show');
-        
+        $(billingPaper.models.popupReasonReject).modal('show');
       });
     },
 
     /**
-    * Display button billing 
-    * 
-    * @returns void
-    */
+     * Display button billing
+     *
+     * @returns void
+     */
     displayProcessBilling: function () {
       var status = $(billingPaper.models.sltStatus).val();
       var approve = $(billingPaper.models.sltApprove).val();
@@ -162,10 +198,10 @@ var billingPaper = new function () {
       // Case select all
       if (approve == SELECT_ALL) {
         if (status == NO_CREATE) {
-           $(billingPaper.models.btnDelivery).addClass('display-none');
+          $(billingPaper.models.btnDelivery).addClass('display-none');
         }
         if (status == WAITING_DELIVERY || status == DELIVERIED) {
-          $(billingPaper.models.areaInput).addClass('display-none'); 
+          $(billingPaper.models.areaInput).addClass('display-none');
           $(billingPaper.models.btnCreate).addClass('display-none');
         }
       }
@@ -203,22 +239,22 @@ var billingPaper = new function () {
 
     /**
      * Search billing paper
-     * 
+     *
      * @returns void}
      */
     searchBillingPaper: function () {
 
       var param = {
-        'conditionSearch' : {
-            'companyName' : $(billingPaper.models.txtCompanyName).val(),
-            'status': $(billingPaper.models.sltStatus).val(),
-            'approve': $(billingPaper.models.sltApprove).val(),
-            'startYear': $(billingPaper.models.sltStartYear).val(),
-            'startMonth': $(billingPaper.models.sltStartMonth).val(),
-            'endYear': $(billingPaper.models.sltEndYear).val(),
-            'endMonth': $(billingPaper.models.sltEndMonth).val(),
-            'numberRecord' : $(billingPaper.models.sltNumberRecord).val()
-          }
+        'conditionSearch': {
+          'companyName': $(billingPaper.models.txtCompanyName).val(),
+          'status': $(billingPaper.models.sltStatus).val(),
+          'approve': $(billingPaper.models.sltApprove).val(),
+          'startYear': $(billingPaper.models.sltStartYear).val(),
+          'startMonth': $(billingPaper.models.sltStartMonth).val(),
+          'endYear': $(billingPaper.models.sltEndYear).val(),
+          'endMonth': $(billingPaper.models.sltEndMonth).val(),
+          'numberRecord': $(billingPaper.models.sltNumberRecord).val()
+        }
       };
 
       // Ajax
@@ -232,16 +268,18 @@ var billingPaper = new function () {
           $(billingPaper.models.areaResultSearch).empty();
           $(billingPaper.models.areaResultSearch).append(res.html);
 
+          // Set display item
+          billingPaper.events.displayProcessBilling();
         }
       })
-      .fail(function (res) {
+        .fail(function (res) {
           return;
-      });
+        });
     },
 
     /**
      * Search pagination billing paper
-     * 
+     *
      * @param object item item of event
      * @param object event event
      * @param int itemType 1: numberRecord, 2: link pagination
@@ -272,44 +310,190 @@ var billingPaper = new function () {
             $(billingPaper.models.areaResultSearch).empty();
             $(billingPaper.models.areaResultSearch).append(res.html);
 
+            // Set display item
+            billingPaper.events.displayProcessBilling();
+
             // Set radio checked
             billingPaper.events.autoCheckedRadioCompany(param['companyId']);
           }
         })
-        .fail(function (res) {
+          .fail(function (res) {
+            // Set display item
+            billingPaper.events.displayProcessBilling();
+
             return;
-        });
+          });
       }
     },
 
     /**
      * Check value and checked radio button
-     * 
+     *
+     * @param int companyId
      * @returns void
      */
     autoCheckedRadioCompany: function (companyId) {
 
       if (companyId !== undefined && companyId !== null) {
-        $(billingPaper.models.btnRadioCompany).each(function() {
+        $(billingPaper.models.btnRadioCompany).each(function () {
           if (companyId == $(this).val()) {
             $(this).prop('checked', true);
             return true;
           }
         });
       }
-
     },
-    
+
     /**
-     * 
+     * Create billing paper
+     *
      * @returns void
      */
-    createBillingPaper : function () {
-      
+    createBillingPaper: function () {
+
+      var companyId = $("input:radio[name='rdo_company']:checked").val();
+
+      // Create parameter
+      var param = JSON.parse(window.localStorage.getItem(ID_SCREEN));
+      param['createBillingPaper'] = {
+        'companyId': companyId,
+        'remark': $(billingPaper.models.txtRemark).val(),
+        'isDetail': $("input:checkbox[name='is_detail']:checked").val()
+      };
+
+      // Ajax
+      $.post(billingPaper.url.createBillingPaper, param, function (res) {
+        if (res.code === HTTP_SUCCESS) {
+
+          // Show alert inform
+          $(billingPaper.models.titlePopupInform).html(res.title);
+          $(billingPaper.models.messagePopupInform).html(res.message);
+          $(billingPaper.models.popupInform).modal('show');
+
+        } else {
+          // Show alert inform
+          $(billingPaper.models.titlePopupInform).html(res.title);
+          $(billingPaper.models.messagePopupInform).html(res.message);
+          $(billingPaper.models.popupInform).modal('show');
+        }
+
+        // Append data
+        if (res.html !== undefined) {
+          $(billingPaper.models.areaResultSearch).empty();
+          $(billingPaper.models.areaResultSearch).append(res.html);
+        }
+
+        // Set display item
+        billingPaper.events.displayProcessBilling();
+      })
+        .fail(function (res) {
+          // Set display item
+          billingPaper.events.displayProcessBilling();
+
+          return;
+        });
+    },
+
+    /**
+     * Delivery billing paper
+     *
+     * @returns void
+     */
+    deliveryBillingPaper: function () {
+
+      var companyId = $("input:radio[name='rdo_company']:checked").val();
+
+      // Show inform when billing paper delivered
+      if (DELIVERIED == $(billingPaper.models.statusBilling + companyId).val()) {
+
+        // Show alert inform
+        $(billingPaper.models.popupConfirmTitle).html(message.popup_confirm_title);
+        $(billingPaper.models.popupConfirmText).html(message.msg_confirm_delivery_again);
+        $(billingPaper.models.popupConfirm).modal('show');
+      } else {
+        billingPaper.events.deliverySubmit();
+      }
+    },
+
+    /**
+     * Submit delivery billing paper
+     *
+     * @returns void
+     */
+    deliverySubmit: function () {
+
+      var companyId = $("input:radio[name='rdo_company']:checked").val();
+
+      // Create parameter
+      var param = JSON.parse(window.localStorage.getItem(ID_SCREEN));
+      param['deliveryBillingPaper'] = {
+        'companyId': companyId
+      };
+
+      // Ajax
+      $.post(billingPaper.url.deliveryBillingPaper, param, function (res) {
+        if (res.code === HTTP_SUCCESS) {
+
+          // Show alert inform
+          if (res.pdf_url === undefined) {
+            $(billingPaper.models.titlePopupInform).html(res.title);
+            $(billingPaper.models.messagePopupInform).html(res.message);
+            $(billingPaper.models.popupInform).modal('show');
+          } else {
+            $url = DOMAIN + res.pdf_url;
+            window.open($url, '_blank');
+          }
+
+        } else {
+          // Show alert inform
+          $(billingPaper.models.titlePopupInform).html(res.title);
+          $(billingPaper.models.messagePopupInform).html(res.message);
+          $(billingPaper.models.popupInform).modal('show');
+        }
+
+        // Set display item
+        billingPaper.events.displayProcessBilling();
+      })
+        .fail(function (res) {
+          // Set display item
+          billingPaper.events.displayProcessBilling();
+          return;
+        });
+    },
+
+    /**
+     * Export billing paper
+     *
+     * @returns void
+     */
+    export: function () {
+
+      // Create parameter
+      var param = JSON.parse(window.localStorage.getItem(ID_SCREEN));
+      param['conditionSearch']['numberRecord'] = $(billingPaper.models.totalRecord).val();
+
+      // Ajax
+      $.post(billingPaper.url.exportBillingPaper, param, function (res) {
+
+        if (res.code === HTTP_ERROR) {
+          // Show alert inform
+          $(billingPaper.models.titlePopupInform).html(res.title);
+          $(billingPaper.models.messagePopupInform).html(res.message);
+          $(billingPaper.models.popupInform).modal('show');
+        }
+
+        // Set display item
+        billingPaper.events.displayProcessBilling();
+      })
+        .fail(function (res) {
+          // Set display item
+          billingPaper.events.displayProcessBilling();
+          return;
+        });
     }
   };
 };
 
 $(document).ready(function () {
-    billingPaper.init();
+  billingPaper.init();
 });
