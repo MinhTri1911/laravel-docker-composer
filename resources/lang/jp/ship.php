@@ -41,6 +41,11 @@ return [
     'btn_add_ship' => '追加',
     'btn_cancel' => 'システムを追加',
     'lbl_title_ship_nation_id' => '船籍国ID',
+    'lbl_title_spot_charge_register' => '初期登録費',
+    'lbl_title_spot_charge_create_data' => 'データ作成費',
+    'lbl_title_currecy_use' => '使用通貨',
+    'now' => '現在日',
+    'spot' => 'スポット費用',
 
 
     // popup add service

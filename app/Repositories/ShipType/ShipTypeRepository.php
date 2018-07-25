@@ -33,4 +33,15 @@ class ShipTypeRepository extends EloquentRepository implements ShipTypeInterface
         // Get all ship type with del_flag is false
         return $this->where('del_flag', Constant::DELETE_FLAG_FALSE)->get($columns);
     }
+
+    /**
+     * Function check ship type exists
+     *
+     * @param int $typeId
+     * @return boolean
+     */
+    public function checkTypeExists($typeId)
+    {
+        return $this->where('id', $typeId)->where('del_flag', Constant::DELETE_FLAG_FALSE)->exists();
+    }
 }

@@ -38,4 +38,15 @@ class NationBusiness
             'name_en',
         ]);
     }
+
+    /**
+     * Function check exists nation id
+     *
+     * @param int $nationId
+     * @return boolean
+     */
+    public function checkExistsNationId($nationId)
+    {
+        return $this->nationRepository->checkExists($nationId);
+    }
 }

@@ -12,12 +12,16 @@
 namespace App\Business;
 
 use App\Repositories\Service\ServiceInterface;
+use App\Traits\CommonArray;
 
-class SearchServiceBusiness {
+class SearchServiceBusiness
+{
+    use CommonArray;
 
     protected $serviceRepository;
 
-    public function __construct(ServiceInterface $serviceRepository) {
+    public function __construct(ServiceInterface $serviceRepository)
+    {
         $this->serviceRepository = $serviceRepository;
     }
 
@@ -28,10 +32,11 @@ class SearchServiceBusiness {
      * @param int shipId
      * @return data query
      */
-    public function initSearchSevice($currencyId, $shipId) {
-        
+    public function initSearchSevice($currencyId, $shipId)
+    {
+
         $dataQuery = [];
-        
+
         if ($shipId == null || $shipId == '') {
             $dataQuery = $this->serviceRepository->getListService($currencyId);
         } else {
@@ -40,7 +45,7 @@ class SearchServiceBusiness {
 
         return $dataQuery;
     }
-    
+
      /**
      * Business search service
      * @access public
@@ -50,13 +55,37 @@ class SearchServiceBusiness {
      * @param string nameServiceSearch
      * @return data query
      */
-    public function searchSevice($currencyId, $shipId, $idServiceSearch, $nameServiceSearch) {
-        
+    public function searchSevice($currencyId, $shipId, $idServiceSearch, $nameServiceSearch)
+    {
+
         $dataQuery = [];
-        
+
         $dataQuery = $this->serviceRepository->searchListService($currencyId,$shipId,$idServiceSearch,$nameServiceSearch);
 
         return $dataQuery;
     }
 
+    /**
+     * Function check service exists with currency
+     * @param int companyId
+     * @parama array serviceIds
+     * @return boolean
+     * @throws \Exception
+     */
+    public function checkServiceExistsWithCurrency($companyId, $serviceIds)
+    {
+        // Check company id is int and services is array
+        if (!is_numeric($companyId) || !is_array($serviceIds)) {
+            return false;
+        }
+
+        if (empty($serviceIds)) {
+            return true;
+        }
+
+        $services = $this->serviceRepository->getServiceExistsWithCurrency($companyId);
+        $servicesExists = array_column($services->toArray(), 'id');
+
+        return $this->checkArrayExists($serviceIds, $servicesExists);
+    }
 }

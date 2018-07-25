@@ -4,7 +4,7 @@
  * Ship management Repository
  *
  * @package App\Repositories\Ship
- * @author Rikkei.Quyenl
+ * @author Rikkei.QuyenL
  * @date 2018/07/05
  */
 
@@ -38,7 +38,7 @@ class TShipSpotRepository extends EloquentRepository implements TShipSpotInterfa
         $ship->ship_id = $data['ship_id'];
         $ship->currency_id = $data['currency_id'];
         $ship->month_usage = date('Y-m').'-1';
-        $ship->spot_id = 2;
+        $ship->spot_id = $typeInsert;
         if ($typeInsert == 1) {
            $ship->amount_charge = Common::foramtNumber($data['chargeRegister']);
         } else {

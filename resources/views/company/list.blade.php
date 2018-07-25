@@ -94,7 +94,7 @@
                     tabindex="18">
                     {{ trans('company.go_to_history_billing') }}
                 </a>
-                <a class="btn btn-green-dark btn-w150" href="{{ route('billing.create.billing.paper') }}" tabindex="17">
+                <a class="btn btn-green-dark btn-w150" href="{{ route('billing.index') }}" tabindex="17">
                     {{ trans('company.go_to_create_billing_paper') }}
                 </a>
                 <a href="{{ route('ship.index') }}" class="btn btn-green-dark btn-w150" tabindex="16">{{ trans('company.go_to_list_ship') }}</a>

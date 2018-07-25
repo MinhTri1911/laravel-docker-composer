@@ -240,4 +240,13 @@ interface RepositoryInterface
      * @return bool
      */
     public function multiUpdate($ids, $data = [], $column = null);
+
+    /**
+     * Undocumented function
+     *
+     * @param array $values
+     * @param string $sequence
+     * @return int
+     */
+    public function insertGetId($values, $sequence = null);
 }

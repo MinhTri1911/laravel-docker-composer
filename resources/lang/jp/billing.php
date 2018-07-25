@@ -36,15 +36,7 @@ return [
     'lbl_status_approve' => '承認',
     'lbl_year' => '年',
     'lbl_month' => '月',
-
-    // Popup
-    'title_popup_update_payment_date' => '入金確認日更新ポップアップ',
-    'title_popup_reason_reject' => '却下理由',
-    'title_popup_create'     => '請求書発行',
-    'title_popup_delivery'     => '請求書を発行',
-    'message_create_billing_ok'     => '請求書が作成されました。承認がおりるまでお待ちください。',
-    'message_delivery_billing_ok' => '請求書発行に成功しました。',
-    'lbl_close_popup' => '閉じる',
+    'export_file_name' => '請求書リスト',
 
 //    History billing
     'lbl_object_statistic' => '対象',
@@ -105,10 +97,19 @@ return [
         'month' => '月',
     ],
 
+    // Popup
+    'title_popup_update_payment_date' => '入金確認日更新ポップアップ',
+    'title_popup_reason_reject' => '却下理由',
+    'title_popup_create'     => '請求書発行',
+    'title_popup_delivery'     => '請求書を発行',
+    'lbl_close_popup' => '閉じる',
+
     'message' => [
         'choose_row' => '請求書を選択してください。',
         'not_found_data' => '請求書の情報はエラーで、請求書の状態をチェックしてください。',
-        'confirm_delivery_again' => '請求書が発行されましたが、もう一度発行しますか？'
+        'confirm_delivery_again' => '請求書が発行されましたが、もう一度発行しますか？',
+        'create_billing_ok'     => '請求書が作成されました。承認がおりるまでお待ちください。',
+        'delivery_billing_ok' => '請求書発行に成功しました。'
     ],
 
     // Button

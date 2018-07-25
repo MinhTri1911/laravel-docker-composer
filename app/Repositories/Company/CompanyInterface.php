@@ -77,4 +77,12 @@ interface CompanyInterface
      * @return boolean
      */
     public function existsContractWattingApprove($companyId);
+
+    /**
+     * Function check exists company
+     *
+     * @param int $companyId
+     * @return boolean
+     */
+    public function checkCompanyExists($companyId);
 }

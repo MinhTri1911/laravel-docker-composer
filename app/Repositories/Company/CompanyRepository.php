@@ -258,4 +258,15 @@ class CompanyRepository extends EloquentRepository implements CompanyInterface
             ->whereNotNull('m_contract.updated_at')
             ->exists();
     }
+
+    /**
+     * Function check exists company
+     *
+     * @param int $companyId
+     * @return boolean
+     */
+    public function checkCompanyExists($companyId)
+    {
+        return $this->where('id', $companyId)->where('del_flag', Constant::DELETE_FLAG_FALSE)->exists();
+    }
 }

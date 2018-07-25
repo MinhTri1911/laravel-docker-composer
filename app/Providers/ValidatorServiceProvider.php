@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Validator;
 
 class ValidatorServiceProvider extends ServiceProvider
 {
@@ -13,7 +14,9 @@ class ValidatorServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Validator::extend('foo', "UserValidator@foo");
+        Validator::extend('money', "App\Validators\CustomValidate@validateMoneySpot", 'msg_default');
+        Validator::extend('after_date_custom', "App\Validators\CustomValidate@validateAfterDateCustom");
+        Validator::extend('exists_service', "App\Validators\CustomValidate@validateExistsService");
     }
 
     /**

@@ -17,9 +17,8 @@ use App\Repositories\Billing\BillingPaperInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Common\RenderPDF as PDFRender;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Csv;
-use PhpOffice\PhpSpreadsheet\IOFactory;
+use App\Common\Mail;
+use PHPMailer\PHPMailer\Exception as MailException;
 
 /**
  * Class BillingPaperBusiness Handle business related billing paper
@@ -60,7 +59,7 @@ class BillingPaperBusiness
             'startMonth' => (integer)date('m'),
             'endYear' => date('Y'),
             'endMonth' => (integer)date('m'),
-            'numberRecord' => Constant::ARY_PAGINATION_PER_PAGE[10],
+            'numberRecord' => @Constant::ARY_PAGINATION_PER_PAGE[10]
         ];
         $listSearch = $this->searchBillingPaper($conditionSearch);
         $models['resultSearch'] = $listSearch['resultSearch'];
@@ -77,29 +76,38 @@ class BillingPaperBusiness
      */
     public function searchBillingPaper($conditionSearch)
     {
-        // Get min and max deadline month no
-        $monthNow = date_create(date('Y-m') . '-01');
+        try {
 
-        // Date of input search
-        $startDate = date_create($conditionSearch['startYear'] . '-' . $conditionSearch['startMonth'] . '-1');
-        $endDate = date_create($conditionSearch['endYear'] . '-' . $conditionSearch['endMonth'] . '-1');
-        $endDayTime = strtotime(date_format($endDate, "Y-m-d") . ' +' . 1 . ' month -1 days');
+            $models = [];
 
-        // Interval input search
-        $minMonth = date_diff($startDate, $monthNow);
-        $maxMonth = date_diff($endDate, $monthNow);
+            // Get min and max deadline month no
+            $monthNow = date_create(date('Y-m') . '-01');
 
-        // Set min/max deadline month no
-        $conditionSearch['minMonth'] = $startDate >= $monthNow ? $minMonth->format('%m') : '-1';
-        $conditionSearch['maxMonth'] = $endDate >= $monthNow ? $maxMonth->format('%m') : '-1';
+            // Date of input search
+            $startDate = date_create($conditionSearch['startYear'] . '-' . $conditionSearch['startMonth'] . '-1');
+            $endDate = date_create($conditionSearch['endYear'] . '-' . $conditionSearch['endMonth'] . '-1');
+            $endDayTime = strtotime(date_format($endDate, "Y-m-d") . ' +' . 1 . ' month -1 days');
 
-        // Set start/end deadline date
-        $conditionSearch['beginDate'] = date_format($startDate, "Y-m-d");
-        $conditionSearch['endDate'] = date('Y-m-d', $endDayTime);
+            // Interval input search
+            $minMonth = date_diff($startDate, $monthNow);
+            $maxMonth = date_diff($endDate, $monthNow);
 
-        $models['resultSearch'] = $this->_getListSearchBilling($conditionSearch);
+            // Set min/max deadline month no
+            $conditionSearch['minMonth'] = $startDate >= $monthNow ? $minMonth->format('%m') : '-1';
+            $conditionSearch['maxMonth'] = $endDate >= $monthNow ? $maxMonth->format('%m') : '-1';
 
-        return $models;
+            // Set start/end deadline date
+            $conditionSearch['beginDate'] = date_format($startDate, "Y-m-d");
+            $conditionSearch['endDate'] = date('Y-m-d', $endDayTime);
+
+            $models['resultSearch'] = $this->_getListSearchBilling($conditionSearch);
+
+            return $models;
+        } catch (Exception $e) {
+            $models['resultSearch'] = [];
+        }
+
+
     }
 
     /**
@@ -129,8 +137,8 @@ class BillingPaperBusiness
         $models['numberRecord'] = Constant::ARY_PAGINATION_PER_PAGE;
 
         // Set data combobox year
-        $models['year'] = ['start' => (date('Y') - 5),
-            'end' => (date('Y') + 5)
+        $models['year'] = ['start' => (date('Y') - 2),
+            'end' => (date('Y') + 2)
         ];
 
         return $models;
@@ -165,7 +173,7 @@ class BillingPaperBusiness
 
             } else {
                 // Set text column money in screen
-                $billing->total_money_yen = number_format($billing->total_money, 2);
+                $billing->total_money_yen = number_format($billing->total_money, 0);
 
                 // Set text status billing paper
                 // Case waiting approve
@@ -218,8 +226,8 @@ class BillingPaperBusiness
                 // Set total money
                 if ($billing->approved_flag === null || $billing->approved_flag == Constant::STATUS_REJECT_APPROVE) {
                     // Set money for insert
-                    $billing->total_amount_billing = $billing->total_amount_billing * 1.08 + $billing->charge;
-                    $billing->total_money = $billing->total_money * 1.08 + $billing->charge;
+                    $billing->total_amount_billing = $billing->total_amount_billing * 1.08 + $billing->charge_delivery;
+                    $billing->total_money = $billing->total_money * 1.08 + $billing->charge_delivery;
                 }
 
                 return $billing;
@@ -325,25 +333,11 @@ class BillingPaperBusiness
     }
 
     /**
-     * Create pdf billing paper
-     *
-     * @access private
-     * @param object $billingPaper Object billing paper
-     * @return null|url $urlPdf
-     */
-    private function _createPdfBillingPaper($billingPaper)
-    {
-        $urlPdf = '';
-
-        return $urlPdf;
-    }
-
-    /**
      * Register database create billing paper
      *
      * @access private
      * @param object $billingPaper Object billing paper
-     * @return bool
+     * @return false|object
      */
     private function _registerDatabaseCreate($billingPaper)
     {
@@ -381,33 +375,38 @@ class BillingPaperBusiness
 
             $billingPaper = $billingPaperDatabase[0];
             $billingPaper->user_login_id = Auth::id();
-
-            // Method billing is send mail
-            if ($billingPaper->method == Constant::BILLING_METHOD_MAIL) {
-                $this->_sendMailDelivery($billingPaper);
-                $result['billing_method'] = $billingPaper->method;
-            }
+            $result['billing_method'] = $billingPaper->method;
 
             // Method billing is Print PDF
             // Create and save pdf billing paper file
             if ($billingPaper->method != Constant::BILLING_METHOD_MAIL) {
-                $result = $this->_createPdfDelivery($billingPaper);
+                $result['pdf_path'] = $billingPaper->pdf_original_link;
             }
 
+            // Begin transaction
+            DB::beginTransaction();
             if ($billingPaper->delivered_flag == Constant::DELIVERY_FLAG_FALSE) {
-                // Begin transaction
-                DB::beginTransaction();
-
                 // Update Flag delivered
                 $this->_billingPaperRepository->updateFlagDelivered($billingPaper);
-
-                // Commit transaction
-                DB::commit();
             }
 
-            return $result;
-        } catch (Exception $e) {
+            // Method billing is send mail
+            if ($billingPaper->method == Constant::BILLING_METHOD_MAIL) {
+                $this->_sendMailDelivery($billingPaper);
+            }
 
+            // Commit transaction
+            DB::commit();
+
+            return $result;
+        } catch (MailException $e) {
+            // Rollback transaction
+            DB::rollBack();
+
+            return [
+                'error_message' => Lang::get('common-message.error.E002')
+            ];
+        } catch (Exception $e) {
             // Rollback transaction
             DB::rollBack();
 
@@ -422,35 +421,33 @@ class BillingPaperBusiness
      *
      * @access private
      * @param object $billingPaper Object billing paper
-     * @return bool
+     * @return null|string
      */
-    private function _createPdfDelivery($billingPaper)
+    private function _createPdfBillingPaper($billingPaper)
     {
-        $result = [];
-        $result['billing_method'] = $billingPaper->method;
+        try {
+            // Clear cache
+            ob_clean();
+            flush();
 
-        // Clear cache
-        ob_clean();
-        flush();
+            // File name
+            $pdfFileName = $billingPaper->company_id . '_' . $billingPaper->company_name . '_' . date('YmdHis');
+            // Path folder pdf
+            $pdfPathFile = public_path() . '/Billing_Paper/' . date('Ym') . '/';
 
-        // File name
-        $pdfFileName = $billingPaper->company_id . '_' . $billingPaper->company_name . '_' . date('YmdHis');
-        // Path folder pdf
-        $pdfPathFile = public_path() . '/Billing_Paper/' . date('Ym') . '/';
+            // Check exist and create folder
+            if (!file_exists($pdfPathFile)) {
+                mkdir($pdfPathFile, 0777, true);
+            }
 
-        $result['pdf_full_path'] = $pdfPathFile . $pdfFileName;
-        $result['pdf_path'] = 'Billing_Paper/' . date('Ym') . '/' . $pdfFileName . '.pdf';
+            // Save file csv
+            PDFRender::$pdfFileName = $pdfPathFile . $pdfFileName;
+            PDFRender::exportPDFWithView('billing.paper-billing-pdf', ['user' => 'QuangPM'], 'save');
 
-        // Check exist and create folder
-        if (!file_exists($pdfPathFile)) {
-            mkdir($pdfPathFile, 0777, true);
+            return 'Billing_Paper/' . date('Ym') . '/' . $pdfFileName . '.pdf';
+        } catch (Exception $e) {
+            return null;
         }
-
-        // Save file csv
-        PDFRender::$pdfFileName = $result['pdf_full_path'];
-        PDFRender::exportPDFWithView('billing.paper-billing-pdf', ['user' => 'QuangPM'], 'save');
-
-        return $result;
     }
 
     /**
@@ -458,100 +455,129 @@ class BillingPaperBusiness
      *
      * @access private
      * @param object $billingPaper Object billing paper
-     * @return bool
+     * @return void
      */
     private function _sendMailDelivery($billingPaper)
     {
+        $mail = [];
+        $mail['toAdress'] = $billingPaper->ope_email_1;
+        $mail['toPerson'] = $billingPaper->ope_person_name_1;
+        $mail['attachmentFile'] = public_path($billingPaper->pdf_original_link);
+
         // Not yet delivery
         if ($billingPaper->delivered_flag == Constant::DELIVERY_FLAG_FALSE) {
-            return true;
+            $mail['subject'] = '○○○○年◯◯月 CMAXSご請求書';
+            $mail['body'] = $billingPaper->company_name . "御中 <br/>"
+                . "いつもCMAXSをご愛顧頂きありがとうございます．<br/>"
+                . "○○○○年◯◯月分のご請求書を添付しますので，ご査収ください．<br/>"
+                . "株式会社 ClassNKコンサルティングサービス．";
         } // Delivered
         elseif ($billingPaper->delivered_flag == Constant::DELIVERY_FLAG_TRUE) {
-            return true;
+            $mail['subject'] = '（再送信）○○○○年◯◯月 CMAXSご請求書';
+            $mail['body'] = $billingPaper->company_name . "御中<br/>"
+                . "いつもCMAXSをご愛顧頂きありがとうございます．<br/>"
+                . "○○○○年◯◯月分のご請求書を添付しますので，ご査収ください．<br/>"
+                . "株式会社 ClassNKコンサルティングサービス．<br/>"
+                . "「先日送信したメールが届いていない可能性がありましたので再送信します．既にお手元に届いている場合は，本メールは破棄してください」";
         }
 
-        return true;
+        // Send mail
+        Mail::sendMail($mail);
     }
 
     /**
-     * Get data csv
+     * Get file csv
      *
      * @access pubic
      * @param array $conditionSearch Condition search billing paper
-     * @return bool
+     * @return array
      */
     public function exportBillingPaper($conditionSearch)
     {
         try {
 
-            $result = [];
             $fileName = 'billingpaper.csv';
+            $arrListCsv = $this->_createDataCsv($conditionSearch);
 
-            // Add headers for each column in the CSV download
-            $headers = [
-                '会社名', // company name
-                'その月の請求総額', // total money
-                '支払予定年月',  // payment_due_date
-                '支払方法（現金/手形）', // method_name
-                '窓口1 担当者名', // ope_person_name_1
-                '窓口1 電話番号', // ope_phone_1
-                '窓口1 メールアドレス', // ope_email_1
-                '状態', // Status
-                '承認' // Staus approve
-            ];
-
-            // Get data search
-            $listSearch = $this->searchBillingPaper($conditionSearch);
-            $result['resultSearch'] = $listSearch['resultSearch'];
-            $list = $result['resultSearch']->items();
-
-            // Create data csv array
-            $arrListCsv = [];
-            $arrListCsv[] = $headers;
-            foreach ($list as $row) {
-                $array = [];
-                $array[] = $row->company_name;
-                $array[] = $row->total_money;
-                $array[] = $row->payment_due_date;
-                $array[] = $row->method_name;
-                $array[] = $row->ope_person_name_1;
-                $array[] = $row->ope_phone_1;
-                $array[] = $row->ope_email_1;
-                $array[] = $row->statusString;
-                $array[] = $row->approveString;
-                $arrListCsv[] = $array;
-            }
-
-            // Create new spreadsheet
-            $spreadSheet = new Spreadsheet();
-            $objWorksheet = $spreadSheet->getActiveSheet();
-            foreach ($arrListCsv as $index => $row) {
-                $objWorksheet->fromArray(
-                    $row, NULL, 'A' . $index);
-            }
-
-            // Header
-            header('Content-Description: File Transfer');
-            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-            header('Content-Disposition: attachment; filename=' . $fileName);
-            header('Expires: 0');
-            header('Pragma: no-cache');
-            // force download  
-            header("Content-Type: application/force-download");
-            header("Content-Type: application/octet-stream");
-            header("Content-Type: application/download");
+            // Clear cache
             ob_clean();
             flush();
 
-            $objWriter = new Csv($spreadSheet);
-            $objWriter->save('php://output');
+            $headers = array(
+                "Content-type" => "text/csv",
+                "Content-Type" => 'application/octet-stream',
+                "Content-Disposition" => "attachment; filename=$fileName",
 
-            exit();
+                "Pragma" => "no-cache",
+                "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+                "Expires" => "0"
+            );
+
+            $fileCsv = function () use ($arrListCsv) {
+                $file = fopen('php://output', 'w');
+                foreach ($arrListCsv as $row) {
+                    fputcsv($file, $row);
+                }
+                fclose($file);
+            };
+
+            return [
+                'headers' => $headers,
+                'file' => $fileCsv,
+            ];
 
         } catch (Exception $ex) {
             return [
                 'error_message' => Lang::get('common-message.error.E002')
             ];
         }
+    }
+
+    /**
+     * Create data csv export
+     *
+     * @access private
+     * @param object $conditionSearch Condition search
+     * @return array $arrListCsv
+     */
+    private function _createDataCsv($conditionSearch)
+    {
+        $arrListCsv = [];
+
+        // Add headers for each column in the CSV download
+        $headerCsv = [
+            '会社名', // company name
+            'その月の請求総額', // total money
+            '支払予定年月',  // payment_due_date
+            '支払方法（現金/手形）', // method_name
+            '窓口1 担当者名', // ope_person_name_1
+            '窓口1 電話番号', // ope_phone_1
+            '窓口1 メールアドレス', // ope_email_1
+            '状態', // Status
+            '承認' // Staus approve
+        ];
+
+        // Get data search
+        $listSearch = $this->searchBillingPaper($conditionSearch);
+        $result['resultSearch'] = $listSearch['resultSearch'];
+        $list = $result['resultSearch']->items();
+
+        // Create data csv array
+        $arrListCsv[] = $headerCsv;
+        foreach ($list as $row) {
+            $array = [];
+            $array[] = $row->company_name;
+            $array[] = $row->total_money;
+            $array[] = $row->payment_due_date;
+            $array[] = $row->method_name;
+            $array[] = $row->ope_person_name_1;
+            $array[] = $row->ope_phone_1;
+            $array[] = $row->ope_email_1;
+            $array[] = $row->statusString;
+            $array[] = $row->approveString;
+            $arrListCsv[] = $array;
+        }
+
+        return $arrListCsv;
     }
 }

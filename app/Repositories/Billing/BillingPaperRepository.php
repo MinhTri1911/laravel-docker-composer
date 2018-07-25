@@ -35,26 +35,55 @@ class BillingPaperRepository extends EloquentRepository implements BillingPaperI
      */
     public function getListSearchBilling($models)
     {
+        // Select history usage billing
         $historyUsage = DB::raw('(SELECT DISTINCT SHU.id, SHU.ship_id, SHU.billed_flag, SHU.total_amount_billing, SHU.total_money
                                   FROM t_history_usage AS SHU
                                       INNER JOIN t_detail_history_usage AS SDHU ON SDHU.history_usage_id= SHU.id
                                   ) AS history_usage');
 
+        // Select history billed
+        $historyBilling = DB::raw("(SELECT SHB.company_id, SHB.id AS history_billing_id, SHB.reason_reject, SHB.approved_flag, SHB.payment_deadline_no,
+                                        SBM.name_jp AS method_name_jp, SBM.charge AS charge_delivery, SCR.rate, SHB.delivered_flag,
+                                        SHB.payment_due_date, SHB.total_amount_billing, SHB.total_money
+                                    FROM t_history_billing AS SHB
+                                      INNER JOIN m_billing_method AS SBM ON SBM.id = SHB.billing_method_id 
+                                          AND SBM.currency_id = SHB.currency_id 
+                                          AND SBM.del_flag = " . Constant::DELETE_FLAG_FALSE 
+                                  . " INNER JOIN m_currency AS SCR ON SCR.id = SHB.currency_id 
+                                          AND SCR.del_flag = " . Constant::DELETE_FLAG_FALSE 
+                                . " WHERE SHB.payment_actual_date IS NULL
+                                      AND (SHB.delivered_flag =  " . Constant::DELIVERY_FLAG_FALSE 
+                                      . " OR (SHB.delivered_flag  = " . Constant::DELIVERY_FLAG_TRUE 
+                                         . " AND month(SHB.claim_date) = " . (integer)date('m') 
+                                        . " AND year(SHB.claim_date) = " . (integer)date('Y') ."))
+                                    ) AS HB");
+
         return DB::table('m_company AS C')
             ->select(DB::raw("C.id AS company_id,
                                 C.name_jp AS company_name,
-                                C.payment_deadline_no,
                                 C.ope_person_name_1,
                                 C.ope_phone_1,
                                 C.ope_email_1,
-                                BM.name_jp AS method_name,
-                                BM.charge,
-                                HB.id AS history_billing_id,
+                                HB.history_billing_id,
                                 HB.approved_flag,
                                 HB.reason_reject,
-                                CR.name_jp AS currency_name ,
-                                CR.rate,
+                                CASE 
+                                    WHEN HB.history_billing_id IS NULL OR HB.approved_flag = 3 THEN CR.rate
+                                    ELSE HB.rate
+                                END AS rate,
                                 MAX(history_usage.billed_flag) AS billed_flag,
+                                CASE 
+                                    WHEN HB.history_billing_id IS NULL OR HB.approved_flag = 3 THEN C.payment_deadline_no
+                                    ELSE HB.payment_deadline_no
+                                END AS payment_deadline_no,
+                                CASE 
+                                    WHEN HB.history_billing_id IS NULL OR HB.approved_flag = 3 THEN BM.name_jp
+                                    ELSE HB.method_name_jp
+                                END AS method_name,
+                                CASE 
+                                    WHEN HB.history_billing_id IS NULL OR HB.approved_flag = 3 THEN BM.charge
+                                    ELSE HB.charge_delivery
+                                END AS charge_delivery,
                                 SUM(
                                     CASE 
                                         WHEN history_usage.billed_flag = 0 THEN history_usage.total_amount_billing
@@ -72,7 +101,7 @@ class BillingPaperRepository extends EloquentRepository implements BillingPaperI
                                     ELSE C.month_billing
                                 END AS month_billing,
                                 CASE 
-                                    WHEN HB.id IS NULL OR HB.approved_flag = 3 THEN 1
+                                    WHEN HB.history_billing_id IS NULL OR HB.approved_flag = 3 THEN 1
                                     WHEN HB.delivered_flag = 0 THEN 2
                                     WHEN HB.delivered_flag = 1 THEN 3
                                 END AS status"))
@@ -89,11 +118,8 @@ class BillingPaperRepository extends EloquentRepository implements BillingPaperI
             ->join($historyUsage, function ($join) {
                 $join->on('history_usage.ship_id', '=', 'S.id');
             })
-            ->leftJoin('t_history_billing AS HB', function ($join) {
-                $join->on('HB.company_id', '=', 'C.id')
-                    ->whereNull('HB.payment_actual_date')
-                    ->whereraw('(HB.delivered_flag = ? OR (HB.delivered_flag  = ? AND month(HB.claim_date) = ? AND year(HB.claim_date) = ?))'
-                        , [Constant::DELIVERY_FLAG_FALSE, Constant::DELIVERY_FLAG_TRUE, (integer)date('m'), (integer)date('Y')]);
+             ->leftJoin($historyBilling, function ($join) {
+                $join->on('HB.company_id', '=', 'C.id');
             })
             ->whereRaw("(? IS NULL OR C.name_jp LIKE ?)", [$models['companyName'], '%' . $models['companyName'] . '%'])
             ->whereRaw("(? = 0 OR HB.approved_flag = ?)", [$models['approve'], $models['approve']])
@@ -107,7 +133,7 @@ class BillingPaperRepository extends EloquentRepository implements BillingPaperI
                     ->orWhereRaw('(? = 3 AND HB.delivered_flag = 1 AND HB.approved_flag = ? AND HB.payment_due_date >= ? AND HB.payment_due_date <= ?)'
                         , [$models['status'], Constant::STATUS_APPROVED, $models['beginDate'], $models['endDate']]);
             })
-            ->groupBy(['C.id', 'HB.id'])
+            ->groupBy(['C.id', 'HB.history_billing_id'])
             ->orderBy('C.id', 'ASC')
             ->paginate($models['numberRecord']);
     }
@@ -135,7 +161,7 @@ class BillingPaperRepository extends EloquentRepository implements BillingPaperI
                                 C.billing_day_no,
                                 C.billing_method_id,
                                 C.currency_id,
-                                BM.charge,
+                                BM.charge AS charge_delivery,
                                 BM.method,
                                 HB.id AS history_billing_id,
                                 HB.approved_flag,
@@ -192,7 +218,7 @@ class BillingPaperRepository extends EloquentRepository implements BillingPaperI
                                 C.billing_day_no,
                                 C.billing_method_id,
                                 C.currency_id,
-                                BM.charge,
+                                BM.charge AS charge_delivery,
                                 BM.method,
                                 CR.rate,
                                 HU.billed_flag,
@@ -304,25 +330,26 @@ class BillingPaperRepository extends EloquentRepository implements BillingPaperI
                                 C.ope_person_name_1,
                                 C.ope_phone_1,
                                 C.ope_email_1,
-                                C.ope_company_id,
-                                C.billing_method_id,
-                                C.currency_id,
+                                HB.ope_company_id,
+                                HB.billing_method_id,
+                                HB.currency_id,
                                 BM.name_jp,
                                 BM.method,
                                 CR.rate,
                                 HB.id AS history_billing_id,
                                 HB.delivered_flag,
+                                HB.pdf_original_link,
                                 CR.name_jp AS currency_name"))
+            ->join('t_history_billing AS HB', 'HB.company_id', '=', 'C.id')
             ->join('m_currency AS CR', function ($join) {
-                $join->on('CR.id', '=', 'C.currency_id')
+                $join->on('CR.id', '=', 'HB.currency_id')
                     ->where('CR.del_flag', '=', Constant::DELETE_FLAG_FALSE);
             })
             ->join('m_billing_method AS BM', function ($join) {
-                $join->on('BM.id', '=', 'C.billing_method_id')
-                    ->on('BM.currency_id', '=', 'C.currency_id')
+                $join->on('BM.id', '=', 'HB.billing_method_id')
+                    ->on('BM.currency_id', '=', 'HB.currency_id')
                     ->where('BM.del_flag', '=', Constant::DELETE_FLAG_FALSE);
             })
-            ->join('t_history_billing AS HB', 'HB.company_id', '=', 'C.id')
             ->where("C.id", '=', $companyId)
             ->where("HB.approved_flag", '=', Constant::STATUS_APPROVED)
             ->whereRaw("(HB.delivered_flag = ? OR (HB.delivered_flag  = ? AND month(HB.claim_date) = ? AND year(HB.claim_date) = ?))",

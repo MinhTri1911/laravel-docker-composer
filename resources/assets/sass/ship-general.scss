@@ -187,7 +187,12 @@ and open the template in the editor.
  * css create ship contract
  */
 
-.create-ship-contract {
+input[name="nation"] {
+  cursor: pointer;
+}
+
+.create-ship-contract,
+.create-ship {
   .input-group{
     width: 100%;
     position: relative;
@@ -225,11 +230,23 @@ and open the template in the editor.
     }
   }
 
-  .modal-normal {
-    .modal-dialog {
-      // margin-top: 0px;
-    }
+  .alert-danger {
+      display: none;
+  }
 
+  .alert-success {
+      display: none;
+  }
+
+  .alert-show {
+      display: block !important;
+  }
+
+  .alert {
+    margin-bottom: 2px !important;
+  }
+
+  .modal-normal {
     .modal-row {
       padding-bottom: 10px;
       &::after{

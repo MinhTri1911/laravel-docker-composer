@@ -41,7 +41,7 @@
                         <td>{{$spot->data_update->spot_spot_name}}</td>
                         <td>{{$spot->request_operation}}</td>
                         <td>{{\Carbon\Carbon::parse($spot->data_update->spot_date_request)->format('Y/m/d H:i:s')}}</td>
-                        <td>{{$spot->data_update->spot_user_name}}</td>
+                        <td>{{$spot->spot_user_request}}</td>
                         <td><div class="btn btn-blue-dark btn-custom-sm btn-detail" data-type="1" data-item="{{$spot->data_update->spot_id}}">{{__('approve.btn_detail')}}</div></td>
                     </tr>
                    @else
@@ -55,7 +55,7 @@
                             <td>{{$spot->spot_spot_name}}</td>
                             <td>{{$spot->request_operation}}</td>
                             <td>{{\Carbon\Carbon::parse($spot->spot_date_request)->format('Y/m/d H:i:s')}}</td>
-                            <td>{{$spot->spot_user_name}}</td>
+                            <td>{{$spot->spot_user_request}}</td>
                             <td><div class="btn btn-blue-dark btn-custom-sm btn-detail" data-type="1" data-item="{{$spot->spot_id}}">{{__('approve.btn_detail')}}</div></td>
                         </tr>
                    @endif

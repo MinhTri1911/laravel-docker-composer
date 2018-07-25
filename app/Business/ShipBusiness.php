@@ -4,7 +4,7 @@
  * Ship management Business
  *
  * @package App\Business
- * @author Rikkei.quyenl
+ * @author Rikkei.QuyenL
  * @date 2018/07/05
  */
 
@@ -63,23 +63,23 @@ class ShipBusiness
         }
 
         // Check order by is descending or ascending
-        $orderBy = $orderBy ? 'DESC' : 'ASC';
+        $sortType = $orderBy ? 'DESC' : 'ASC';
 
-        return $query->orderBy($this->_convertToColumn($filterColumn), $orderBy)
-            ->orderBy('m_ship.id', $orderBy)
+        return $query->orderBy($this->_convertToColumn($filterColumn), $sortType)
+            ->orderBy('m_ship.id', $sortType)
             ->paginate($perPage);
     }
 
     /**
      * Business filter company
      *
-     * @param array $filters conditions filter
+     * @param array $filterData conditions filter
      * @param int $pagination total record per page
      * @param array $option sort with column and order by
      * @param null|int $companyId
      * @return mixed
      */
-    public function filterCompany($filters,
+    public function filterCompany($filterData,
                                   $pagination = Constant::PAGINATION_PER_PAGE,
                                   $option = [],
                                   $companyId = null)
@@ -90,7 +90,7 @@ class ShipBusiness
         }
 
         // Get filter search data
-        $filters = $this->_getFilterData($filters);
+        $filters = $this->_getFilterData($filterData);
 
         // Check order by is descending or ascending
         $option['orderBy'] = $option['orderBy'] ? 'DESC' : 'ASC';
@@ -149,32 +149,109 @@ class ShipBusiness
         return $data;
     }
 
-    /*
+    /**
      * Business init search ship
+     *
      * @access public
-     * @param int companyId
-     * @return data query
+     * @param int $companyId
+     * @return mixed query
      */
-
-    public function initSearchShip($companyId) {
-
+    public function initSearchShip($companyId)
+    {
         $dataQuery = $this->_shipRepository->getListShip($companyId);
 
         return $dataQuery;
     }
 
-    /*
+    /**
      * Business init search ship
-     * @access public
-     * @param int companyId
-     * @return data query
+     *
+     * @param int $companyId
+     * @param int $idShipSearch
+     * @param string $nameShipSearch
+     * @return mixed
      */
-
-    public function searchShip($companyId, $idShipSearch, $nameShipSearch) {
-
+    public function searchShip($companyId, $idShipSearch, $nameShipSearch)
+    {
         $dataQuery = $this->_shipRepository->searchListShip($companyId,$idShipSearch,$nameShipSearch);
 
         return $dataQuery;
     }
 
+    /**
+     * Get list view data
+     * 1. Get list company
+     * 2. Get list nation
+     * 3. Get list classification
+     * 4. Get list ship type
+     *
+     * @param int $companyId request company id
+     * @return array
+     */
+    public function getViewData($companyId = null)
+    {
+        // Call repository and get list view data
+        $listCompany = $this->_shipRepository->getListCompany();
+        $listNation = $this->_shipRepository->getListNation();
+        $listClassification = $this->_shipRepository->getListClassification();
+        $listShipType = $this->_shipRepository->getListShipType();
+
+        return [
+            'selectedCompanyId' => !empty($companyId) ? $companyId : null,
+            'company' => array_pluck($listCompany, 'name_jp', 'id'),
+            'nation' => $listNation,
+            'classification' => array_pluck($listClassification, 'name_jp', 'id'),
+            'shipType' => array_pluck($listShipType, 'type', 'id')
+        ];
+    }
+
+    /**
+     * Call repository and insert ship data
+     *
+     * @access public
+     * @param array $validatedData
+     * @return bool
+     */
+    public function createShip($validatedData)
+    {
+        // Convert insert data
+        $insertData = $this->_convertInsertData($validatedData);
+
+        // Register database
+        return $this->_shipRepository->createShip($insertData);
+    }
+
+    /**
+     * Convert data to insert
+     *
+     * @access private
+     * @param array $insertData
+     * @return array
+     */
+    private function _convertInsertData($insertData)
+    {
+        return [
+            'name' => $insertData['txt-ship-name'],
+            'company_id' => $insertData['slb-company'],
+            'imo_number' => $insertData['txt-imo-number'],
+            'mmsi_number' => $insertData['txt-mmsi-number'],
+            'nation_id' => $insertData['nation-id'],
+            'classification_id' => $insertData['slb-classification'],
+            'register_number' => $insertData['txt-register-number'],
+            'type_id' => $insertData['slb-ship-type'],
+            'height' => $insertData['txt-ship-length'],
+            'width' => $insertData['txt-ship-width'],
+            'water_draft' => $insertData['txt-water-draft'],
+            'total_weight_ton' => $insertData['txt-total-weight-ton'],
+            'total_ton' => $insertData['txt-weight-ton'],
+            'member_number' => $insertData['txt-member-number'],
+            'remark' => $insertData['txt-remark'],
+            'url_1' => $insertData['txt-url-1'],
+            'url_2' => $insertData['txt-url-2'],
+            'url_3' => $insertData['txt-url-3'],
+            'created_by' => auth()->id(),
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+    }
 }

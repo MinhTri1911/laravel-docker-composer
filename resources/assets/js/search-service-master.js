@@ -164,8 +164,8 @@ var searchService = new function () {
             var chargeCreate = $('input[name=chargeCreate' + id + ']').val();
             var nameJP = $('input[name=nameJP' + id + ']').val();
             
-            chargeRegister = Events.separateCommaValue(chargeRegister)+".00";
-            chargeCreate = Events.separateCommaValue(chargeCreate)+".00";
+            chargeRegister = Events.separateCommaValue(chargeRegister);
+            chargeCreate = Events.separateCommaValue(chargeCreate);
             
             $(searchService.models.chargeRegister).val(chargeRegister);
             $(searchService.models.chargeCreate).val(chargeCreate);
@@ -186,5 +186,3 @@ var searchService = new function () {
 $(document).ready(function () {
     searchService.init();
 });
-
-

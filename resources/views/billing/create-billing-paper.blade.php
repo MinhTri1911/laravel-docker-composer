@@ -18,74 +18,70 @@
                 <h2>{{ __('billing.head_search') }}</h2>
             </div>
 
-            <!--Begin form search-->
-            {!!Form::open(['method' => 'GET'])!!}
-
             <!-- Url Search-->
             {{ Form::hidden('url_search', route('billing.search.billing.paper'), ['id' => 'url-search']) }}
             {{ Form::hidden('url_create', route('billing.create.billing.paper'), ['id' => 'url-create']) }}
             {{ Form::hidden('url_delivery', route('billing.delivery.billing.paper'), ['id' => 'url-delivery']) }}
             {{ Form::hidden('url_export_csv', route('billing.export.billing.paper'), ['id' => 'url-export-csv']) }}
 
-                <div class="content-form">
-                    <div class="form-group">
-                        <div class="left-side">
-                            <label class="label-control">{{__('billing.lbl_company_name')}}</label>
-                        </div>
-                        <div class="right-side">
-                          {!! Form::text('company_name', null, ['class' => 'form-control', 'placeholder' => __('billing.lbl_company_name'), 'id' => 'company-name']) !!}
-                        </div>
+            <div class="content-form">
+                <div class="form-group">
+                    <div class="left-side">
+                        <label class="label-control">{{__('billing.lbl_company_name')}}</label>
                     </div>
-                    <div class="form-group">
-                        <div class="left-side">
-                            <label class="label-control">{{__('billing.lbl_status')}}</label>
-                        </div>
-                        <div class="right-side">
-                            <div class="custom-select">
-                                {!! Form::select(0, $model['statusSelector'], null, ['class' => 'form-control', 'id' => 'slt-status']) !!}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="left-side">
-                            <label class="label-control">{{__('billing.lbl_status_approve')}}</label>
-                        </div>
-                        <div class="right-side">
-                            <div class="custom-select">
-                                {!! Form::select(0, $model['statusApproveSelector'], null, ['class' => 'form-control', 'id' => 'slt-approve']) !!}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group alone clear-both">
-                        <div class="left-side">
-                            <label class="label-control">{{__('billing.lbl_payment_due_date')}}</label>
-                        </div>
-                        <div class="right-side">
-                            <div class="custom-select year">
-                                {!! Form::selectRange("start_year", $model['year']['start'], $model['year']['end'], date('Y'), ['class' => 'year single', 'id' => "slt-start-year"]) !!}
-                            </div>
-                            <span class="pull-left">{{__('billing.lbl_year')}}</span>
-                            <div class="custom-select month">
-                                {!! Form::selectRange("start_month", 1, 12, (integer)date('m'), ['class' => 'month single', 'id' => "slt-start-month"]) !!}
-                            </div>
-                            <span class="pull-left">{{__('billing.lbl_month')}}</span>
-                            <div class="between f-left">～</div>
-                            <div class="custom-select year">
-                                {!! Form::selectRange("end_year", $model['year']['start'], $model['year']['end'], date('Y'), ['class' => 'year single', 'id' => "slt-end-year"]) !!}
-                            </div>
-                            <span class="pull-left">{{__('billing.lbl_year')}}</span>
-
-                            <div class="custom-select month">
-                                {!! Form::selectRange("end_month", 1, 12, (integer)date('m'), ['class' => 'month single', 'id' => "slt-end-month"]) !!}
-                            </div>
-                            <span class="pull-left">{{__('billing.lbl_month')}}</span>
-                        </div>
-                    </div>
-                    <div class="form-btn">
-                         {!! Form::button( __('billing.btn_search'), ["class"=>"btn btn-blue-dark btn-w150", 'id' => 'btn-search']) !!}
+                    <div class="right-side">
+                      {!! Form::text('company_name', null, ['class' => 'form-control', 'placeholder' => __('billing.lbl_company_name'), 'id' => 'company-name', 'tabindex' => 1]) !!}
                     </div>
                 </div>
-            {!! Form::close() !!}
+                <div class="form-group">
+                    <div class="left-side">
+                        <label class="label-control">{{__('billing.lbl_status')}}</label>
+                    </div>
+                    <div class="right-side">
+                        <div class="custom-select">
+                            {!! Form::select(0, $model['statusSelector'], null, ['class' => 'form-control', 'id' => 'slt-status', 'tabindex' => 2]) !!}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="left-side">
+                        <label class="label-control">{{__('billing.lbl_status_approve')}}</label>
+                    </div>
+                    <div class="right-side">
+                        <div class="custom-select">
+                            {!! Form::select(0, $model['statusApproveSelector'], null, ['class' => 'form-control', 'id' => 'slt-approve', 'tabindex' => 3]) !!}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group alone clear-both">
+                    <div class="left-side">
+                        <label class="label-control">{{__('billing.lbl_payment_due_date')}}</label>
+                    </div>
+                    <div class="right-side">
+                        <div class="custom-select year">
+                            {!! Form::selectRange("start_year", $model['year']['start'], $model['year']['end'], date('Y'), ['class' => 'year single', 'id' => "slt-start-year", 'tabindex' => 4]) !!}
+                        </div>
+                        <span class="pull-left">{{__('billing.lbl_year')}}</span>
+                        <div class="custom-select month">
+                            {!! Form::selectRange("start_month", 1, 12, (integer)date('m'), ['class' => 'month single', 'id' => "slt-start-month", 'tabindex' => 5]) !!}
+                        </div>
+                        <span class="pull-left">{{__('billing.lbl_month')}}</span>
+                        <div class="between f-left">～</div>
+                        <div class="custom-select year">
+                            {!! Form::selectRange("end_year", $model['year']['start'], $model['year']['end'], date('Y'), ['class' => 'year single', 'id' => "slt-end-year", 'tabindex' => 6]) !!}
+                        </div>
+                        <span class="pull-left">{{__('billing.lbl_year')}}</span>
+
+                        <div class="custom-select month">
+                            {!! Form::selectRange("end_month", 1, 12, (integer)date('m'), ['class' => 'month single', 'id' => "slt-end-month", 'tabindex' => 7]) !!}
+                        </div>
+                        <span class="pull-left">{{__('billing.lbl_month')}}</span>
+                    </div>
+                </div>
+                <div class="form-btn">
+                     {!! Form::button( __('billing.btn_search'), ["class"=>"btn btn-blue-dark btn-w150", 'id' => 'btn-search', 'tabindex' => 8]) !!}
+                </div>
+            </div>
 
             <!-- Title table -->
             <div class="block-title-tbl">
@@ -192,9 +188,9 @@
     <script>
         var message = {
             'msg_confirm_delivery_again' : "{{__('billing.message.confirm_delivery_again')}}",
-            'popup_confirm_title' : "{{__('billing.title_popup_delivery')}}",
+            'popup_confirm_delivery_title' : "{{__('billing.title_popup_delivery')}}",
+            'export_file_name' : "{{__('billing.export_file_name')}}",
         };
-        console.log(message.msg_confirm_delivery_again);
     </script>
     <script type="text/javascript" src="{{ asset('js/create-billing-paper.js') }}"></script>
 @endsection

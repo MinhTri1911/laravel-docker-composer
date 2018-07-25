@@ -49,7 +49,7 @@ return [
         'lbl_contract_approve' => '承認',
         'lbl_contract_date_create' => '作成日',
         'lbl_contract_date_update' => '更新日',
-        'lbl_contract_no' => 'Chưa có hợp đồng nào được tạo',
+        'lbl_contract_no' => '作成した契約がありません。',
         
         'btn_contract_create' => '作成',
         'btn_contract_disable' => '中断',
@@ -68,7 +68,7 @@ return [
         'lbl_spot_date_update' => '更新日',
         'lbl_limit' => '表示件数',
         'lbl_error_contract_pending' => '表示件数',
-        'lbl_spot_no' => 'Chưa có phí spot nào được tạo',
+        'lbl_spot_no' => '作成したスポット費用がありません。',
        
         'btn_back' => '戻る',
         'btn_create' => '作成',
@@ -81,11 +81,11 @@ return [
         
         'res_tit_restore_contract' => '契約復活確認',
         'msg_restore_success' => '契約が有効化されました。',
-        'msg_restore_failed' => 'Restore khoong thnhaf công',
+        'msg_restore_failed' => '契約が無効化失敗しました。',
         
         'res_tit_disable_contract' => '契約無効化確認',
         'msg_disable_success' => ':contractの契約が無効にされました。',
-        'msg_disable_failed' => 'Disable không thành công',
+        'msg_disable_failed' => '契約が無効化失敗しました。',
         
         'res_tit_delete_contract' => '契約削除確認',
         'msg_delete_success' => ':contractの契約が削除されました。',
@@ -93,10 +93,10 @@ return [
         
         'res_tit_delete_spot' => 'スポット費用削除確認',
         'msg_delete_spot_success' => 'スポット費用が削除されました。',
-        'msg_delete_spot_failed' => 'Delete không thành công spot',
+        'msg_delete_spot_failed' => 'スポット費用の削除にエラーが発生しました。',
         
         'res_tit_delete_ship' => '船舶削除確認ポップアップ',
-        'msg_delete_ship_success' => 'Delete thành công ship :ship',
+        'msg_delete_ship_success' => '船舶削除が成功しました。',
         'msg_delete_ship_failed' => 'Delete ship không thành công',
         'msg_delete_ship_failed_auth' => '認証エラーが発生しました。',
         

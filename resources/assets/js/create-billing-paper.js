@@ -68,6 +68,9 @@ var billingPaper = new function () {
 
   // Domain
   const DOMAIN = location.protocol + "//" + location.host + '/';
+  
+  // KEY ENTER
+  const KEY_ENTER = 13;
 
   this.url = {
     searchBillingPaper: $(this.models.urlSearch).val(),
@@ -104,6 +107,13 @@ var billingPaper = new function () {
       billingPaper.events.displayProcessBilling();
     });
 
+    // Search when press key enter
+    $(document).on('keyup', billingPaper.models.txtCompanyName, function (e) {
+      e.preventDefault();
+      if(e.keyCode == KEY_ENTER) {
+        billingPaper.events.searchBillingPaper();
+      }
+    });
     // Event search
     $(document).on('click', billingPaper.models.btnSearch, function () {
       billingPaper.events.searchBillingPaper();
@@ -407,7 +417,7 @@ var billingPaper = new function () {
       if (DELIVERIED == $(billingPaper.models.statusBilling + companyId).val()) {
 
         // Show alert inform
-        $(billingPaper.models.popupConfirmTitle).html(message.popup_confirm_title);
+        $(billingPaper.models.popupConfirmTitle).html(message.popup_confirm_delivery_title);
         $(billingPaper.models.popupConfirmText).html(message.msg_confirm_delivery_again);
         $(billingPaper.models.popupConfirm).modal('show');
       } else {
@@ -432,6 +442,13 @@ var billingPaper = new function () {
 
       // Ajax
       $.post(billingPaper.url.deliveryBillingPaper, param, function (res) {
+
+        // Append data
+        if (res.html !== undefined) {
+          $(billingPaper.models.areaResultSearch).empty();
+          $(billingPaper.models.areaResultSearch).append(res.html);
+        }
+
         if (res.code === HTTP_SUCCESS) {
 
           // Show alert inform
@@ -474,12 +491,27 @@ var billingPaper = new function () {
 
       // Ajax
       $.post(billingPaper.url.exportBillingPaper, param, function (res) {
-
         if (res.code === HTTP_ERROR) {
           // Show alert inform
           $(billingPaper.models.titlePopupInform).html(res.title);
           $(billingPaper.models.messagePopupInform).html(res.message);
           $(billingPaper.models.popupInform).modal('show');
+        } else {
+
+          // Create element a
+          var a = document.createElement("a");
+          document.body.appendChild(a);
+          a.style = "display: none";
+
+          // Create url
+          var blob = new Blob([res], {type: "octet/stream"}),
+            url = window.URL.createObjectURL(blob);
+          a.href = url;
+
+          // Download file
+          a.download = message.export_file_name + '.csv';
+          a.click();
+          window.URL.revokeObjectURL(url);
         }
 
         // Set display item

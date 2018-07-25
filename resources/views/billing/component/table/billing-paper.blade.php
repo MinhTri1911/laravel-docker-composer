@@ -51,7 +51,7 @@
                         @endif
                     </td>
                     <td class="tbl-row-process">
-                        <a href="{{route('billing.preview.billing.paper')}}" target="_blank" id="btn-pdf">
+                        <a href="{{route('billing.preview.billing.paper')}}?company_id={{$row->company_id}}" target="_blank" id="btn-pdf">
                             <i class="glyphicon glyphicon-file"></i>
                         </a>
                         <a href="{{route('billing.history.billing')}}"  id="btn-history">
@@ -74,7 +74,7 @@
             </div>
             <div class="right-side">
                 <div class="custom-select">
-                    {!! Form::textarea('remark', null, ['size' => '30x3', 'class' => 'form-control', 'placeholder' => __('billing.lbl_remark'), 'id' => 'txt-remark']) !!}
+                    {!! Form::textarea('remark', null, ['size' => '30x3', 'class' => 'form-control', 'placeholder' => __('billing.lbl_remark'), 'id' => 'txt-remark', 'tabindex' => 100]) !!}
                 </div>
             </div>
         </div>
@@ -92,10 +92,10 @@
     </div>
     <div class="process-billing">
         <div class="right-side">
-            {!! Form::button( __('billing.btn_back'), ["class"=>"btn btn-blue-light btn-w150", 'id' => 'btn-back']) !!}
-            {!! Form::button( __('billing.btn_create'), ["class"=>"btn btn-green-dark btn-w150", 'id' => 'btn-create']) !!}
-            {!! Form::button( __('billing.btn_export_csv'), ["class"=>"btn btn-blue-dark btn-w150", 'id' => 'btn-export-csv']) !!}
-            {!! Form::button( __('billing.btn_delivery'), ["class"=>"btn btn-green-dark btn-w150", 'id' => 'btn-delivery']) !!}
+            {!! Form::button( __('billing.btn_back'), ["class"=>"btn btn-blue-light btn-w150", 'id' => 'btn-back', 'tabindex' => 102]) !!}
+            {!! Form::button( __('billing.btn_create'), ["class"=>"btn btn-green-dark btn-w150", 'id' => 'btn-create', 'tabindex' => 103]) !!}
+            {!! Form::button( __('billing.btn_export_csv'), ["class"=>"btn btn-blue-dark btn-w150", 'id' => 'btn-export-csv', 'tabindex' => 104]) !!}
+            {!! Form::button( __('billing.btn_delivery'), ["class"=>"btn btn-green-dark btn-w150", 'id' => 'btn-delivery', 'tabindex' => 105]) !!}
         </div>
     </div>
 </div>

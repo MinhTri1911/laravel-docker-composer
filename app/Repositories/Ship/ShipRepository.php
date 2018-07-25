@@ -4,7 +4,7 @@
  * Ship management Repository
  *
  * @package App\Repositories\Ship
- * @author Rikkei.quyenl
+ * @author Rikkei.QuyenL
  * @date 2018/07/05
  */
 
@@ -139,7 +139,7 @@ class ShipRepository extends EloquentRepository implements ShipInterface
         // Check if get all contract inside all ship
         if (empty($idShip) || is_null($idShip)) {
             if (!empty($idContract) && !is_null($idContract)) {
-                if (gettype($idContract) == 'array')
+                if (is_array($idContract))
                     return $contract
                                     ->whereIn('m_contract.id', $idContract)
                                     ->get();
@@ -153,7 +153,7 @@ class ShipRepository extends EloquentRepository implements ShipInterface
 
         // If get contract inside a ship
         if (!empty($idContract) && !is_null($idContract)) {
-            if (gettype($idContract) == 'array')
+            if (is_array($idContract))
                 return $contract
                                 ->whereIn('m_contract.id', $idContract)
                                 ->where('m_ship.id', $idShip)
@@ -229,6 +229,29 @@ class ShipRepository extends EloquentRepository implements ShipInterface
     }
 
     /**
+     * Handle Update contract base on ID and Data update
+     *
+     * @access public
+     * @param int|array $id
+     * @param array $data
+     */
+    public function updateContract($id, $data) {
+        if(is_null($id) || is_null($data)) {
+            return false;
+        }
+
+        if (is_array($id)) {
+            return DB::table('m_contract')
+                ->whereIn('id', $id)
+                ->update($data);
+        }
+
+        return DB::table('m_contract')
+                ->where('id', $id)
+                ->update($data);
+    }
+
+    /**
      * Get spot of ship by id ship
      *
      * @access public
@@ -275,10 +298,10 @@ class ShipRepository extends EloquentRepository implements ShipInterface
                                 't_ship_spot.id' => $idSpot,
                                 'm_ship.id' => $idShip])
                             ->first();
-
         if (!is_null($limit)) {
             return $spot->where('m_ship.id', $idShip)->paginate($limit);
         }
+
         return $spot->get();
     }
 
@@ -389,7 +412,8 @@ class ShipRepository extends EloquentRepository implements ShipInterface
      * @param int companyId
      * @return mixed
      */
-    public function getListShip($companyId = 0) {
+    public function getListShip($companyId = 0)
+    {
 
         $query = DB::table('m_ship')->select([
             'm_ship.id',
@@ -419,7 +443,8 @@ class ShipRepository extends EloquentRepository implements ShipInterface
      * @param string nameServiceSearch
      * @return mixed
      */
-    public function searchListShip($companyId, $shipId, $shipName) {
+    public function searchListShip($companyId, $shipId, $shipName)
+    {
 
         if ($shipName != null) {
             $shipName = "%" . $shipName . "%";
@@ -536,5 +561,142 @@ class ShipRepository extends EloquentRepository implements ShipInterface
             ->where('m_ship.del_flag', Constant::DELETE_FLAG_FALSE)
             ->get()
             ->toArray();
+    }
+
+    /**
+     * Get operation company
+     *
+     * @access public
+     * @return array
+     */
+    public function getListCompany()
+    {
+        return DB::table('m_company')->select([
+            'm_company.id',
+            'm_company.name_en',
+            'm_company.name_jp'
+        ])
+            ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->get()
+            ->toArray();
+    }
+
+    /**
+     * Check exist company id
+     *
+     * @param int $companyId
+     * @return bool
+     */
+    public function checkExistCompany($companyId)
+    {
+        return DB::table('m_company')->select(['m_company.id'])
+            ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->where('m_company.id', $companyId)
+            ->exists();
+    }
+
+    /**
+     * Get list nation
+     *
+     * @access public
+     * @return array
+     */
+    public function getListNation()
+    {
+        return DB::table('m_nation')->select([
+            'm_nation.id',
+            'm_nation.name_en',
+            'm_nation.name_jp'
+        ])
+            ->where('m_nation.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->get();
+    }
+
+    /**
+     * Check exist nation id
+     *
+     * @param int $nationId
+     * @return bool
+     */
+    public function checkExistNation($nationId)
+    {
+        return DB::table('m_nation')->select(['m_nation.id'])
+            ->where('m_nation.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->where('m_nation.id', $nationId)
+            ->exists();
+    }
+
+    /**
+     * Get list classification
+     *
+     * @access public
+     * @return array
+     */
+    public function getListClassification()
+    {
+        return DB::table('m_ship_classification')->select([
+            'm_ship_classification.id',
+            'm_ship_classification.name_en',
+            'm_ship_classification.name_jp'
+        ])
+            ->where('m_ship_classification.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->get()
+            ->toArray();
+    }
+
+    /**
+     * Check exist classification id
+     *
+     * @param int $classificationId
+     * @return bool
+     */
+    public function checkExistClassification($classificationId)
+    {
+        return DB::table('m_ship_classification')->select(['m_ship_classification.id'])
+            ->where('m_ship_classification.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->where('m_ship_classification.id', $classificationId)
+            ->exists();
+    }
+
+    /**
+     * Get ship type
+     *
+     * @access public
+     * @return array
+     */
+    public function getListShipType()
+    {
+        return DB::table('m_ship_type')->select([
+            'm_ship_type.id',
+            'm_ship_type.type'
+        ])
+            ->where('m_ship_type.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->get()
+            ->toArray();
+    }
+
+    /**
+     * Check exist ship type id
+     *
+     * @param int $shipTypeId
+     * @return bool
+     */
+    public function checkExistShipType($shipTypeId)
+    {
+        return DB::table('m_ship_type')->select(['m_ship_type.id'])
+            ->where('m_ship_type.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->where('m_ship_type.id', $shipTypeId)
+            ->exists();
+    }
+
+    /**
+     * Insert ship to database
+     *
+     * @param array $data insert data
+     * @return bool
+     */
+    public function createShip($data)
+    {
+        return $this->insert($data);
     }
 }

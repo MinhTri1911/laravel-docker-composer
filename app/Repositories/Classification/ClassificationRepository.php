@@ -33,4 +33,15 @@ class ClassificationRepository extends EloquentRepository implements Classificat
         // Get all classification with del_flag is false
         return $this->where('del_flag', Constant::DELETE_FLAG_FALSE)->get($columns);
     }
+
+    /**
+     * Function check classification id exists
+     *
+     * @param int $id
+     * @return boolean
+     */
+    public function checkClassificationExists($id)
+    {
+        return $this->where('id', $id)->where('del_flag', Constant::DELETE_FLAG_FALSE)->exists();
+    }
 }

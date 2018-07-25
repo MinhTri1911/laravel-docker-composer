@@ -4,7 +4,7 @@
  * Ship management Interface
  *
  * @package App\Repositories\Ship
- * @author Rikkei.quyenl
+ * @author Rikkei.QuyenL
  * @date 2018/07/05
  */
 
@@ -40,7 +40,16 @@ interface ShipInterface
      * @return mixed Illuminate\Support\Collection
      */
     public function getContractActive($idShip = null, $idContract = []);
-
+    
+        /**
+     * Handle Update contract base on ID and Data update
+     * 
+     * @access public
+     * @param int|array $id
+     * @param array $data
+     */
+    public function updateContract($id, $data);
+    
     /**
      * Get spot of ship by id ship
      *
@@ -119,4 +128,76 @@ interface ShipInterface
      * @return array
      */
     public function selectShipNotHaveService($companyId, $serviceId, $columnsSelect = ['*']);
+
+    /**
+     * Get operation company
+     *
+     * @access public
+     * @return array
+     */
+    public function getListCompany();
+
+    /**
+     * Check exist company id
+     *
+     * @param int $companyId
+     * @return bool
+     */
+    public function checkExistCompany($companyId);
+
+    /**
+     * Get list nation
+     *
+     * @access public
+     * @return array
+     */
+    public function getListNation();
+
+    /**
+     * Check exist nation id
+     *
+     * @param int $nationId
+     * @return bool
+     */
+    public function checkExistNation($nationId);
+
+    /**
+     * Get list classification
+     *
+     * @access public
+     * @return array
+     */
+    public function getListClassification();
+
+    /**
+     * Check exist classification id
+     *
+     * @param int $classificationId
+     * @return bool
+     */
+    public function checkExistClassification($classificationId);
+
+    /**
+     * Get ship type
+     *
+     * @access public
+     * @return array
+     */
+    public function getListShipType();
+
+    /**
+     * Check exist ship type id
+     *
+     * @param int $shipTypeId
+     * @return bool
+     */
+    public function checkExistShipType($shipTypeId);
+
+    /**
+     * Insert ship to database
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function createShip($data);
 }

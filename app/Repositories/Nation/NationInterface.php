@@ -29,4 +29,12 @@ interface NationInterface
      * @return Collection
      */
     public function getNationByIdOrName($id = 0, $name = '', $columns = ['*']);
+
+    /**
+     * Function check exists nation id
+     *
+     * @param int $nationId
+     * @return boolean
+     */
+    public function checkExists($nationId);
 }

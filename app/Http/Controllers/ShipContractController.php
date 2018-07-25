@@ -17,6 +17,7 @@ use App\Business\ShipContractBusiness;
 use Exception;
 use App\Common\Constant;
 use Illuminate\Support\Facades\Log;
+use App\Http\Requests\ShipContractRequest;
 
 class ShipContractController extends Controller
 {
@@ -177,6 +178,10 @@ class ShipContractController extends Controller
             abort(404);
         }
 
+        if (!$request->get('currency-id') || !is_numeric($request->get('currency-id'))) {
+            abort(404);
+        }
+
         try {
             $data = $this->_shipContractBusiness->initCreateShipContract($request->get('company-id'));
         } catch (\Exception $e) {
@@ -190,7 +195,55 @@ class ShipContractController extends Controller
             'classificationies' => $data['classificationies'],
             'nations' => $data['nations'],
             'companyId' => $request->get('company-id'),
-            'services' => $data['services']
+            'services' => $data['services'],
+            'currencyId' => $request->get('currency-id'),
         ]);
+    }
+
+    /**
+     * Function store ship contract
+     * @param Request $request
+     */
+    public function store(ShipContractRequest $request)
+    {
+        $dataShip = $request->only(
+            'company-id',
+            'currency-id',
+            'txt-ship-name',
+            'txt-imo-number',
+            'txt-mmsi-number',
+            'nation-id',
+            'slb-classification',
+            'txt-register-number',
+            'slb-ship-type',
+            'txt-ship-width',
+            'txt-ship-length',
+            'txt-water-draft',
+            'txt-total-weight-ton',
+            'txt-weight-ton',
+            'txt-member-number',
+            'txt-remark',
+            'txt-url-1',
+            'txt-url-2',
+            'txt-url-3'
+        );
+
+        $dataContract = $request->only('service', 'currency-id');
+        $dataSpot = $request->only('spot', 'currency-id');
+        $status = true;
+
+        \DB::beginTransaction();
+        try {
+            $this->_shipContractBusiness->storeShipContractWithSpot($dataShip, $dataContract, $dataSpot);
+            \DB::commit();
+            $message = trans('common-message.inform.I033');
+        } catch (\Exception $e) {
+            \DB::rollback();
+
+            $status = false;
+            $message = trans('common-message.inform.I034');
+        }
+
+        return redirect()->route('company.show', $request->get('company-id'))->with($status ? 'success' : 'error', $message);
     }
 }

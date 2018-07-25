@@ -253,7 +253,7 @@
                                     @endif
                                     @if($contract->contract_approved_flag == \App\Common\Constant::STATUS_APPROVED
                                         || $contract->contract_approved_flag == \App\Common\Constant::STATUS_REJECT_APPROVE)
-                                            <a href="{{route('contract.edit', $contract->contract_id)}}" class="btn btn-orange btn-custom-sm edit-contract-{{$contract->contract_id}}">{{__('ship-contract.detail.btn_contract_edit')}}</a>
+                                            <a href="{{route('contract.edit', [$ship->detail_ship->ship_id, $contract->contract_id])}}" class="btn btn-orange btn-custom-sm edit-contract-{{$contract->contract_id}}">{{__('ship-contract.detail.btn_contract_edit')}}</a>
                                     @endif
                                 </td>
                             </tr>
@@ -266,7 +266,7 @@
                     </tbody>
                 </table>
                 <div class="block-handle align-right">
-                    <a href="/contract/create" class="btn btn-green-dark btn-w190 pull-left">{{__('ship-contract.detail.btn_create')}}</a>
+                    <a href="{{route('contract.init.create', $ship->detail_ship->ship_id)}}" class="btn btn-green-dark btn-w190 pull-left">{{__('ship-contract.detail.btn_create')}}</a>
                     @if( $ship->contracts->count() > 0)
                         <button class="btn btn-gray-dark btn-w190 pull-left disable-contract" data-ship="{{$ship->detail_ship->ship_id}}">{{__('ship-contract.detail.btn_disable')}}</button>
                         <button class="btn btn-red btn-w150 pull-left delete-contract" data-ship="{{$ship->detail_ship->ship_id}}">{{__('ship-contract.detail.btn_delete')}}</button>
@@ -356,7 +356,7 @@
                         <div class="fl-page fl-right">
                             <div class="block-handle align-right">
                                 <a href="{{route('ship.index', ['id' => $ship->detail_ship->ship_id])}}" class="btn btn-blue-light btn-w150">{{__('ship-contract.detail.btn_back')}}</a>
-                                <a href="/spot/create" class="btn btn-green-dark btn-w150 pull-right">{{__('ship-contract.detail.btn_create')}}</a>
+                                <a href="{{route('ship.init.create', $ship->detail_ship->ship_id)}}" class="btn btn-green-dark btn-w150 pull-right">{{__('ship-contract.detail.btn_create')}}</a>
                             </div>
                         </div>
                     </div>

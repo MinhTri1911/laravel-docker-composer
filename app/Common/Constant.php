@@ -97,6 +97,9 @@ class Constant
     const HTTP_CODE_ERROR_404 = 404;
     // Status code error 500 Internal Server Error
     const HTTP_CODE_ERROR_500 = 500;
+    
+    // Code status not found data
+    const HTTP_CODE_ERROR_NF = "NotFound";
 
     // Format datetime
     const FORMAT_DATE_TIME = [

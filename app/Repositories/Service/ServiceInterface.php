@@ -64,5 +64,11 @@ interface ServiceInterface
      * @return Collection
      */
     public function getServiceValidWithCompany($companyId);
-
+    
+    /**
+     * Function get services exists have same currency with company
+     * @param int companyId
+     * @return Collection
+     */
+    public function getServiceExistsWithCurrency($companyId);
 }

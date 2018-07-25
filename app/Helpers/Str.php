@@ -32,7 +32,7 @@ class Str
         else
             return false;
     }
-    
+
     /**
      * Format string to money with format x,xxx,xxx.00
      * 
@@ -44,10 +44,10 @@ class Str
         if (is_null($money) || empty($money)) {
             return '';
         }
-        
+
         $money = (int)str_replace(',', '', $money);
-        $money = preg_replace('/\B(?=(\d{3})+(?!\d)\.?)/', ",", $money).'.00';
-        
+        $money = preg_replace('/\B(?=(\d{3})+(?!\d)\.?)/', ",", $money);
+
         return $money;
     }
 }

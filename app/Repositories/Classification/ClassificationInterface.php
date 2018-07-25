@@ -20,4 +20,12 @@ interface ClassificationInterface
      * @return Collection
      */
     public function getAllShipClassification($columns = ['*']);
+
+    /**
+     * Function check classification id exists
+     *
+     * @param int $id
+     * @return boolean
+     */
+    public function checkClassificationExists($id);
 }

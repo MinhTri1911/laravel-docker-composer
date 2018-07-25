@@ -492,4 +492,19 @@ abstract class EloquentRepository implements RepositoryInterface
 
         return true;
     }
+
+    /**
+     * Undocumented function
+     *
+     * @param array $values
+     * @param string $sequence
+     * @return int
+     */
+    public function insertGetId($values, $sequence = null)
+    {
+        $id = $this->_model->insertGetId($values, $sequence);
+        $this->setModel();
+
+        return $id;
+    }
 }

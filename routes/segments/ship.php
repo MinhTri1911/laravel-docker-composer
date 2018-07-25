@@ -17,8 +17,10 @@ Route::group(['middleware' => 'auth'], function() {
     Route::group(['prefix' => 'ship', 'as' => 'ship.'], function () {
         Route::get('/filter', 'ShipController@filterShip')->name('filter');
         Route::get('/create-ship-contract', 'ShipContractController@create')->name('contract.create');
+        Route::post('/create-ship-contract', 'ShipContractController@store')->name('contract.store');
 
         Route::get('/{id}/edit', 'ShipController@edit')->name('edit');
-
+        Route::get('/create', 'ShipController@showCreate')->name('create');
+        Route::post('/create', 'ShipController@create')->name('create');
     });
 });

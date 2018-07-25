@@ -99,4 +99,43 @@ interface ContractInterface {
      * @param boolean
      */
     public function checkHaveContractWattingApproveById($companyId, $serviceIds);
+    
+    /**
+     * Get contract of ship
+     *
+     * @access public
+     * @param int $idShip
+     * @param int|array $idContract
+     * @return mixed Illuminate\Support\Collection
+     */
+    public function getContract($idShip = null, $idContract = '');
+    
+    /**
+     * Get list spot of ship
+     * 
+     * @access public
+     * @param int $shipId
+     * @param array $param
+     * @return mixed Illuminate\Support\Collection
+     */
+    public function getSpotOfShip($shipId = null, $param = null);
+    
+        /**
+     * Get list spot of ship
+     * 
+     * @access public
+     * @param int $shipId
+     * @param array $param
+     * @return mixed Illuminate\Support\Collection
+     */
+    public function updateContract($contractId = null, $param = null);
+    
+    /**
+     * Insert Spot into for ship contract
+     * 
+     * @access public
+     * @param array $data
+     * @return Illuminate/Database/Query/Builder
+     */
+    public function insertSpotForShipContract($data);
 }

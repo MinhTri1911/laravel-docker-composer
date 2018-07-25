@@ -35,7 +35,7 @@ var spotCreate = new function () {
                     "currencyId": currencyId
                 },
                 success: function (data) {
-                    $(spotCreate.models.amountCharge).val(data + '.00');
+                    $(spotCreate.models.amountCharge).val(data);
                 },
                 // Not do anything when error
                 error: function (error) {

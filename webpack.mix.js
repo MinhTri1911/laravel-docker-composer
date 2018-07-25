@@ -90,6 +90,9 @@ mix.babel([
         .babel([
             'resources/assets/js/create-ship-contract.js'
         ], 'public/js/create-ship-contract.js')
+        .babel([
+            'resources/assets/js/nation-search.js'
+        ], 'public/js/nation-search.js')
         .sass('resources/assets/sass/vendor.scss', 'public/css')
         .sass('resources/assets/sass/auth.scss', 'public/css')
         .sass('resources/assets/sass/user-general.scss', 'public/css')

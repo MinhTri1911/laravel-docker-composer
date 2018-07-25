@@ -20,4 +20,12 @@ interface ShipTypeInterface
      * @return Collection
      */
     public function getAllShipType($columns = ['*']);
+
+    /**
+     * Function check ship type exists
+     *
+     * @param int $typeId
+     * @return boolean
+     */
+    public function checkTypeExists($typeId);
 }

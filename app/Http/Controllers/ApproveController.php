@@ -20,7 +20,7 @@ class ApproveController extends Controller
 {
     // Declare business contain handle business
     private $_approveBusiness;
-    
+
     /**
      * Initial business approve
      * 
@@ -32,7 +32,7 @@ class ApproveController extends Controller
     {
         $this->_approveBusiness = $approveBusiness;
     }
-    
+
     /**
      * Display home page approve
      * 
@@ -44,20 +44,20 @@ class ApproveController extends Controller
     {
         try {
             $query = $request->query();
-            
+
             if (!empty($query) && count($query) > 0) {
                 $data = $this->_approveBusiness->getDataForSearchAprrove($request);
             } else {
                 $data = $this->_approveBusiness->getDataForHomeApprove();
             }
-            
+
             return view('approve.list')->with('datas', $data);
         } catch (Exception $exc) {
             Log::error($exc->getFile() .' on '. $exc->getLine());
             abort(Constant::HTTP_CODE_ERROR_500, $exc->getMessage());
         }
     }
-    
+
     /**
      * Display HTML show content modal
      * 
@@ -74,23 +74,23 @@ class ApproveController extends Controller
                 case $this->_approveBusiness::TYPE_APPROVE_SPOT:
                     $viewHtml = view('approve.detail-spot', compact('data'))->render();
                     break;
-                
+
                 case $this->_approveBusiness::TYPE_APPROVE_CONTRACT:
                     $viewHtml = view('approve.detail-contract', compact('data'))->render();
                     break;
-                
+
                 default:
                     $viewHtml = '';
                     break;
             }
-            
+
             return $viewHtml;
         } catch (Exception $exc) {
             Log::error($exc->getFile() .' on '. $exc->getLine());
             abort(Constant::HTTP_CODE_ERROR_500, $exc->getMessage());
         }
     }
-    
+
     /**
      * Accept request approve
      * 
@@ -108,7 +108,7 @@ class ApproveController extends Controller
             abort(Constant::HTTP_CODE_ERROR_500, $exc->getMessage());
         }
     }
-    
+
     /**
      * Reject request approve
      * 

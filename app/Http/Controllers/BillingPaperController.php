@@ -75,14 +75,7 @@ class BillingPaperController extends Controller
     public function searchBillingPaper(Request $request)
     {
 
-        $models = $this->_billingPaperBusiness->searchBillingPaper($request->conditionSearch);
-
-        // Render data paginate after search
-        $paginationView = view('billing.component.table.billing-paper', [
-            'model' => $models,
-            'paginator' => $models['resultSearch'],
-            'url' => route('billing.search.billing.paper') . '?page='
-        ])->render();
+        $paginationView = $this->_refreshSearch($request->conditionSearch);
 
         return response()->json([
             'code' => Constant::HTTP_CODE_SUCCESS,
@@ -112,14 +105,7 @@ class BillingPaperController extends Controller
         $resultCreateBilling = $this->_billingPaperBusiness->createBillingPaper($request->createBillingPaper);
 
         // Refresh data search
-        $resultSearch = $this->_billingPaperBusiness->searchBillingPaper($request->conditionSearch);
-
-        // Render data paginate after search
-        $paginationView = view('billing.component.table.billing-paper', [
-            'model' => $resultSearch,
-            'paginator' => $resultSearch['resultSearch'],
-            'url' => route('billing.search.billing.paper') . '?page='
-        ])->render();
+        $paginationView = $this->_refreshSearch($request->conditionSearch);
 
         // Return error code 500
         if (gettype($resultCreateBilling) == 'array' && isset($resultCreateBilling['error_message'])) {
@@ -134,7 +120,7 @@ class BillingPaperController extends Controller
             // Return when success
             return response()->json([
                 'code' => Constant::HTTP_CODE_SUCCESS,
-                'message' => Lang::get('billing.message_create_billing_ok'),
+                'message' => Lang::get('billing.message.create_billing_ok'),
                 'title' => Lang::get('billing.title_create_billing_paper'),
                 'html' => $paginationView,
             ]);
@@ -163,29 +149,35 @@ class BillingPaperController extends Controller
         // Delivery billing paper
         $resultDeliveryBillingPaper = $this->_billingPaperBusiness->deliveryBillingPaper($request->deliveryBillingPaper);
 
+        // Refresh data search
+        $paginationView = $this->_refreshSearch($request->conditionSearch);
+
         // Return error code 500
         if (gettype($resultDeliveryBillingPaper) == 'array' && isset($resultDeliveryBillingPaper['error_message'])) {
+
             return response()->json([
                 'code' => Constant::HTTP_CODE_ERROR_500,
                 'message' => $resultDeliveryBillingPaper['error_message'],
-                'title' => Lang::get('billing.confirm_delivery_again'),
+                'title' => Lang::get('billing.title_popup_delivery'),
+                'html' => $paginationView,
             ]);
         } else {
 
             // Check method delivery
             if ($resultDeliveryBillingPaper['billing_method'] != Constant::BILLING_METHOD_MAIL) {
-
                 return response()->json([
                     'code' => Constant::HTTP_CODE_SUCCESS,
-                    'pdf_url' => $resultDeliveryBillingPaper['pdf_path']
+                    'pdf_url' => $resultDeliveryBillingPaper['pdf_path'],
+                    'html' => $paginationView,
                 ]);
 
             } else {
                 // Return when send mail
                 return response()->json([
                     'code' => Constant::HTTP_CODE_SUCCESS,
-                    'message' => Lang::get('billing.message_delivery_billing_ok'),
-                    'title' => Lang::get('billing.title_popup_delivery')
+                    'message' => Lang::get('billing.message.delivery_billing_ok'),
+                    'title' => Lang::get('billing.title_popup_delivery'),
+                    'html' => $paginationView,
                 ]);
             }
         }
@@ -212,7 +204,28 @@ class BillingPaperController extends Controller
                 'title' => Lang::get('billing.title_popup_create')
             ]);
         } else {
-            // No thing
+
+            return response()->stream($resultExport['file'], 200, $resultExport['headers']);
         }
+    }
+
+    /**
+     * Export billing paper
+     *
+     * @access private
+     * @param array $conditionSearch Condition search
+     * @return view
+     */
+    private function _refreshSearch($conditionSearch)
+    {
+        // Refresh data search
+        $resultSearch = $this->_billingPaperBusiness->searchBillingPaper($conditionSearch);
+
+        // Render data paginate after search
+        return view('billing.component.table.billing-paper', [
+            'model' => $resultSearch,
+            'paginator' => $resultSearch['resultSearch'],
+            'url' => route('billing.search.billing.paper') . '?page='
+        ])->render();
     }
 }

@@ -156,8 +156,8 @@
         <div class="modal-footer">
             <button type="button" class="btn btn-blue-light btn-w150" data-dismiss="modal">{{__('approve.btn_close')}}</button>
             @if($contract->contract_approved_flag != \App\Common\Constant::STATUS_REJECT_APPROVE)
-            <button type="button" class="btn btn-blue-dark btn-w150 btn-approve" data-type="0">{{__('approve.btn_approve')}}</button>
             <button type="button" class="btn btn-red btn-w150 btn-reject" data-type="0">{{__('approve.btn_reject')}}</button>
+            <button type="button" class="btn btn-blue-dark btn-w150 btn-approve" data-type="0">{{__('approve.btn_approve')}}</button>
             @endif
         </div>
     @endforeach

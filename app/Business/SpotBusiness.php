@@ -19,19 +19,23 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Common\Constant;
+use App\Traits\CommonArray;
 
-class SpotBusiness 
+class SpotBusiness
 {
+    use CommonArray;
+
     protected $_shipInterface;
     protected $_mSpotInterface;
     protected $_mCurrency;
     protected $_tShipSpotInterface;
 
     public function __construct(
-            ShipInterface $shipInterface, 
-            MSpotInterface $mSpotInterface, 
-            MCurrencyInterface $mCurrency, 
-            TShipSpotInterface $tShipSpotInterface) {
+        ShipInterface $shipInterface,
+        MSpotInterface $mSpotInterface,
+        MCurrencyInterface $mCurrency,
+        TShipSpotInterface $tShipSpotInterface
+    ) {
         $this->_shipInterface = $shipInterface;
         $this->_mSpotInterface = $mSpotInterface;
         $this->_mCurrency = $mCurrency;
@@ -44,7 +48,8 @@ class SpotBusiness
      * @param arr request
      * @return true/false
     */
-    public function createSpot($request) {
+    public function createSpot($request)
+    {
         try {
             DB::beginTransaction();
             $date  = substr($request->dateStart,0,8).'01';
@@ -71,7 +76,8 @@ class SpotBusiness
      * @param int idShip
      * @return mixed Illuminate\Support\Collection
      */
-    public function initCreate($idShip) {
+    public function initCreate($idShip)
+    {
         try {
             $data['ship'] = $this->_shipInterface->getIdShip($idShip);
             if ($data['ship'] == null) {
@@ -99,7 +105,8 @@ class SpotBusiness
      * @param int currency_id
      * @return mixed Illuminate\Support\Collection
      */
-    public function getCharge($currency_id, $spot_id) {
+    public function getCharge($currency_id, $spot_id)
+    {
         try {
             $amountCharge = $this->_mSpotInterface->getCharge($currency_id, $spot_id);
             return $amountCharge->charge;
@@ -107,5 +114,28 @@ class SpotBusiness
             Log::info($ex);
             return abort(500,Constant::ID_SCREEN['SMB0009']);
         }
+    }
+
+    /**
+     * Function check exists spot with currency
+     * @param int companyId
+     * @param array spotIds
+     * @return boolean
+     */
+    public function checkExistsSpotWithCurrency($companyId, $spotIds)
+    {
+        // Check company is int and spot is array
+        if (!is_numeric($companyId) || !is_array($spotIds)) {
+            return false;
+        }
+
+        if (empty($spotIds)) {
+            return true;
+        }
+
+        $spots = $this->_mSpotInterface->getExistsSpotWithCurrency($companyId);
+        $spotsExists = array_column($spots->toArray(), 'id');
+
+        return $this->checkArrayExists($spotIds, $spotsExists);
     }
 }

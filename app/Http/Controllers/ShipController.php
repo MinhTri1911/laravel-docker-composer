@@ -4,15 +4,18 @@
  * Ship management Controller
  *
  * @package App\Http\Controllers
- * @author Rikkei.quyenl
+ * @author Rikkei.QuyenL
  * @date 2018/07/05
  */
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Common\Constant;
-use Illuminate\Http\Request;
 use App\Business\ShipBusiness;
+use App\Http\Requests\ShipRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class ShipController CM_DD_SMB0001 ship management
@@ -162,13 +165,51 @@ class ShipController extends Controller
     }
 
     /**
-     * Show page create ship
+     * Show create ship view
      *
+     * @param Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function create()
+    public function showCreate(Request $request)
     {
-        return view('ship.create');
+        // Initial create ship view data
+        $companyId = $request->get('company-id');
+        $viewData = $this->_shipBusiness->getViewData($companyId);
+
+        return view('ship.create', compact('viewData'));
+    }
+
+    /**
+     * Create ship
+     *
+     * @param ShipRequest $request
+     * @return mixed
+     */
+    public function create(ShipRequest $request)
+    {
+        // Get validated request data
+        $validatedData = $request->validated();
+
+        try {
+            // Begin transaction
+            DB::beginTransaction();
+
+            // Insert ship
+            $this->_shipBusiness->createShip($validatedData);
+
+            // Commit a transaction via the commit method
+            DB::commit();
+
+            // Redirect to list ship screen
+            return redirect()->route('ship.index');
+
+        } catch (Exception $e) {
+            // Rollback the transaction
+            DB::rollBack();
+
+            // Redirect error page
+            return abort(Constant::HTTP_CODE_ERROR_500, Constant::ID_SCREEN['SMB0008']);
+        }
     }
 
     /**

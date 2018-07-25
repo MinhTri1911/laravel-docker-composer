@@ -329,4 +329,15 @@ class CompanyBusiness
 
         return true;
     }
+
+    /**
+     * Function check exists company id
+     *
+     * @param int $companyId
+     * @return boolean
+     */
+    public function checkExistsCompanyId($companyId)
+    {
+        return $this->companyRepository->checkCompanyExists($companyId);
+    }
 }

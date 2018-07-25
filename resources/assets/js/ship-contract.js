@@ -59,12 +59,10 @@ $(function(){
             Handler.checkList.forEach(function(value){
                 idContracts += value+':';
             });
-
             var data = {
                 'ship': $(this).data('ship'),
                 'contract': idContracts.substr(0, idContracts.lastIndexOf(":"))
             };
-
             Handler.typeModal = "delete";
             Handler.modalPopup.title = ShipModal.modalContractDelete.title || "";
             Handler.modalPopup.message = ShipModal.modalContractDelete.message || "";
@@ -194,6 +192,14 @@ var Handler = {
         
         // Handle pjax when click limit page
         vThis.limitPage();
+        
+        var tbody_f = document.querySelectorAll('.modal');
+        for (var i = 0; i < tbody_f.length; i++) {
+            const ps2 = new PerfectScrollbar(tbody_f[i], {
+                wheelSpeed: 0.1,
+                minScrollbarLength: 90
+            });
+        }
     },
     
     /**

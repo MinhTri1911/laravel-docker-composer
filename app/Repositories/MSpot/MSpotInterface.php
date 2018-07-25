@@ -37,4 +37,11 @@ interface MSpotInterface
      * @return boolen
     */
     public function checkExits($spot_id);
+    
+    /**
+     * Function get exists spot with same currency with company
+     * @param int companyId
+     * @return Collection
+     */
+    public function getExistsSpotWithCurrency($companyId) ;
 }

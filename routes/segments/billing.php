@@ -14,7 +14,7 @@
 Route::group([ 'prefix' => 'billing', 'as' => 'billing.'], function () {
 
     // Index create billing
-    Route::get('/', 'BillingPaperController@index')->name('create.billing.paper');
+    Route::get('/', 'BillingPaperController@index')->name('index');
     Route::get('/search', 'BillingPaperController@searchBillingPaper')->name('search.billing.paper');
     Route::post('/create', 'BillingPaperController@createBillingPaper')->name('create.billing.paper');
     Route::post('/delivery', 'BillingPaperController@deliveryBillingPaper')->name('delivery.billing.paper');

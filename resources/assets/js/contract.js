@@ -11,7 +11,6 @@ $(function () {
 
 
 $(document).ready(function () {
-
     $(document).on('keyup', "input[name='chargeRegister']", function (e) {
         Events.separateComma($(this));
     });
@@ -19,5 +18,7 @@ $(document).ready(function () {
      $(document).on('keyup', "input[name='chargeCreate']", function (e) {
         Events.separateComma($(this));
     });
+    
+    
 });
 

@@ -8,8 +8,15 @@
 
 const HTTP_SUCCESS = 200;
 const HTTP_ERROR = 500;
+const DATE_FORMAT = 'YYYY/MM/DD';
+const MAX_LENGTH_REMARK = 255;
+const MAX_LENGTH_CHARGE = 18;
 
 var ship = new function () {
+    this.flagValidator = true;
+
+    this.serviceIdAdded = [];
+
     this.models = {
         // Items
         nationId: '#search-nation-id',
@@ -19,22 +26,55 @@ var ship = new function () {
         txtNationId: '#nation-id',
         slbServieName: '#slb-service',
         txtChargeRegister: '#charge-register',
-        txtChargeCreteData: '#charge-create-data',
+        txtChargeCreateData: '#charge-create-data',
+        txtStartDate: '#service-start-date',
+        txtEndDate: '#service-end-date',
+        txtRemark: '#txtRemark',
+        areaPushService: '#service-data-hidden',
 
         // Button
         seachNation: '#search-nation',
         btnSearchNation: '#btn-search-nation',
         btnOkeSelectNation: '#btn-ok',
+        btnAddService: '#btn-add-service-to-table',
 
         // Modal
         popupSeachNation: '#popup-search-nation',
+        popupAddService: '#popup-add-service',
 
         // Label
         lblPriceService: '#lbl-price-service',
+        lblErrorStartDate: '#lbl-error-start-date',
+        lblErrorEndDate: '#lbl-error-end-date',
+        lblErrorRemark: '#lbl-error-remark',
+        lblErrorChargeRegister: '#lbl-error-charge-register',
+        lblErrorChargeCreateData: '#lbl-error-charge-create-data',
+
+        // Table
+        serviceAppendData: '#service-append-data',
+
+        // class
+        classErrorStartDate: '.error-start-date',
+        classErrorEndDate: '.error-end-date',
+        classErrorRemark: '.error-remark',
+        classErrorChargeRegister: '.error-charge-register',
+        classErrorChargeCreateData: '.error-charge-create-data',
+        classSuccess: '.success-create-data',
     }
 
     this.data = {
         serviceData: JSON.parse($('#service-price').val()),
+        messages: {
+            startDateRequire: window.Laravel.startDateRequire,
+            endDateRequire: window.Laravel.endDateRequire,
+            startDateBeforNow: window.Laravel.startDateBeforNow,
+            endDateBeforStartDate: window.Laravel.endDateBeforStartDate,
+            startDateFormat: window.Laravel.startDateFormat,
+            endDateFormat: window.Laravel.endDateFormat,
+            remarkMaxLength: window.Laravel.remarkMaxLenght,
+            chargeRegisterkMaxLength: window.Laravel.chargeRegisterMaxLength,
+            chargeCreateDatakMaxLength: window.Laravel.chargeCreateDataMaxLength,
+        },
     }
 
     this.urls = {
@@ -58,7 +98,31 @@ var ship = new function () {
             $(document).on('click', this.models.btnSearchNation, function () {
                 this.searchNation();
             })
-        }
+        },
+
+        /**
+         * Event keyup then format number
+         * @returns void
+         */
+        changeCharge: function () {
+           $(document).on('keyup', ship.models.txtChargeRegister, function (event) {
+               Events.separateComma($(this));
+           });
+
+           $(document).on('keyup', ship.models.txtChargeCreateData, function (event) {
+               Events.separateComma($(this));
+           });
+        },
+    }
+
+    /**
+     * Format number to display
+     * @param int|double number
+     * @param int decimal
+     * @return string
+     */
+    this.formatNumber = function (number) {
+        return Events.separateCommaValue(number.toString());
     }
 
     /**
@@ -143,18 +207,272 @@ var ship = new function () {
             let dataPrice = ship.data.serviceData[$(this).val()];
 
             // Reset price service and price spot
-            $(ship.models.txtChargeRegister).val(dataPrice.chargeRegister);
-            $(ship.models.txtChargeCreteData).val(dataPrice.chargeCreateData);
+            $(ship.models.txtChargeRegister).val(ship.formatNumber(dataPrice.chargeRegister));
+            $(ship.models.txtChargeCreateData).val(ship.formatNumber(dataPrice.chargeCreateData));
             $(ship.models.lblPriceService).empty();
-            $(ship.models.lblPriceService).append(dataPrice.price);
+            $(ship.models.lblPriceService).append(ship.formatNumber(dataPrice.price));
+
+            ship.clearMessageError();
         });
+    }
+
+    /**
+     * Function validate adding service
+     * @returns boolean
+     */
+    this.validatorService = function () {
+        let startDate = $(ship.models.txtStartDate).val();
+        let endDate = $(ship.models.txtEndDate).val();
+        let now = moment().format('L');
+        let remark = $(ship.models.txtRemark).val();
+        let chargeRegister = $(ship.models.txtChargeRegister).val();
+        let chargeCreateData = $(ship.models.txtChargeCreateData).val();
+        console.log(this.flagValidator)
+        // Check require start date
+        if (startDate == '') {
+            this.flagValidator = false;
+            this.appendMessgeError(
+                ship.models.classErrorStartDate,
+                ship.models.lblErrorStartDate,
+                ship.data.messages.startDateRequire
+            );
+        }
+
+        // Check require end date
+        if (endDate == '') {
+            this.flagValidator = false;
+            this.appendMessgeError(
+                ship.models.classErrorEndDate,
+                ship.models.lblErrorEndDate,
+                ship.data.messages.endDateRequire
+            );
+        }
+
+        // Check start date equal or after now
+        if (startDate != '' && moment(startDate).isBefore(now)) {
+            this.flagValidator = false;
+            this.appendMessgeError(
+                ship.models.classErrorStartDate,
+                ship.models.lblErrorStartDate,
+                ship.data.messages.startDateBeforNow
+            );
+        }
+
+        // Check end date after start date
+        if (startDate != '' && moment(endDate).isSameOrBefore(startDate)) {
+            this.flagValidator = false;
+            this.appendMessgeError(
+                ship.models.classErrorEndDate,
+                ship.models.lblErrorEndDate,
+                ship.data.messages.endDateBeforStartDate
+            );
+        }
+
+        // Check start date, end date valid format
+        if (this.flagValidator) {
+            // Check format startdate
+            let checkFormatStartDate = moment(startDate, DATE_FORMAT, true);
+            let isValidStartDate = checkFormatStartDate.isValid();
+
+            let checkFormatEndDate = moment(endDate, DATE_FORMAT, true);
+            let isValidEndDate = checkFormatEndDate.isValid();
+
+            if (!isValidStartDate) {
+                this.flagValidator = false;
+                this.appendMessgeError(
+                    ship.models.classErrorStartDate,
+                    ship.models.lblErrorStartDate,
+                    ship.data.messages.startDateFormat
+                );
+            }
+
+            if (!isValidEndDate) {
+                this.flagValidator = false;
+                this.appendMessgeError(
+                    ship.models.classErrorEndDate,
+                    ship.models.lblErrorEndDate,
+                    ship.data.messages.endDateFormat
+                );
+            }
+        }
+
+        // Check max length remark
+        if (remark.length > MAX_LENGTH_REMARK) {
+            this.flagValidator = false;
+            this.appendMessgeError(
+                ship.models.classErrorRemark,
+                ship.models.lblErrorRemark,
+                ship.data.messages.remarkMaxLength
+            );
+        }
+
+        // Check max length charge register
+        if (chargeRegister.length > MAX_LENGTH_CHARGE) {
+            this.flagValidator = false;
+            this.appendMessgeError(
+                ship.models.classErrorChargeRegister,
+                ship.models.lblErrorChargeRegister,
+                ship.data.messages.chargeRegisterkMaxLength
+            );
+        }
+
+        // Check max length charge create data
+        if (chargeCreateData.length > MAX_LENGTH_CHARGE) {
+            this.flagValidator = false;
+            this.appendMessgeError(
+                ship.models.classErrorChargeCreateData,
+                ship.models.lblErrorChargeCreateData,
+                ship.data.messages.chargeCreateDatakMaxLength
+            );
+        }
+
+        let statusReturn = this.flagValidator;
+
+        // Reset flag check status
+        this.flagValidator = true;
+
+        return statusReturn;
+    }
+
+    /**
+     * Function append message error
+     * @param string classAppend
+     * @param string label
+     * @param string message
+     * @returns void
+     */
+    this.appendMessgeError = function (classAppend, label, message) {
+        // Append message error
+        $(label).empty();
+        $(label).append(message);
+
+        $(classAppend).css({'display': 'block'});
+    }
+
+    /**
+     * Function clear message error
+     * @returns void
+     */
+    this.clearMessageError = function () {
+        $(ship.models.lblErrorStartDate).empty();
+        $(ship.models.classErrorStartDate).css({'display': 'none'});
+
+        $(ship.models.lblErrorEndDate).empty();
+        $(ship.models.classErrorEndDate).css({'display': 'none'});
+
+        $(ship.models.lblErrorRemark).empty();
+        $(ship.models.classErrorRemark).css({'display': 'none'});
+
+        $(ship.models.lblErrorChargeRegister).empty();
+        $(ship.models.classErrorChargeRegister).css({'display': 'none'});
+
+        $(ship.models.lblErrorChargeCreateData).empty();
+        $(ship.models.classErrorChargeCreateData).css({'display': 'none'});
+
+        $(ship.models.classSuccess).css({'display': 'none'});
+    }
+
+    /**
+     * Function add service to table
+     * @returns void
+     */
+    this.addService = function () {
+        $(ship.models.btnAddService).bind('click', {ship: this}, function (event) {
+            let ship = event.data.ship;
+
+            if (('#') + event.target.getAttribute('id') == ship.models.btnAddService) {
+                // First clear old message
+                ship.clearMessageError();
+
+                // Check validator
+                if (!ship.validatorService()) {
+                    return;
+                } else {
+                    if (!ship.serviceIdAdded.includes($(ship.models.slbServieName).val())) {
+                    // Set value for append
+                        let beginTd = '<td class="col-md-2">';
+                        let endTd = '</td>';
+                        let beginTr = '<tr>';
+                        let endTr = '</tr>';
+
+                        let data = {
+                            serviceId: $(ship.models.slbServieName).val(),
+                            startDate: $(ship.models.txtStartDate).val(),
+                            endDate: $(ship.models.txtEndDate).val(),
+                            price: ship.data.serviceData[$(ship.models.slbServieName).val()].price,
+                            chargeRegister: $(ship.models.txtChargeRegister).val(),
+                            chargeCreateData: $(ship.models.txtChargeCreateData).val(),
+                        }
+
+                        let str = '';
+
+                        // Loop for adding string
+                        for (var append in data) {
+                            str += (beginTd + data[append] + endTd);
+                        }
+
+                        // Add id service to remark service was added
+                        ship.serviceIdAdded.push(data.serviceId);
+
+                        // Append dataa
+                        $(ship.models.serviceAppendData).append(beginTr + str + endTr);
+
+                        // Show messsage success
+                        $(ship.models.classSuccess).css({'display': 'block'});
+
+                        let dataAppend = {
+                            serviceId: $(ship.models.slbServieName).val(),
+                            startDate: $(ship.models.txtStartDate).val(),
+                            endDate: $(ship.models.txtEndDate).val(),
+                            remark: $(ship.models.txtRemark).val(),
+                            spotRegisterId: 1,
+                            chargeRegister: $(ship.models.txtChargeRegister).val(),
+                            spotCreateDataId: 2,
+                            chargeCreateData: $(ship.models.txtChargeCreateData).val(),
+                        }
+
+                        $(ship.models.areaPushService).append(ship.appendFormHidden(dataAppend));
+                    }
+                }
+            }
+        });
+    }
+
+    this.appendFormHidden = function (data) {
+
+        let formService = "<input type='hidden' name='service[" + data.serviceId + "]' value='" + data.serviceId + "'>";
+        let formServiceId = "<input type='hidden' name=service[" + data.serviceId + "][id] value='" + data.serviceId + "'>";
+        let formStartDate = "<input type='hidden' name=service[" + data.serviceId + "][start-date] value='" + data.startDate + "'>";
+        let formEndDate = "<input type='hidden' name=service[" + data.serviceId + "][end-date] value='" + data.endDate + "'>";
+        let formRemark = "<input type='hidden' name=service[" + data.serviceId + "][remark] value='" + data.remark + "'>";
+
+        let formSpotRegister = "<input type='hidden' name='spot[" + data.serviceId + "]"
+            + "[" + data.spotRegisterId + "]' value='" + data.spotRegisterId + "'>";
+        let formSpotRegisterId = "<input type='hidden' name=spot[" + data.serviceId + "]"
+            + "[" + data.spotRegisterId + "][id] value='" + data.spotRegisterId + "'>";
+        let formSpotChargeRegister = "<input type='hidden' name=spot[" + data.serviceId + "]"
+            + "[" + data.spotRegisterId + "][charge] value='" + data.chargeRegister + "'>";
+
+        let formSpotCreateData = "<input type='hidden' name=spot[" + data.serviceId + "]"
+            + "[" + data.spotCreateDataId + "] value='" + data.spotCreateDataId + "'>";
+        let formSpotCreateDataId = "<input type='hidden' name=spot[" + data.serviceId + "]"
+            + "[" + data.spotCreateDataId + "][id] value='" + data.spotCreateDataId + "'>";
+        let formSpotChargeCreateData = "<input type='hidden' name=spot[" + data.serviceId + "]"
+            + "[" + data.spotCreateDataId + "][charge] value='" + data.chargeCreateData + "'>";
+
+        let str = (formService + formServiceId + formStartDate + formEndDate + formRemark + formSpotRegister);
+        str += (formSpotRegisterId + formSpotChargeRegister + formSpotCreateData + formSpotCreateDataId +formSpotChargeCreateData);
+
+        return str;
     }
 }
 
 $(document).ready(function () {
     ship.initScrollForTable();
+    ship.events.changeCharge();
     ship.showSearchNation();
     ship.searchNation();
     ship.selectNation();
     ship.selectService();
+    ship.addService();
 });

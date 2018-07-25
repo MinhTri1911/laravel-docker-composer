@@ -14,6 +14,7 @@ namespace App\Repositories\Contract;
 use App\Repositories\EloquentRepository;
 use App\Models\MContract;
 use App\Common\Constant;
+use DB;
 
 class ContractRepository extends EloquentRepository implements ContractInterface
 {
@@ -104,7 +105,7 @@ class ContractRepository extends EloquentRepository implements ContractInterface
     }
 
     /**
-     * Function get new contract watting approved
+     * Function get new contract waiting approved
      * @param int companyId
      * @param array serviceIds
      * @return array
@@ -137,7 +138,7 @@ class ContractRepository extends EloquentRepository implements ContractInterface
 
     /**
      * Function delete contract
-     * @param array ids
+     * @param array id
      * @param string|null column
      * @return boolean
      */
@@ -151,8 +152,8 @@ class ContractRepository extends EloquentRepository implements ContractInterface
     }
 
     /**
-     * Function update delete contract watting approve
-     * @param array ids
+     * Function update delete contract waiting approve
+     * @param array id
      * @param array data
      * @param string|null column
      * @return boolean
@@ -160,7 +161,6 @@ class ContractRepository extends EloquentRepository implements ContractInterface
     public function updateDeleteContractWattingApprove($ids, $data, $column = null)
     {
         $data = is_array($data) ? $data : [$data];
-
         return $this
             ->whereIn('approved_flag', [Constant::STATUS_APPROVED, Constant::STATUS_REJECT_APPROVE])
             ->whereIn('status', [Constant::STATUS_CONTRACT_ACTIVE, Constant::STATUS_CONTRACT_PENDING])
@@ -231,4 +231,170 @@ class ContractRepository extends EloquentRepository implements ContractInterface
             ->whereNotNull('m_contract.updated_at')
             ->exists();
     }
+    
+    /**
+     * Get contract of ship
+     *
+     * @access public
+     * @param int $idShip
+     * @param int|array $idContract
+     * @return mixed Illuminate\Support\Collection
+     */
+    public function getContract($idShip = null, $idContract = '', $paramCondition = null)
+    {
+        // Query get contract
+        $contract = DB::table('m_contract')
+                ->join('m_ship', function($join) {
+                    $join->on('m_ship.id', '=', 'm_contract.ship_id')
+                    ->where('m_ship.del_flag', Constant::DELETE_FLAG_FALSE);
+                })
+                // Check company sync to ship
+                ->join('m_company', function($join) use ($paramCondition) {
+                    if (isset($paramCondition['company']) && count($paramCondition['company']) > 0) {
+                        $join->on('m_ship.company_id', '=', 'm_company.id')
+                            ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE)
+                            ->whereIn('m_company.id', $paramCondition['company']);
+                        unset($paramCondition['company']);
+                    } else {
+                        $join->on('m_ship.company_id', '=', 'm_company.id')
+                            ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE);
+                    }
+                })
+                ->join('m_service', function($join) {
+                    $join->on('m_service.id', '=', 'm_contract.service_id')
+                        ->where('m_service.del_flag', Constant::DELETE_FLAG_FALSE);
+                })
+                ->join('t_price_service', function($join) {
+                    $join->on('m_service.id', '=', 't_price_service.service_id')
+                        ->where('t_price_service.del_flag', Constant::DELETE_FLAG_FALSE);
+                })
+                ->join('m_nation', function($join) {
+                    $join->on('m_ship.nation_id', '=', 'm_nation.id')
+                            ->where('m_nation.del_flag', Constant::DELETE_FLAG_FALSE);
+                })
+                ->join('m_currency', function($join) {
+                    $join->on('m_company.currency_id', '=', 'm_currency.id')
+                            ->where('m_currency.del_flag', Constant::DELETE_FLAG_FALSE);
+                })
+                ->select([
+                    "m_contract.id as contract_id",
+                    "m_contract.revision_number as contract_revision_number",
+                    "m_contract.start_date as contract_date_start",
+                    "m_contract.end_date as contract_date_end",
+                    "m_contract.status as contract_status",
+                    "m_contract.approved_flag as contract_approved_flag",
+                    "m_contract.reason_reject as contract_reason_reject",
+                    "m_contract.created_at as contract_created_at",
+                    "m_contract.updated_at as contract_updated_at",
+                    "m_contract.approved_flag as contract_approved_flag",
+                    "m_contract.remark as contract_remark",
+                    "m_service.id as contract_service_id",
+                    "m_service.name_jp as contract_service_name",
+                    "m_ship.id as contract_ship_id",
+                    "m_ship.name as contract_ship_name",
+                    'm_currency.id as contract_currency_id',
+                    'm_currency.name_jp as contract_currency_name',
+                    DB::raw(
+                        "DATE_FORMAT(m_contract.start_date, '%Y/%m/%d') as contract_start_date, "
+                        . "DATE_FORMAT(m_contract.end_date, '%Y/%m/%d') as contract_end_date")
+                ])
+                ->whereIn('approved_flag', [
+                    Constant::STATUS_APPROVED,
+//                    Constant::STATUS_WAITING_APPROVE,
+                    Constant::STATUS_REJECT_APPROVE]);
+                
+        // Check if get all contract inside all ship
+        if (empty($idShip) || is_null($idShip)) {
+            if (!empty($idContract) && !is_null($idContract)) {
+                if (is_array($idContract))
+                    return $contract
+                                    ->whereIn('m_contract.id', $idContract)
+                                    ->get();
+                return $contract
+                                ->where('m_contract.id', $idContract)
+                                ->first();
+            }
+            
+            return $contract->get();
+        }
+        
+        // If get contract inside a ship
+        if (!empty($idContract) && !is_null($idContract)) {
+            if (is_array($idContract))
+                return $contract
+                                ->whereIn('m_contract.id', $idContract)
+                                ->where('m_ship.id', $idShip)
+                                ->get();
+            return $contract
+                            ->where('m_contract.id', $idContract)
+                            ->where('m_ship.id', $idShip)
+                            ->first();
+        }
+        
+        return $contract
+                        ->where('m_ship.id', $idShip)
+                        ->get();
+    }
+    
+    /**
+     * Get list spot of ship
+     * 
+     * @access public
+     * @param int $shipId
+     * @param array $param
+     * @return mixed Illuminate\Support\Collection
+     */
+    public function getSpotOfShip($shipId = null, $param = null)
+    {
+        $spot = DB::table('t_ship_spot')
+                ->join('m_ship', function($join) use ($param) {
+                    $join->on('t_ship_spot.ship_id', '=', 'm_ship.id')
+                            ->where('m_ship.del_flag', Constant::DELETE_FLAG_FALSE);
+                })
+                ->join('m_spot', function($join) {
+                    $join->on('m_spot.id', '=', 't_ship_spot.spot_id')
+                        ->where('m_spot.del_flag', Constant::DELETE_FLAG_FALSE);
+                })
+                ->where([
+                    'm_ship.id' => $shipId
+                ]);
+                
+        if (isset($param['idSpot'])) {
+            $spot = $spot->whereIn('t_ship_spot', $param['idSpot']);
+        }
+        
+        return $spot;
+    }
+    
+    
+    /**
+     * Get list spot of ship
+     * 
+     * @access public
+     * @param int $shipId
+     * @param array $param
+     * @return mixed Illuminate\Support\Collection
+     */
+    public function updateContract($contractId = null, $dataUpdate = [])
+    {
+       
+        return DB::table('m_contract')
+                ->where([
+                    'm_contract.id' => $contractId
+                ])
+                ->update($dataUpdate);
+    }
+    
+    /**
+     * Insert Spot into for ship contract
+     * 
+     * @access public
+     * @param array $data
+     * @return Illuminate/Database/Query/Builder
+     */
+    public function insertSpotForShipContract($data) {
+        return DB::table('t_ship_spot')
+                ->insert($data);
+    }
+    
 }

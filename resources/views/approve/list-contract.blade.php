@@ -44,7 +44,7 @@
                         <td>{{\App\Common\Constant::CONTRACT_O[$contract->data_update->contract_status]}}</td>
                         <td>{{$contract->request_operation??null}}</td>
                         <td>{{\Carbon\Carbon::parse($contract->data_update->contract_date_request)->format('Y/m/d H:i:s')}}</td>
-                        <td>{{$contract->data_update->contract_user_name}}</td>
+                        <td>{{$contract->contract_user_request}}</td>
                         <td><div class="btn btn-blue-dark btn-custom-sm btn-detail" data-type="0" data-item="{{$contract->contract_id}}">{{__('approve.btn_detail')}}</div></td>
                     </tr>
                    @else
@@ -59,7 +59,7 @@
                             <td>{{\App\Common\Constant::CONTRACT_O[$contract->contract_status]}}</td>
                             <td>{{$contract->request_operation??null}}</td>
                             <td>{{\Carbon\Carbon::parse($contract->contract_date_request)->format('Y/m/d H:i:s')}}</td>
-                            <td>{{$contract->contract_user_name}}</td>
+                            <td>{{$contract->contract_user_request}}</td>
                             <td><div class="btn btn-blue-dark btn-custom-sm btn-detail" data-type="0" data-item="{{$contract->contract_id}}">{{__('approve.btn_detail')}}</div></td>
                         </tr>
                    @endif

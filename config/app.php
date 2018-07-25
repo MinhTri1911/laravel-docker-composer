@@ -179,6 +179,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\RepositoryServiceProvider::class,
         App\Providers\HelperServiceProvider::class,
+        App\Providers\ValidatorServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
 
         // Migrateions generator

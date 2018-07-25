@@ -66,4 +66,15 @@ class NationRepository extends EloquentRepository implements NationInterface
             })
             ->get();
     }
+
+    /**
+     * Function check exists nation id
+     *
+     * @param int $nationId
+     * @return boolean
+     */
+    public function checkExists($nationId)
+    {
+        return $this->where('id', $nationId)->where('del_flag', Constant::DELETE_FLAG_FALSE)->exists();
+    }
 }

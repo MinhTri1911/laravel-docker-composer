@@ -20,6 +20,25 @@
 
         <div class="main-summary">
             <div class="col-md-12">
+                @if (session('error'))
+                    <div class="alert alert-danger display-block">
+                        <div class="block-error">
+                            <i class="fa fa-exclamation" aria-hidden="true"></i>
+                            <label class="control-label">{{ session('error') }}</label>
+                        </div>
+                    </div>
+                @endif
+
+                @if (session('success'))
+                    <div class="alert alert-success display-block">
+                        <div class="block-success">
+                            <i class="fa fa-check" aria-hidden="true"></i>
+                            <label class="control-label">{{ session('success') }}</label>
+                        </div>
+                    </div>
+                @endif
+            </div>
+            <div class="col-md-12">
                 <!--begin show detail company infomation-->
                 <div class="col-md-4 block-detail">
                     <div class="row">
@@ -415,7 +434,10 @@
                                     </div>
                                     <div class="col-md-12">
                                         <div class="col-md-6">
-                                            <a href="{{ route('ship.contract.create', ['company-id' => $company->id]) }}"
+                                            <a href="{{ route('ship.contract.create', [
+                                                    'company-id' => $company->id,
+                                                    'currency-id' => $company->currency_id
+                                                ]) }}"
                                                 class="btn btn-green-dark btn-w150"
                                                 tabindex="4">
                                                 {{ trans('company.btn_create') }}
