@@ -10,7 +10,7 @@
 
 namespace App\Repositories\MCurrency;
 
-interface MCurrencyInterface 
+interface MCurrencyInterface
 {
     /**
      * Select MCurrency by currency id
@@ -19,7 +19,7 @@ interface MCurrencyInterface
      * @return mixed Illuminate\Support\Collection
     */
     public function getMCurrencyByCurrencyId($currency_id);
-    
+
     /**
      * Function check exits currency by currency id
      * @access public
@@ -27,4 +27,12 @@ interface MCurrencyInterface
      * @return boolen
     */
     public function checkExits($currency_id);
+
+    /**
+     * Function get all currency
+     *
+     * @param array $columns
+     * @return Collection
+     */
+    public function getAllCurrency($columns = ['*']);
 }

@@ -84,4 +84,19 @@ class BillingMethodCompanyController extends Controller
             'newShowUrl' => route('billing.method.show', $request->get('billing-method-id')),
         ]);
     }
+
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function get(Request $request)
+    {
+        if (!$request->ajax()) {
+
+        }
+
+
+    }
 }

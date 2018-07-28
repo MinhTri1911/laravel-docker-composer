@@ -269,4 +269,18 @@ class CompanyRepository extends EloquentRepository implements CompanyInterface
     {
         return $this->where('id', $companyId)->where('del_flag', Constant::DELETE_FLAG_FALSE)->exists();
     }
+
+    /**
+     * Function get company
+     *
+     * @param int $companyId
+     * @param array $columns
+     * @throws Exception
+     * @return App\Models\MCompany
+     */
+    public function getCompanyDetail($companyId, $columns = ['*'])
+    {
+        return $this->where('del_flag', Constant::DELETE_FLAG_FALSE)
+            ->findOrFail($companyId, $columns);
+    }
 }

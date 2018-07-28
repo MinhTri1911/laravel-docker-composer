@@ -65,16 +65,6 @@ class ContractRepository extends EloquentRepository implements ContractInterface
     }
 
     /**
-     * Function edit
-     * @access public
-     * @param arr data
-     * @return mixed
-     */
-    public function editContract($data) {
-
-    }
-
-    /**
      * Function get contract id by company id and service id
      * @param int companyId
      * @param array serviceIds
@@ -231,7 +221,7 @@ class ContractRepository extends EloquentRepository implements ContractInterface
             ->whereNotNull('m_contract.updated_at')
             ->exists();
     }
-    
+
     /**
      * Get contract of ship
      *
@@ -293,16 +283,15 @@ class ContractRepository extends EloquentRepository implements ContractInterface
                     "m_ship.id as contract_ship_id",
                     "m_ship.name as contract_ship_name",
                     'm_currency.id as contract_currency_id',
-                    'm_currency.name_jp as contract_currency_name',
+                    'm_currency.code as contract_currency_name',
                     DB::raw(
                         "DATE_FORMAT(m_contract.start_date, '%Y/%m/%d') as contract_start_date, "
                         . "DATE_FORMAT(m_contract.end_date, '%Y/%m/%d') as contract_end_date")
                 ])
                 ->whereIn('approved_flag', [
                     Constant::STATUS_APPROVED,
-//                    Constant::STATUS_WAITING_APPROVE,
                     Constant::STATUS_REJECT_APPROVE]);
-                
+
         // Check if get all contract inside all ship
         if (empty($idShip) || is_null($idShip)) {
             if (!empty($idContract) && !is_null($idContract)) {
@@ -314,10 +303,10 @@ class ContractRepository extends EloquentRepository implements ContractInterface
                                 ->where('m_contract.id', $idContract)
                                 ->first();
             }
-            
+
             return $contract->get();
         }
-        
+
         // If get contract inside a ship
         if (!empty($idContract) && !is_null($idContract)) {
             if (is_array($idContract))
@@ -330,15 +319,15 @@ class ContractRepository extends EloquentRepository implements ContractInterface
                             ->where('m_ship.id', $idShip)
                             ->first();
         }
-        
+
         return $contract
                         ->where('m_ship.id', $idShip)
                         ->get();
     }
-    
+
     /**
      * Get list spot of ship
-     * 
+     *
      * @access public
      * @param int $shipId
      * @param array $param
@@ -358,18 +347,17 @@ class ContractRepository extends EloquentRepository implements ContractInterface
                 ->where([
                     'm_ship.id' => $shipId
                 ]);
-                
+
         if (isset($param['idSpot'])) {
             $spot = $spot->whereIn('t_ship_spot', $param['idSpot']);
         }
-        
+
         return $spot;
     }
-    
-    
+
     /**
      * Get list spot of ship
-     * 
+     *
      * @access public
      * @param int $shipId
      * @param array $param
@@ -377,17 +365,16 @@ class ContractRepository extends EloquentRepository implements ContractInterface
      */
     public function updateContract($contractId = null, $dataUpdate = [])
     {
-       
         return DB::table('m_contract')
                 ->where([
                     'm_contract.id' => $contractId
                 ])
                 ->update($dataUpdate);
     }
-    
+
     /**
      * Insert Spot into for ship contract
-     * 
+     *
      * @access public
      * @param array $data
      * @return Illuminate/Database/Query/Builder
@@ -396,5 +383,20 @@ class ContractRepository extends EloquentRepository implements ContractInterface
         return DB::table('t_ship_spot')
                 ->insert($data);
     }
-    
+
+    /**
+     * Function get contract after insert
+     *
+     * @param array $condition
+     * @param array $serviceIds
+     * @param array $columns
+     * @return Collection
+     */
+    public function getContractAfterInsert($condition, $serviceIds, $columns = ['*'])
+    {
+        return $this->select($columns)
+            ->where($condition)
+            ->whereIn('service_id', $serviceIds)
+            ->get();
+    }
 }

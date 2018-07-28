@@ -46,8 +46,11 @@ class ShipContractRequest extends FormRequest
      */
     public function rules()
     {
+        $now = date('Y/m/d');
+
         return [
             'txt-ship-name' => 'required|max:100',
+            'company-id' => 'required',
             'txt-imo-number' => 'required|max:15',
             'txt-mmsi-number' => 'nullable|max:20',
             'nation-id' => 'required|digits_between:1,20',
@@ -61,9 +64,13 @@ class ShipContractRequest extends FormRequest
             'txt-weight-ton' => 'nullable|digits_between:0,10',
             'txt-member-number' => 'nullable|integer|digits_between:0,5',
             'txt-remark' => 'nullable|max:255',
-            'txt-url-1' => 'nullable|max:150|url',
-            'txt-url-2' => 'nullable|max:150|url',
-            'txt-url-3' => 'nullable|max:150|url'
+            'txt-url-1' => 'nullable|max:255|url',
+            'txt-url-2' => 'nullable|max:255|url',
+            'txt-url-3' => 'nullable|max:255|url',
+            'service.*.id' => 'numeric',
+            'service.*.start-date' => 'nullable|date_format:Y/m/d|after_or_equal:' . $now,
+            'service.*.end-date' => 'nullable|date_format:Y/m/d|after:service.*.start-date',
+            'spot.*.*.charge' => 'nullable|digits_between:0,4',
         ];
     }
 
@@ -74,9 +81,20 @@ class ShipContractRequest extends FormRequest
      */
     public function messages()
     {
+        $serviceId = trans('ship.lbl_service_name');
+        $startDate =  trans('ship.lbl_start_date');
+        $endDate = trans('ship.lbl_end_date');
+
         return [
             'nation-id.required' => trans('error.e003_required', ['field' => trans('ship.lbl_title_nation')]),
             'nation-id.digits_between' => trans('validation.digits_between', ['attribute' => trans('ship.lbl_title_nation')]),
+            'company-id.required' => trans('error.e003_required', ['field' => trans('ship.lbl_title_company')]),
+            'service.*.id.numeric' => trans('error.e008_numeric', ['field' => $serviceId]),
+            'service.*.start-date.date_format' => trans('error.e005_format_date', ['field' => $startDate, 'format' => 'YYYY/mm/dd']),
+            'service.*.start-date.after_or_equal' => trans('error.e020_greater_than_or_equal', ['field' => $startDate]),
+            'service.*.end-date.date_format' => trans('error.e005_format_date', ['field' => $endDate, 'format' => 'YYYY/mm/dd']),
+            'service.*.end-date.after' => trans('error.e012_start_date_less_than_end_date'),
+            'spot.*.*.charge.digits_between' => trans('validation.digits_between', ['attribute' => trans('ship.spot')]),
         ];
     }
 
@@ -97,6 +115,16 @@ class ShipContractRequest extends FormRequest
         // Set check valid is true
         $isValidServiceIds = true;
         $isValidSpotIds = true;
+
+        // Check duplicate service
+        $detechServiceIdDuplicate = ($services && is_array($services)) ? array_unique(array_column($services, 'id')) : [];
+
+        if (is_array($services) && count($detechServiceIdDuplicate) < count(array_column($services, 'id'))) {
+            $message =  trans('common-message.error.E021', [
+                'item' => trans('company.lbl_service_name'),
+            ]);
+            $this->_addValidatorMessage($validator, 'slb-ship-type', $message);
+        }
 
         // Check exists services
         if ($services && is_array($services)) {
@@ -136,7 +164,7 @@ class ShipContractRequest extends FormRequest
 
         // Check nation id exists
         $nationBusiness = app(NationBusiness::class);
-        $nation = $nationBusiness->checkExistsNationId($this->get('nation-id'));
+        $nation = $this->get('nation-id') ? $nationBusiness->checkExistsNationId($this->get('nation-id')) : true;
 
         if (!$nation) {
             $message =  trans('error.e009_not_exists_master', [
@@ -147,7 +175,7 @@ class ShipContractRequest extends FormRequest
 
         // Check company id exists
         $companyBusiness = app(CompanyBusiness::class);
-        $company = $companyBusiness->checkExistsCompanyId($this->get('company-id'));
+        $company = $this->get('company-id') ? $companyBusiness->checkExistsCompanyId($this->get('company-id')) : true;
 
         if (!$company) {
             $message =  trans('error.e009_not_exists_master', [
@@ -158,7 +186,9 @@ class ShipContractRequest extends FormRequest
 
         // Check ship type exists
         $shipContractBusiness = app(ShipContractBusiness::class);
-        $shipType = $shipContractBusiness->checkShipTypeExists($this->get('slb-ship-type'));
+        $shipType = $this->get('slb-ship-type')
+            ? $shipContractBusiness->checkShipTypeExists($this->get('slb-ship-type'))
+            : true;
 
         if (!$shipType) {
             $message =  trans('error.e009_not_exists_master', [
@@ -168,7 +198,9 @@ class ShipContractRequest extends FormRequest
         }
 
         // Check ship classification exists
-        $shipClassification = $shipContractBusiness->checkShipClassificationExists($this->get('slb-classification'));
+        $shipClassification = $this->get('slb-classification')
+            ? $shipContractBusiness->checkShipClassificationExists($this->get('slb-classification'))
+            : true;
 
         if (!$shipClassification) {
             $message =  trans('error.e009_not_exists_master', [

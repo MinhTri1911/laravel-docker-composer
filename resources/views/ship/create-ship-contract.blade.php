@@ -44,7 +44,7 @@
                                     {{ trans('ship.icon_title') }}
                                 </label>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-8 {{ $errors->has('txt-ship-name') ? ' has-error' : '' }}">
                                 {{ Form::text('txt-ship-name', '', [
                                         'class' => 'form-control',
                                         'placeholder' => trans('ship.lbl_title_ship_name'),
@@ -77,11 +77,11 @@
                                     <span class="require">*</span>
                                 </label>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-8 {{ $errors->has('txt-imo-number') ? ' has-error' : '' }}">
                                 {{ Form::text('txt-imo-number', '', [
                                         'class' => 'form-control',
                                         'placeholder' => trans('ship.lbl_title_imo_number'),
-                                        'tabindex' => 3,
+                                        'tabindex' => 2,
                                     ])
                                 }}
                             </div>
@@ -93,11 +93,11 @@
                                     {{ trans('ship.lbl_title_mmsi_number') . trans('ship.icon_title') }}
                                 </label>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-8 {{ $errors->has('txt-mmsi-number') ? ' has-error' : '' }}">
                                 {{ Form::text('txt-mmsi-number', '', [
                                         'class' => 'form-control',
                                         'placeholder' => trans('ship.lbl_title_mmsi_number'),
-                                        'tabindex' => 4,
+                                        'tabindex' => 3,
                                     ])
                                 }}
                             </div>
@@ -112,14 +112,14 @@
                                 </label>
                             </div>
 
-                            <div class="col-md-8">
-                                <div class="input-group">
+                            <div class="col-md-8 {{ $errors->has('nation-id') ? ' has-error' : '' }}">
+                                <div class="input-group-search-popup">
                                     {{ Form::text('nation', $nations->first() ? $nations->first()->name_jp : null, [
                                             'class' => 'form-control',
                                             'placeholder' => trans('ship.lbl_title_nation'),
                                             'readonly' => 'readonly',
                                             'id' => 'nation',
-                                            'tabindex' => 5
+                                            'tabindex' => 4,
                                         ])
                                     }}
                                     <div class="input-group-addon show-modal-service" id="search-nation"><i class="fa fa-search"></i></div>
@@ -136,7 +136,7 @@
                                     <span class="require">*</span>
                                 </label>
                             </div>
-                            <div class="col-md-8 custom-select">
+                            <div class="col-md-8 custom-select {{ $errors->has('slb-classification') ? ' has-error' : '' }}">
                                 @php
                                     $dataClassification = [];
                                     $firstValue = $classificationies->first() ? $classificationies->first()->id : null;
@@ -147,7 +147,7 @@
                                 @endphp
                                 {{ Form::select('slb-classification', $dataClassification, $firstValue, [
                                         'class' => 'form-control',
-                                        'tabindex' => 6,
+                                        'tabindex' => 5,
                                     ])
                                 }}
                             </div>
@@ -159,11 +159,11 @@
                                     {{ trans('ship.lbl_title_register_number') . trans('ship.icon_title') }}
                                 </label>
                             </div>
-                            <div class="col-md-8 custom-select">
+                            <div class="col-md-8 custom-select {{ $errors->has('txt-register-number') ? ' has-error' : '' }}">
                                 {{ Form::text('txt-register-number', '', [
                                         'class' => 'form-control',
                                         'placeholder' => trans('ship.lbl_title_register_number'),
-                                        'tabindex' => 7,
+                                        'tabindex' => 6,
                                     ])
                                 }}
                             </div>
@@ -176,7 +176,7 @@
                                     <span class="require">*</span>
                                 </label>
                             </div>
-                            <div class="col-md-8 custom-select">
+                            <div class="col-md-8 custom-select {{ $errors->has('slb-ship-type') ? ' has-error' : '' }}">
                                 @php
                                     $dataShipType = [];
                                     $firstValueShipType = $shipTypes->first() ? $shipTypes->first()->id : null;
@@ -187,7 +187,7 @@
                                 @endphp
                                 {{ Form::select('slb-ship-type', $dataShipType, $firstValueShipType, [
                                         'class' => 'form-control',
-                                        'tabindex' => 8,
+                                        'tabindex' => 7,
                                     ])
                                 }}
                             </div>
@@ -199,11 +199,11 @@
                                     {{ trans('ship.lbl_title_ship_width') . trans('ship.icon_title') }}
                                 </label>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-8 {{ $errors->has('txt-ship-width') ? ' has-error' : '' }}">
                                 {{ Form::text('txt-ship-width', '', [
                                         'class' => 'form-control',
                                         'placeholder' => trans('ship.lbl_title_ship_width'),
-                                        'tabindex' => 9,
+                                        'tabindex' => 8,
                                     ])
                                 }}
                             </div>
@@ -215,11 +215,11 @@
                                     {{ trans('ship.lbl_title_ship_length') . trans('ship.icon_title') }}
                                 </label>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-8 {{ $errors->has('txt-ship-length') ? ' has-error' : '' }}">
                                 {{ Form::text('txt-ship-length', '', [
                                         'class' => 'form-control',
                                         'placeholder' => trans('ship.lbl_title_ship_length'),
-                                        'tabindex' => 10,
+                                        'tabindex' => 9,
                                     ])
                                 }}
                             </div>
@@ -234,11 +234,11 @@
                                     {{ trans('ship.lbl_title_water_draft') . trans('ship.icon_title') }}
                                 </label>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-8 {{ $errors->has('txt-water-draft') ? ' has-error' : '' }}">
                                 {{ Form::text('txt-water-draft', '', [
                                         'class' => 'form-control',
                                         'placeholder' => trans('ship.lbl_title_water_draft'),
-                                        'tabindex' => 11,
+                                        'tabindex' => 10,
                                     ])
                                 }}
                             </div>
@@ -250,11 +250,11 @@
                                     {{ trans('ship.lbl_title_total_weight_ton') . trans('ship.icon_title') }}
                                 </label>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-8 {{ $errors->has('txt-total-weight-ton') ? ' has-error' : '' }}">
                                 {{ Form::text('txt-total-weight-ton', '', [
                                         'class' => 'form-control',
                                         'placeholder' => trans('ship.lbl_title_total_weight_ton'),
-                                        'tabindex' => 12,
+                                        'tabindex' => 11,
                                     ])
                                 }}
                             </div>
@@ -266,11 +266,11 @@
                                     {{ trans('ship.lbl_title_weight_ton') . trans('ship.icon_title') }}
                                 </label>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-8 {{ $errors->has('txt-weight-ton') ? ' has-error' : '' }}">
                                 {{ Form::text('txt-weight-ton', '', [
                                         'class' => 'form-control',
                                         'placeholder' => trans('ship.lbl_title_weight_ton'),
-                                        'tabindex' => 13,
+                                        'tabindex' => 12,
                                     ])
                                 }}
                             </div>
@@ -282,11 +282,11 @@
                                     {{ trans('ship.lbl_title_member_number') . trans('ship.icon_title') }}
                                 </label>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-8 {{ $errors->has('txt-member-number') ? ' has-error' : '' }}">
                                 {{ Form::text('txt-member-number', '', [
                                         'class' => 'form-control',
                                         'placeholder' => trans('ship.lbl_title_member_number'),
-                                        'tabindex' => 14,
+                                        'tabindex' => 13,
                                     ])
                                 }}
                             </div>
@@ -298,11 +298,11 @@
                                     {{ trans('ship.lbl_title_remark') . trans('ship.icon_title') }}
                                 </label>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-8 {{ $errors->has('txt-remark') ? ' has-error' : '' }}">
                                 {{ Form::textarea('txt-remark', '', [
                                         'class' => 'form-control',
                                         'placeholder' => trans('ship.lbl_title_remark'),
-                                        'tabindex' => 15,
+                                        'tabindex' => 14,
                                         'rows' => '3',
                                     ])
                                 }}
@@ -315,11 +315,11 @@
                                     {{ trans('ship.lbl_url_1') . trans('ship.icon_title') }}
                                 </label>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-8 {{ $errors->has('txt-url-1') ? ' has-error' : '' }}">
                                 {{ Form::text('txt-url-1', '', [
                                         'class' => 'form-control',
                                         'placeholder' => trans('ship.lbl_url_1'),
-                                        'tabindex' => 16,
+                                        'tabindex' => 15,
                                     ])
                                 }}
                             </div>
@@ -331,11 +331,11 @@
                                     {{ trans('ship.lbl_url_2') . trans('ship.icon_title') }}
                                 </label>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-8 {{ $errors->has('txt-url-2') ? ' has-error' : '' }}">
                                 {{ Form::text('txt-url-2', '', [
                                         'class' => 'form-control',
                                         'placeholder' => trans('ship.lbl_url_2'),
-                                        'tabindex' => 17,
+                                        'tabindex' => 16,
                                     ])
                                 }}
                             </div>
@@ -347,11 +347,11 @@
                                     {{ trans('ship.lbl_url_3') . trans('ship.icon_title') }}
                                 </label>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-8 {{ $errors->has('txt-url-3') ? ' has-error' : '' }}">
                                 {{ Form::text('txt-url-3', '', [
                                         'class' => 'form-control',
                                         'placeholder' => trans('ship.lbl_url_3'),
-                                        'tabindex' => 18,
+                                        'tabindex' => 17,
                                     ])
                                 }}
                             </div>
@@ -365,6 +365,7 @@
                                         'id' => 'btn-add-service',
                                         'data-toggle' =>'modal',
                                         'data-target' => '#popup-add-service',
+                                        'tabindex' => 18,
                                     ])
                                 }}
                             </div>
@@ -388,6 +389,7 @@
                             <thead>
                                 <tr>
                                     <th class="col-md-2">{{ trans('ship.lbl_head_service_id') }}</th>
+                                    <!-- <th class="col-md-2">{{ trans('ship.lbl_service_name') }}</th> -->
                                     <th class="col-md-2">{{ trans('ship.lbl_head_service_name') }}</th>
                                     <th class="col-md-2">{{ trans('ship.lbl_head_version') }}</th>
                                     <th class="col-md-2">{{ trans('ship.lbl_head_price') }}</th>
@@ -405,9 +407,14 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="col-md-12 block-button">
-                            {{ Form::button(trans('ship.btn_add_ship'), ['class' => 'btn btn-green-dark btn-w150 btn-right', 'type' => 'submit']) }}
-                            <a class="btn btn-blue-light btn-w150 btn-right" href="{{ route('company.show', $companyId) }}">
-                                {{ trans('ship.btn_cancel') }}
+                            {{ Form::button(trans('ship.btn_add_ship'), [
+                                    'class' => 'btn btn-green-dark btn-w150 btn-right',
+                                    'type' => 'submit',
+                                    'tabindex' => 20,
+                                ])
+                            }}
+                            <a class="btn btn-blue-light btn-w150 btn-right" href="{{ route('company.show', $companyId) }}" tabindex="19">
+                                {{ trans('ship.btn_back') }}
                             </a>
                         </div>
                     </div>
@@ -479,6 +486,14 @@
                              </div>
                         </div>
 
+                        <div class="alert alert-warning" id="warning-service-duplicate">
+                            <div class="block-warning">
+                                <label class="control-label">
+                                    {{ trans('common-message.error.E021', ['item' => trans('company.lbl_service_name')]) }}
+                                </label>
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="col-md-3">
@@ -546,7 +561,7 @@
                                 <div class="col-md-3">
                                     <label>{{ trans('ship.lbl_start_date') . trans('ship.icon_title') }}</label>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6 service-start-date">
                                     <div class="group-datepicker">
                                         {{ Form::text('service-start-date', null, [
                                                 'class' => 'form-control custom-datepicker',
@@ -563,7 +578,7 @@
                                 <div class="col-md-3">
                                     <label>{{ trans('ship.lbl_end_date') . trans('ship.icon_title') }}</label>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6 service-end-date">
                                     <div class="group-datepicker">
                                         {{ Form::text('service-end-date', null, [
                                                 'class' => 'form-control custom-datepicker',
@@ -580,8 +595,8 @@
                                 <div class="col-md-3">
                                     <label for="txt-remark">{{ trans('ship.lbl_contract_remark') . trans('ship.icon_title') }}</label>
                                 </div>
-                                <div class="col-md-6">
-                                    {{ Form::textarea('txt-remark', '', ['class' => 'form-control', 'rows' => 3, 'id' => 'txtRemark']) }}
+                                <div class="col-md-6 txt-remark">
+                                    {{ Form::textarea('txt-remark', '', ['class' => 'form-control', 'rows' => 3, 'id' => 'txt-remark']) }}
                                 </div>
                             </div>
 
@@ -595,37 +610,33 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>{{ trans('ship.lbl_title_spot_charge_register') }}</td>
-                                            <td>
-                                                @php
-                                                    $priceRegister = $services->first()
-                                                        ? $services->first()->charge_register
-                                                        : 0;
+                                        @php
+                                            $priceRegister = $services->first()
+                                                ? $services->first()->charge_register
+                                                : 0;
 
-                                                    $priceCreateData = $services->first()
-                                                        ? $services->first()->charge_create_data
-                                                        : 0;
-                                                @endphp
-                                                {{ Form::text('charge-register', $priceRegister, [
-                                                        'class' => 'form-control',
-                                                        'id' => 'charge-register',
-                                                    ])
-                                                }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>2</td>
-                                            <td>{{ trans('ship.lbl_title_spot_charge_create_data') }}</td>
-                                            <td>
-                                                {{ Form::text('charge-create-data', $priceCreateData, [
-                                                        'class' => 'form-control',
-                                                        'id' => 'charge-create-data',
-                                                    ])
-                                                }}
-                                            </td>
-                                        </tr>
+                                            $priceCreateData = $services->first()
+                                                ? $services->first()->charge_create_data
+                                                : 0;
+
+                                            $spotRegister = 'charge-register';
+                                            $spotCreateData = 'charge-create-data';
+                                        @endphp
+                                        @foreach ($spotDefault as $index => $spot)
+                                            <tr>
+                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ $spot->name_jp }}</td>
+                                                <td class="{{ $spot->type == Constant::SPOT_TYPE_REGISTER ? $spotRegister : $spotCreateData }}">
+                                                    {{ Form::text($spot->type == Constant::SPOT_TYPE_REGISTER ? $spotRegister : $spotCreateData,
+                                                        $spot->type == Constant::SPOT_TYPE_REGISTER ? $priceRegister : $priceCreateData, [
+                                                            'class' => 'form-control',
+                                                            'id' => $spot->type == Constant::SPOT_TYPE_REGISTER ? $spotRegister : $spotCreateData,
+                                                            'data-id' => $spot->id,
+                                                        ])
+                                                    }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>

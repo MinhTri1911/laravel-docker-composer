@@ -69,9 +69,9 @@ class ShipRequest extends FormRequest
             'txt-weight-ton' => 'nullable|digits_between:0,10',
             'txt-member-number' => 'nullable|integer|digits_between:0,5',
             'txt-remark' => 'nullable|max:255',
-            'txt-url-1' => 'nullable|max:150|url',
-            'txt-url-2' => 'nullable|max:150|url',
-            'txt-url-3' => 'nullable|max:150|url'
+            'txt-url-1' => 'nullable|max:255|url',
+            'txt-url-2' => 'nullable|max:255|url',
+            'txt-url-3' => 'nullable|max:255|url'
         ];
     }
 
@@ -118,13 +118,15 @@ class ShipRequest extends FormRequest
             });
         }
         // Check nation is empty
-        if (empty($listNation) || ! $existNation) {
-            $validator->after(function ($validator) {
-                $validator->errors()->add('nation-id', trans('error.e009_not_exists_master', [
-                        'field' => trans('ship.lbl_title_nation')
-                    ])
-                );
-            });
+        if (!empty($this->get('nation-id'))) {
+            if (empty($listNation) || ! $existNation) {
+                $validator->after(function ($validator) {
+                    $validator->errors()->add('nation-id', trans('error.e009_not_exists_master', [
+                            'field' => trans('ship.lbl_title_nation')
+                        ])
+                    );
+                });
+            }
         }
         // Check classification is empty
         if (empty($listClassification) || ! $existClassification) {

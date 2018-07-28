@@ -29,7 +29,7 @@ var ship = new function () {
         txtChargeCreateData: '#charge-create-data',
         txtStartDate: '#service-start-date',
         txtEndDate: '#service-end-date',
-        txtRemark: '#txtRemark',
+        txtRemark: '#txt-remark',
         areaPushService: '#service-data-hidden',
 
         // Button
@@ -49,6 +49,7 @@ var ship = new function () {
         lblErrorRemark: '#lbl-error-remark',
         lblErrorChargeRegister: '#lbl-error-charge-register',
         lblErrorChargeCreateData: '#lbl-error-charge-create-data',
+        lblWarningDuplicate: '#warning-service-duplicate',
 
         // Table
         serviceAppendData: '#service-append-data',
@@ -60,6 +61,11 @@ var ship = new function () {
         classErrorChargeRegister: '.error-charge-register',
         classErrorChargeCreateData: '.error-charge-create-data',
         classSuccess: '.success-create-data',
+        classErrorStartDateInput: '.service-start-date',
+        classErrorEndDateInput: '.service-end-date',
+        classErrorRemarkInput: '.txt-remark',
+        classErrorSpotRegisterInput: '.charge-register',
+        classErrorSpotCreateDataInput: '.charge-create-data',
     }
 
     this.data = {
@@ -112,6 +118,16 @@ var ship = new function () {
            $(document).on('keyup', ship.models.txtChargeCreateData, function (event) {
                Events.separateComma($(this));
            });
+        },
+
+        /**
+         * Event popup add service close
+         * @return void
+         */
+        closeAddService: function () {
+            $(document).on('hide.bs.modal', ship.models.popupAddService, function () {
+                ship.clearMessageError();
+            });
         },
     }
 
@@ -227,7 +243,7 @@ var ship = new function () {
         let remark = $(ship.models.txtRemark).val();
         let chargeRegister = $(ship.models.txtChargeRegister).val();
         let chargeCreateData = $(ship.models.txtChargeCreateData).val();
-        console.log(this.flagValidator)
+
         // Check require start date
         if (startDate == '') {
             this.flagValidator = false;
@@ -236,6 +252,7 @@ var ship = new function () {
                 ship.models.lblErrorStartDate,
                 ship.data.messages.startDateRequire
             );
+            $(ship.models.classErrorStartDateInput).addClass('has-error');
         }
 
         // Check require end date
@@ -246,6 +263,7 @@ var ship = new function () {
                 ship.models.lblErrorEndDate,
                 ship.data.messages.endDateRequire
             );
+            $(ship.models.classErrorEndDateInput).addClass('has-error');
         }
 
         // Check start date equal or after now
@@ -256,6 +274,7 @@ var ship = new function () {
                 ship.models.lblErrorStartDate,
                 ship.data.messages.startDateBeforNow
             );
+            $(ship.models.classErrorStartDateInput).addClass('has-error');
         }
 
         // Check end date after start date
@@ -266,6 +285,7 @@ var ship = new function () {
                 ship.models.lblErrorEndDate,
                 ship.data.messages.endDateBeforStartDate
             );
+            $(ship.models.classErrorEndDateInput).addClass('has-error');
         }
 
         // Check start date, end date valid format
@@ -284,6 +304,7 @@ var ship = new function () {
                     ship.models.lblErrorStartDate,
                     ship.data.messages.startDateFormat
                 );
+                $(ship.models.classErrorStartDateInput).addClass('has-error');
             }
 
             if (!isValidEndDate) {
@@ -293,6 +314,7 @@ var ship = new function () {
                     ship.models.lblErrorEndDate,
                     ship.data.messages.endDateFormat
                 );
+                $(ship.models.classErrorEndDateInput).addClass('has-error');
             }
         }
 
@@ -304,6 +326,7 @@ var ship = new function () {
                 ship.models.lblErrorRemark,
                 ship.data.messages.remarkMaxLength
             );
+            $(ship.models.classErrorRemarkInput).addClass('has-error');
         }
 
         // Check max length charge register
@@ -314,6 +337,7 @@ var ship = new function () {
                 ship.models.lblErrorChargeRegister,
                 ship.data.messages.chargeRegisterkMaxLength
             );
+            $(ship.models.classErrorSpotRegisterInput).addClass('has-error');
         }
 
         // Check max length charge create data
@@ -324,6 +348,7 @@ var ship = new function () {
                 ship.models.lblErrorChargeCreateData,
                 ship.data.messages.chargeCreateDatakMaxLength
             );
+            $(ship.models.classErrorSpotCreateDataInput).addClass('has-error');
         }
 
         let statusReturn = this.flagValidator;
@@ -370,6 +395,15 @@ var ship = new function () {
         $(ship.models.classErrorChargeCreateData).css({'display': 'none'});
 
         $(ship.models.classSuccess).css({'display': 'none'});
+
+        $(ship.models.lblWarningDuplicate).css({'display': 'none'});
+
+        // Remove class hight light error
+        $(ship.models.classErrorStartDateInput).removeClass('has-error');
+        $(ship.models.classErrorEndDateInput).removeClass('has-error');
+        $(ship.models.classErrorRemarkInput).removeClass('has-error');
+        $(ship.models.classErrorSpotRegisterInput).removeClass('has-error');
+        $(ship.models.classErrorSpotCreateDataInput).removeClass('has-error');
     }
 
     /**
@@ -397,11 +431,11 @@ var ship = new function () {
 
                         let data = {
                             serviceId: $(ship.models.slbServieName).val(),
+                            serviceName: $(ship.models.slbServieName).find('option:selected').text(),
+                            version: '1,0',
+                            price: ship.data.serviceData[$(ship.models.slbServieName).val()].price,
                             startDate: $(ship.models.txtStartDate).val(),
                             endDate: $(ship.models.txtEndDate).val(),
-                            price: ship.data.serviceData[$(ship.models.slbServieName).val()].price,
-                            chargeRegister: $(ship.models.txtChargeRegister).val(),
-                            chargeCreateData: $(ship.models.txtChargeCreateData).val(),
                         }
 
                         let str = '';
@@ -425,13 +459,15 @@ var ship = new function () {
                             startDate: $(ship.models.txtStartDate).val(),
                             endDate: $(ship.models.txtEndDate).val(),
                             remark: $(ship.models.txtRemark).val(),
-                            spotRegisterId: 1,
+                            spotRegisterId: $(ship.models.txtChargeRegister).attr('data-id'),
                             chargeRegister: $(ship.models.txtChargeRegister).val(),
-                            spotCreateDataId: 2,
+                            spotCreateDataId: $(ship.models.txtChargeCreateData).attr('data-id'),
                             chargeCreateData: $(ship.models.txtChargeCreateData).val(),
                         }
 
                         $(ship.models.areaPushService).append(ship.appendFormHidden(dataAppend));
+                    } else {
+                        $(ship.models.lblWarningDuplicate).css({'display': 'block'});
                     }
                 }
             }
@@ -475,4 +511,5 @@ $(document).ready(function () {
     ship.selectNation();
     ship.selectService();
     ship.addService();
+    ship.events.closeAddService();
 });

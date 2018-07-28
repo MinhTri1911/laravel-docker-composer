@@ -8,7 +8,7 @@
 
 Route::group(['middleware' => 'auth'], function() {
     Route::resource('/company', 'CompanyController', [
-        'only' => ['index', 'create', 'edit'],
+        'only' => ['index', 'create', 'edit', 'store'],
         'middleware' => [
             'index' => 'prevent-history',
         ],

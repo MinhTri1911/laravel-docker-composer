@@ -5,7 +5,7 @@
  * Handle business Billing paper screen
  *
  * @package App\Business;
- * @author Rikkei.quangpm
+ * @author Rikkei.Quangpm
  * @date 2018/07/11
  */
 
@@ -102,6 +102,9 @@ class BillingPaperBusiness
 
             $models['resultSearch'] = $this->_getListSearchBilling($conditionSearch);
 
+            // Set data number of record to display
+            $models['numberRecord'] = Constant::ARY_PAGINATION_PER_PAGE;
+
             return $models;
         } catch (Exception $e) {
             $models['resultSearch'] = [];
@@ -120,16 +123,18 @@ class BillingPaperBusiness
     private function _initConditionScreen($models)
     {
         // Set data selectbox status
-        $models['statusSelector'] = [0 => 'すべて',
+        $models['statusSelector'] = [
+            0 => 'すべて',
             1 => '未作成',
             2 => '発行待ち',
             3 => '発行済'
         ];
 
         // Set data selectbox status approve
-        $models['statusApproveSelector'] = [0 => 'すべて',
-            1 => '承認待ち',
-            2 => '承認済み',
+        $models['statusApproveSelector'] = [
+            0 => 'すべて',
+            1 => '承認済み',
+            2 => '承認待ち',
             3 => '却下'
         ];
 
@@ -157,40 +162,32 @@ class BillingPaperBusiness
         // Get list search billing
         $listSearchBilling = $this->_billingPaperRepository->getListSearchBilling($conditionSearch);
 
-        $monthNowInt = (integer)date('m'); // Current month
         $monthNow = date('Y-m') . '-01'; // Date 1 of current month
 
         // Process display data
         foreach ($listSearchBilling as $billing) {
 
             // Check month billing and handle data for display
-            $listMonthBilling = explode(',', $billing->month_billing);
-            $isBilling = $this->_handleDataBilling($billing, $listMonthBilling, $monthNowInt, $monthNow);
+            $billing = $this->_handleDataBilling($billing, $monthNow);
 
-            // Remove object if no billing
-            if ($isBilling === null) {
-                unset($billing);
+            // Set text column money in screen
+            $billing->total_money_yen = number_format($billing->total_money, 0);
 
+            // Set text status billing paper
+            // Case waiting approve
+            if ($billing->approved_flag == Constant::STATUS_WAITING_APPROVE
+                || $billing->approved_flag == Constant::STATUS_REJECT_APPROVE) {
+                $billing->statusString = '';
             } else {
-                // Set text column money in screen
-                $billing->total_money_yen = number_format($billing->total_money, 0);
+                $billing->statusString = Constant::ARR_BILLING_PAPER_STATUS[$billing->status];
+            }
 
-                // Set text status billing paper
-                // Case waiting approve
-                if ($billing->approved_flag == Constant::STATUS_WAITING_APPROVE
-                    || $billing->approved_flag == Constant::STATUS_REJECT_APPROVE) {
-                    $billing->statusString = '';
-                } else {
-                    $billing->statusString = Constant::ARR_BILLING_PAPER_STATUS[$billing->status];
-                }
-
-                // Set text status approve
-                // Case no create billing and approved
-                if ($billing->approved_flag === null) {
-                    $billing->approveString = '';
-                } else {
-                    $billing->approveString = Constant::APPROVED_O[$billing->approved_flag];
-                }
+            // Set text status approve
+            // Case no create billing and approved
+            if ($billing->approved_flag === null) {
+                $billing->approveString = '';
+            } else {
+                $billing->approveString = Constant::APPROVED_O[$billing->approved_flag];
             }
         }
 
@@ -202,39 +199,37 @@ class BillingPaperBusiness
      *
      * @access private
      * @param object $billing Object billing paper
-     * @param arrray $listMonthBilling Object billing paper
-     * @param int $monthNowInt Current month
      * @param Date $monthNow Date 1 of current month
      * @return null|object
      */
-    private function _handleDataBilling($billing, $listMonthBilling, $monthNowInt, $monthNow)
+    private function _handleDataBilling($billing, $monthNow)
     {
-        foreach ($listMonthBilling as $montBilling) {
 
-            // Month billing is current month: Billing paper create or waitng delivery or Delivered
-            if ($monthNowInt == (integer)trim($montBilling)
-                || $billing->status == Constant::STATUS_BILLING_WAITING_DELIVERY
-                || ($billing->status == Constant::STATUS_BILLING_DELIVERED)) {
+        // Set payment deadline
+        $monthChange = $billing->payment_deadline_no + 1;
+        $monthDeadline = strtotime(date('Y-m-d', strtotime($monthNow)) . ' +' . $monthChange . ' month -1 days');
 
-                // Set payment deadline
-                $monthChange = $billing->payment_deadline_no + 1;
-                $monthDeadline = strtotime(date('Y-m-d', strtotime($monthNow)) . ' +' . $monthChange . ' month -1 days');
+        // Billing paper create or waitng delivery or Delivered
+        if ($billing->status == Constant::STATUS_BILLING_WAITING_DELIVERY
+            || ($billing->status == Constant::STATUS_BILLING_DELIVERED)) {
 
-                $billing->payment_deadline_month = date('Y/m', $monthDeadline);
-                $billing->payment_due_date = date('Y-m-d', $monthDeadline);
+            // Get month and year from date string
+            $billing->payment_deadline_month = date('Y/m', strtotime($billing->payment_due_date));
 
-                // Set total money
-                if ($billing->approved_flag === null || $billing->approved_flag == Constant::STATUS_REJECT_APPROVE) {
-                    // Set money for insert
-                    $billing->total_amount_billing = $billing->total_amount_billing * 1.08 + $billing->charge_delivery;
-                    $billing->total_money = $billing->total_money * 1.08 + $billing->charge_delivery;
-                }
+        } else {
+            // Set payment deadline case not yet approved and waiting delivered
+            $billing->payment_deadline_month = date('Y/m', $monthDeadline);
+            $billing->payment_due_date = date('Y-m-d', $monthDeadline);
 
-                return $billing;
+            // Set total money
+            if ($billing->approved_flag === null || $billing->approved_flag == Constant::STATUS_REJECT_APPROVE) {
+                // Set money for insert
+                $billing->total_amount_billing = $billing->total_amount_billing * 1.08 + $billing->charge_delivery;
+                $billing->total_money = $billing->total_money * 1.08 + $billing->charge_delivery;
             }
         }
 
-        return null;
+        return $billing;
     }
 
     /**
@@ -315,12 +310,10 @@ class BillingPaperBusiness
         }
 
         $billingPaperData = $billingPaperDatabase[0]; // Set object billing paper
-        $monthNowInt = (integer)date('m'); // Current month
         $monthNow = date('Y-m') . '-01'; // Date 1 of current month
 
-        // Check month billing and handle data for create billing paper
-        $listMonthBilling = explode(',', $billingPaperData->month_billing);
-        $billingPaper = $this->_handleDataBilling($billingPaperData, $listMonthBilling, $monthNowInt, $monthNow);
+        // Handle data for create billing paper
+        $billingPaper = $this->_handleDataBilling($billingPaperData, $monthNow);
 
         // Check month billing fail
         if ($billingPaper === null) {
@@ -365,7 +358,7 @@ class BillingPaperBusiness
             $result = [];
 
             // Get data billing paper
-            $billingPaperDatabase = $this->_billingPaperRepository->getBillingPaperDeliveryByCompanyId($model['companyId']);
+            $billingPaperDatabase = $this->_billingPaperRepository->getBillingPaperDeliveryByHistoryBillingId($model['historyBillingId']);
 
             if (count($billingPaperDatabase) == 0) {
                 return [
@@ -373,8 +366,8 @@ class BillingPaperBusiness
                 ];
             }
 
-            $billingPaper = $billingPaperDatabase[0];
-            $billingPaper->user_login_id = Auth::id();
+            // Prepare data for update delivery
+            $billingPaper = $this->_prepareDataDelivery($billingPaperDatabase[0]);
             $result['billing_method'] = $billingPaper->method;
 
             // Method billing is Print PDF
@@ -414,6 +407,30 @@ class BillingPaperBusiness
                 'error_message' => Lang::get('common-message.error.E002')
             ];
         }
+    }
+
+    /**
+     * Prepare data for update delivery
+     *
+     * @access private
+     * @param object $billingPaper Object billing paper
+     * @return object
+     */
+    private function _prepareDataDelivery($billingPaper)
+    {
+        $monthNow = date('Y-m') . '-01'; // Date 1 of current month
+
+        // Set payment deadline
+        if ($billingPaper->delivered_flag == Constant::DELIVERY_FLAG_FALSE) {
+            $monthChange = $billingPaper->payment_deadline_no + 1;
+            $monthDeadline = strtotime(date('Y-m-d', strtotime($monthNow)) . ' +' . $monthChange . ' month -1 days');
+            $billingPaper->payment_due_date = date('Y-m-d', $monthDeadline);
+        }
+
+        // Set user login
+        $billingPaper->user_login_id = Auth::id();
+
+        return $billingPaper;
     }
 
     /**

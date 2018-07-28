@@ -6,7 +6,6 @@ $(function () {
             minScrollbarLength: 90
         });
     }
-
 });
 
 
@@ -19,6 +18,4 @@ $(document).ready(function () {
         Events.separateComma($(this));
     });
     
-    
 });
-

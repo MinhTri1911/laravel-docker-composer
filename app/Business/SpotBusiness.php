@@ -133,7 +133,9 @@ class SpotBusiness
             return true;
         }
 
-        $spots = $this->_mSpotInterface->getExistsSpotWithCurrency($companyId);
+        $spots = $this->_mSpotInterface->getExistsSpotTypeWithCurrency($companyId, [
+            Constant::SPOT_TYPE_CREATE_DATA, Constant::SPOT_TYPE_REGISTER
+        ], ['m_spot.id']);
         $spotsExists = array_column($spots->toArray(), 'id');
 
         return $this->checkArrayExists($spotIds, $spotsExists);

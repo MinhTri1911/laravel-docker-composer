@@ -223,7 +223,8 @@ class ContractBusiness {
 
         // If contract with status approved flag is waiting approve, don't update column updated at and revision number
         // Else update column updated at equal now datetime and revision number up to 0.1
-        if (is_null($contract->contract_updated_at) && $contract->contract_approved_flag == Constant::STATUS_REJECT_APPROVE) {
+        if (is_null($contract->contract_updated_at) 
+                && $contract->contract_approved_flag == Constant::STATUS_REJECT_APPROVE) {
             $dataUpdate['updated_at'] = null;
         } else {
             $dataReasonRejectJson['revision_number'] =  $contract->contract_revision_number + 0.1;
@@ -292,5 +293,45 @@ class ContractBusiness {
             return $this->_contractInterface->insertSpotForShipContract($dataInsert);
         }
         return false;
+    }
+
+    /**
+     * Add Rule validate request date time start and end of contract
+     * 
+     * @access public
+     * @return array [Rule validate start and end date of contract]
+     */
+    public function addValidateDateContract()
+    {
+        $ruleValidate = [];
+
+        $idContract = request()->route()->parameter('idContract');
+
+        if (is_null($idContract)) {
+            return array();
+        }
+
+        $contract = $this->_contractInterface->find($idContract);
+
+        if (is_null($contract)) {
+            return array();
+        }
+
+        // Contract is unactive
+        if ($contract->start_date->format('Y-m-d') > date('Y-m-d')) {
+            $ruleValidate = [
+                'startDate' => 'required|date|date_format:Y/m/d|after_or_equal:'.date('Y/m/d'),
+                'endDate' => 'required|date|date_format:Y/m/d|after_date_custom:startDate'
+            ];
+
+        // Contract was activated
+        } else {
+            $ruleValidate = [
+                'startDate' => 'required|date|date_format:Y/m/d|after_or_equal:'.$contract->start_date->format('Y/m/d').'|before_or_equal:'.$contract->start_date->format('Y/m/t'),
+                'endDate' => 'required|date|date_format:Y/m/d|after_date_custom:startDate|after_or_equal:'.date('Y/m/d')
+            ];
+        }
+
+        return $ruleValidate;
     }
 }

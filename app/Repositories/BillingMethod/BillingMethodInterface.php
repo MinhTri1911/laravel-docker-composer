@@ -20,4 +20,12 @@ interface BillingMethodInterface
      * @return Collection
      */
     public function getBillingMethodByCurrency($currencyId, $columns = ['*']);
+
+    /**
+     * Function get all billing method
+     *
+     * @param array $columns
+     * @return Collection
+     */
+    public function getAllBillingMethod($columns = ['*']);
 }

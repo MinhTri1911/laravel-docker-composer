@@ -77,7 +77,11 @@ class RepositoryServiceProvider extends ServiceProvider {
             'classification' => [
                 'interface' => \App\Repositories\Classification\ClassificationInterface::class,
                 'repository' => \App\Repositories\Classification\ClassificationRepository::class
-            ]
+            ],
+            'companyOperation' => [
+                'interface' => \App\Repositories\CompanyOperation\CompanyOpeInterface::class,
+                'repository' => \App\Repositories\CompanyOperation\CompanyOpeRepository::class
+            ],
         ];
         foreach ($paths as $value) {
             $this->app->singleton($value['interface'], $value['repository']);

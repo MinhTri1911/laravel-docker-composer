@@ -191,61 +191,30 @@ input[name="nation"] {
   cursor: pointer;
 }
 
-.create-ship-contract,
-.create-ship {
-  .input-group{
-    width: 100%;
-    position: relative;
-    .form-control{
-        padding-right: 50px;
-
-    }
-    .input-group-addon {
-        position: absolute;
-        width: $input-height-base;
-        right: 4px;
-        top: 4px;
-        bottom: 4px;
-        z-index: 3;
-        background: $color-blue-border;
-        color: $color-blue-text;
-        border-radius: 0;
-        border: 1px solid $color-blue-border;
-        line-height: $input-height-base - 10;
-        padding: 0;
-        cursor: pointer;
-         -webkit-transition: 0.2s;
-        -o-transition: 0.2s;
-        transition: 0.2s;
-        &:hover{
-            opacity: 0.8;
-            -webkit-transition: 0.2s;
-            -o-transition: 0.2s;
-            transition: 0.2s;
-        }
-
-        *{
-            line-height: 1;
-        }
-    }
-  }
-
+.create-ship-contract {
   .alert-danger {
-      display: none;
+    display: none;
   }
 
   .alert-success {
-      display: none;
+    display: none;
   }
 
   .alert-show {
-      display: block !important;
+    display: block !important;
+  }
+
+  .alert-warning {
+    display: none;
   }
 
   .alert {
     margin-bottom: 2px !important;
   }
+}
 
+.create-ship-contract,
+.create-ship {
   .modal-normal {
     .modal-row {
       padding-bottom: 10px;

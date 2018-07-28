@@ -20,14 +20,6 @@ interface ContractInterface {
     public function createContract($data);
 
     /**
-     * Function edit
-     * @access public
-     * @param arr data
-     * @return mixed
-     */
-    public function editContract($data);
-
-    /**
      * Function get contract id by company id and service id
      * @param int companyId
      * @param int serviceId
@@ -99,7 +91,7 @@ interface ContractInterface {
      * @param boolean
      */
     public function checkHaveContractWattingApproveById($companyId, $serviceIds);
-    
+
     /**
      * Get contract of ship
      *
@@ -109,33 +101,43 @@ interface ContractInterface {
      * @return mixed Illuminate\Support\Collection
      */
     public function getContract($idShip = null, $idContract = '');
-    
+
     /**
      * Get list spot of ship
-     * 
+     *
      * @access public
      * @param int $shipId
      * @param array $param
      * @return mixed Illuminate\Support\Collection
      */
     public function getSpotOfShip($shipId = null, $param = null);
-    
+
         /**
      * Get list spot of ship
-     * 
+     *
      * @access public
      * @param int $shipId
      * @param array $param
      * @return mixed Illuminate\Support\Collection
      */
     public function updateContract($contractId = null, $param = null);
-    
+
     /**
      * Insert Spot into for ship contract
-     * 
+     *
      * @access public
      * @param array $data
      * @return Illuminate/Database/Query/Builder
      */
     public function insertSpotForShipContract($data);
+
+    /**
+     * Function get contract after insert
+     *
+     * @param array $condition
+     * @param array $serviceIds
+     * @param array $columns
+     * @return Collection
+     */
+    public function getContractAfterInsert($condition, $serviceIds, $columns = ['*']);
 }

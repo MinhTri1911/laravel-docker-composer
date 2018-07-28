@@ -11,7 +11,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class MSpot
- * 
+ *
  * @property int $id
  * @property string $name_jp
  * @property string $name_en
@@ -39,6 +39,7 @@ class MSpot extends Eloquent
         'name_jp',
         'name_en',
         'currency_id',
+        'type',
         'charge',
         'del_flag',
         'created_by',

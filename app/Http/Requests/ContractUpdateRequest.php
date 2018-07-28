@@ -1,8 +1,18 @@
 <?php
 
+/**
+ * ContractUpdateRequest.php
+ * Check validate for request from client of edit contract
+ *
+ * @package App\Http\Requests
+ * @author Rikkei.DungLV
+ * @date 2018/07/22
+ */
+
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Business\ContractBusiness;
 
 class ContractUpdateRequest extends FormRequest
 {
@@ -21,30 +31,41 @@ class ContractUpdateRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(ContractBusiness $contractBusiness)
     {
-        return [
+        
+        $rulesDateContract = $contractBusiness->addValidateDateContract($this);
+        return array_merge([
+            'idService'         => 'required',
             'serviceIdHidden'   => 'exists_service',
             'chargeRegister'    => 'money',
             'chargeCreate'      => 'money',
-            'startDate'         => 'required|date|date_format:Y/m/d|after_or_equal:'.date('Y-m-d'),
-            'endDate'           => 'required|date|date_format:Y/m/d|after_date_custom:startDate|before_or_equal:'.date('Y-m-t')
-        ];
+            'remark'            => 'nullable|max:255'
+        ], $rulesDateContract);
     }
 
-    public function messages() {
+    /**
+     * List message after validate request
+     * 
+     * @return array
+     */
+    public function messages()
+    {
         return [
-            'serviceIdHidden.exists_service' => __('contract.error.service_not_exist'),
+            'idService.required'            => __('contract.error.E003', ['item' =>__('contract.lbl_service')]),
+            'serviceIdHidden.exists_service'=> __('contract.error.service_not_exist'),
             'startDate.required'            => __('contract.error.E003', ['item' =>__('contract.lbl_start')]),
             'startDate.date'                => __('contract.error.E016', ['item' =>__('contract.lbl_start')]),
             'startDate.date_format'         => __('contract.error.E005', ['item' =>__('contract.lbl_start')]),
-            'startDate.after_or_equal'      => __('contract.error.E020', ['item' =>__('contract.lbl_start'), 'value' => date('Y/m/d')]),
+            'startDate.after_or_equal'      => __('contract.error.E020', ['item' =>__('contract.lbl_start'), 'value' => ':date']),
+            'startDate.before_or_equal'     => __('contract.error.E019', ['item' =>__('contract.lbl_start'), 'value' => ':date']),
             'endDate.required'              => __('contract.error.E003', ['item' =>__('contract.lbl_end')]),
             'endDate.date'                  => __('contract.error.E016', ['item' =>__('contract.lbl_end')]),
             'endDate.date_format'           => __('contract.error.E005', ['item' =>__('contract.lbl_end')]),
             'endDate.after_date_custom'     => __('contract.error.E012'),
-            'endDate.before_or_equal'       => __('contract.error.E007', ['item' => __('contract.lbl_end'), 'monthyear' => date('Y/m')]),
+            'endDate.after_or_equal'        => __('contract.error.E020', ['item' => __('contract.lbl_end'), 'value' => date('Y/m/d')]),
+            'remark.max'                    => __('contract.error.E004', ['item' => __('contract.lbl_remarks'), 'value' => 255])
         ];
     }
-
 }
+

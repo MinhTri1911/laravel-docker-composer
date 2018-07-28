@@ -83,29 +83,9 @@
                 </div>
             </div>
 
-            <!-- Title table -->
-            <div class="block-title-tbl">
-                <div class="left-side">
-                    <label class="label-control">{{__('billing.lbl_count_record_1') . $model['resultSearch']->total() . __('billing.lbl_count_record_2')}}</label>
-                    {{ Form::hidden('total_record', $model['resultSearch']->total(), [ 'id' => 'total-record'])}}
-                </div>
-                <div class="right-side">
-                    <div class="form-group">
-                        <div class="left-side">
-                            <label class="label-control">{{__('billing.lbl_number_record_display')}}</label>
-                        </div>
-                        <div class="right-side">
-                            <div class="custom-select">
-                                {!! Form::select(0, $model['numberRecord'], null, ['class' => 'form-control', 'id' => 'slt-number-record']) !!}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div id='area-tbl-result'>
                 @include('billing.component.table.billing-paper')
             </div>
-
         </div>
     </div>
 

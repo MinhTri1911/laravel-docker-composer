@@ -4,7 +4,7 @@
  * Billing Paper management Interface
  *
  * @package App\Repositories\Billing
- * @author Rikkei.quangpm
+ * @author Rikkei.Quangpm
  * @date 2018/07/11
  */
 
@@ -62,10 +62,10 @@ interface BillingPaperInterface
      * Get billing paper delivery by company id
      *
      * @access public
-     * @param int $companyId Company Id
+     * @param int $historyBillingId History billing Id
      * @return mixed Illuminate\Support\Collection
      */
-    public function getBillingPaperDeliveryByCompanyId($companyId);
+    public function getBillingPaperDeliveryByHistoryBillingId($historyBillingId);
 
     /**
      * Update Flag delivered

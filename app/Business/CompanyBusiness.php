@@ -340,4 +340,40 @@ class CompanyBusiness
     {
         return $this->companyRepository->checkCompanyExists($companyId);
     }
+
+    /**
+     * Function init data for create company
+     *
+     * @return array
+     */
+    public function initCreateCompany()
+    {
+        $nationRepository = app(\App\Repositories\Nation\NationInterface::class);
+        $nations = $nationRepository->getAllNation(['id', 'name_jp', 'name_en']);
+
+        $currencyRepository = app(\App\Repositories\MCurrency\MCurrencyInterface::class);
+        $currency = $currencyRepository->getAllCurrency(['id', 'code']);
+
+        $currencyId = $currency->first()->id;
+        $billingMethodRepository = app(\App\Repositories\BillingMethod\BillingMethodInterface::class);
+        $billingMethod = $billingMethodRepository->getBillingMethodByCurrency($currencyId, ['id', 'name_jp', 'name_en']);
+
+        $companyOpeRepository = app(\App\Repositories\CompanyOperation\CompanyOpeInterface::class);
+        $companyOpe = $companyOpeRepository->getCompanyOperationByPermisstion(['id', 'name', 'short_name']);
+
+        $shipTypeRepository = app(\App\Repositories\ShipType\ShipTypeInterface::class);
+        $shipTypes = $shipTypeRepository->getAllShipType(['id', 'code', 'type']);
+
+        $classificationRepository = app(\App\Repositories\Classification\ClassificationInterface::class);
+        $classificationies = $classificationRepository->getAllShipClassification(['id', 'code', 'name_en','name_jp']);
+
+        return [
+            'nations' => $nations,
+            'currency' => $currency,
+            'billingMethod' => $billingMethod,
+            'companyOpe' => $companyOpe,
+            'shipTypes' => $shipTypes,
+            'classificationies' =>  $classificationies,
+        ];
+    }
 }

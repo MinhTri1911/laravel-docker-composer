@@ -15,7 +15,7 @@ use App\Models\MSpot;
 use Illuminate\Support\Facades\DB;
 use App\Common\Constant;
 
-class MSpotRepository extends EloquentRepository implements MSpotInterface 
+class MSpotRepository extends EloquentRepository implements MSpotInterface
 {
     /**
      * Set model ship for interface
@@ -71,17 +71,23 @@ class MSpotRepository extends EloquentRepository implements MSpotInterface
     public function checkExits($spot_id) {
         return $this->_model->where('id', $spot_id)->exists();
     }
-    
+
     /**
      * Function get exists spot with same currency with company
-     * @param int companyId
+     * @param int $companyId
+     * @param array $types
+     * @param array $columns
      * @return Collection
      */
-    public function getExistsSpotWithCurrency($companyId) 
-    {
-        return $this->select(['m_spot.id'])
+    public function getExistsSpotTypeWithCurrency(
+        $companyId,
+        $types = [Constant::SPOT_TYPE_REGISTER, Constant::SPOT_TYPE_CREATE_DATA],
+        $columns = ['*']
+    ) {
+        return $this->select($columns)
             ->join('m_company', 'm_company.currency_id', 'm_spot.currency_id')
             ->where('m_company.id', $companyId)
+            ->whereIn('type', $types)
             ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE)
             ->where('m_spot.del_flag', Constant::DELETE_FLAG_FALSE)
             ->get();

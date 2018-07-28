@@ -97,7 +97,7 @@ class Constant
     const HTTP_CODE_ERROR_404 = 404;
     // Status code error 500 Internal Server Error
     const HTTP_CODE_ERROR_500 = 500;
-    
+
     // Code status not found data
     const HTTP_CODE_ERROR_NF = "NotFound";
 
@@ -244,4 +244,8 @@ class Constant
     // Check button permission
     const IS_CHECK_SCREEN = 0;
     const IS_CHECK_BUTTON = 1;
+
+    // Constant spot type
+    const SPOT_TYPE_REGISTER = 1;
+    const SPOT_TYPE_CREATE_DATA = 2;
 }

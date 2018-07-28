@@ -89,7 +89,6 @@ $(function(){
             }
         }
     });
-    
 });
 
 var Handler = {
@@ -139,7 +138,6 @@ var Handler = {
         
         // Handle pjax when click limit page
         vThis.limitPage();
-        
     },
     
     /**
@@ -323,7 +321,6 @@ var Handler = {
     configDataDetail: function(el){
         var type = $(el).data('type');
         var data = {};
-        console.log(this.TYPE_CONTRACT);
         
         if(type == this.TYPE_SPOT) {
             data = {
@@ -356,11 +353,8 @@ var Handler = {
            type: 'GET',
            data: data,
            url: '/approve/show-detail',
-           success: function(res) {
-               console.log(res);
-           },
            error: function(err) {
-               
+               window.location.reload();
            }
         }).done(function(res) {
             $('#modal-detail .modal-content').html(res);
@@ -452,7 +446,6 @@ var Handler = {
     */
    handleApprove: function(data) {
        var vThis = this;
-       console.log(vThis.TYPE_CONTRACT, data, data.type);
        if (typeof data.type !== "undefined" && data.type == vThis.TYPE_CONTRACT) {
            vThis.modal.title = Approve.modalContract.title_approve || "";
        } else if (typeof data.type !== "undefined" && data.type == vThis.TYPE_SPOT) {
@@ -488,16 +481,15 @@ var Handler = {
     */
    handleReject: function(data) {
        var vThis = this;
-       if (data.type && data.type == vThis.TYPE_CONTRACT) {
+       if (typeof data.type != "undefined" && data.type == vThis.TYPE_CONTRACT) {
            vThis.modal.title = Approve.modalContract.title_reject || "";
-       } else if (data.type && data.type == vThis.TYPE_SPOT) {
+       } else if (typeof data.type != "undefined" && data.type == vThis.TYPE_SPOT) {
            vThis.modal.title = Approve.modalSpot.title_reject || "";
-       } else if (data.type && data.type == vThis.TYPE_BILLING) {
+       } else if (typeof data.type != "undefined" && data.type == vThis.TYPE_BILLING) {
            vThis.modal.title = Approve.modalBilling.title_reject || "";
        } else {
            vThis.modal.title = "Header default";
        }
-       
        $.ajax({
            type: "POST",
            url: '/approve/reject-approve',

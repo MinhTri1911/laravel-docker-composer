@@ -1,7 +1,26 @@
+<!-- Title table -->
+<div class="block-title-tbl">
+    <div class="left-side">
+        <label class="label-control">{{__('billing.lbl_count_record_1') . $model['resultSearch']->total() . __('billing.lbl_count_record_2')}}</label>
+        {{ Form::hidden('total_record', $model['resultSearch']->total(), [ 'id' => 'total-record'])}}
+    </div>
+    <div class="right-side">
+        <div class="form-group">
+            <div class="left-side">
+                <label class="label-control">{{__('billing.lbl_number_record_display')}}</label>
+            </div>
+            <div class="right-side">
+                <div class="custom-select">
+                    {!! Form::select(0, $model['numberRecord'], null, ['class' => 'form-control', 'id' => 'slt-number-record']) !!}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!--Table company billing-->
 <div id="block-tbl-company">
-    <table class="table table-blue table-list-company ">
+    <table class="table table-blue table-list-company resizable">
         <thead>
             <tr>
                 <th rowspan="2" class="tbl-row-pick rowspan2"></th>
@@ -26,8 +45,8 @@
                 <tr>
                     <td class="tbl-row-pick">
                         <div class="custom-radio">
-                            {{ Form::radio('rdo_company', $row->company_id, false, ['class' => 'hidden btn-radio-company', 'id' => 'company-id-' . $row->company_id]) }}
-                            <label for="company-id-{{$row->company_id}}" class='lbl-radio-company'></label>
+                            {{ Form::radio('rdo_company', $row->company_id, false, ['hb-id' => $row->history_billing_id, 'id' => 'company-id-' . $loop->iteration,'class' => 'hidden btn-radio-company']) }}
+                            <label for="company-id-{{$loop->iteration}}" class='lbl-radio-company'></label>
                         </div>
                     </td>
                     <td class="tbl-row-no">{{ $loop->iteration}}</td>
@@ -92,7 +111,7 @@
     </div>
     <div class="process-billing">
         <div class="right-side">
-            {!! Form::button( __('billing.btn_back'), ["class"=>"btn btn-blue-light btn-w150", 'id' => 'btn-back', 'tabindex' => 102]) !!}
+            <a href="{{route('company.index')}}" id='btn-back' class='btn btn-blue-light btn-w150' tabindex="102">{{__('billing.btn_back')}}</a>
             {!! Form::button( __('billing.btn_create'), ["class"=>"btn btn-green-dark btn-w150", 'id' => 'btn-create', 'tabindex' => 103]) !!}
             {!! Form::button( __('billing.btn_export_csv'), ["class"=>"btn btn-blue-dark btn-w150", 'id' => 'btn-export-csv', 'tabindex' => 104]) !!}
             {!! Form::button( __('billing.btn_delivery'), ["class"=>"btn btn-green-dark btn-w150", 'id' => 'btn-delivery', 'tabindex' => 105]) !!}

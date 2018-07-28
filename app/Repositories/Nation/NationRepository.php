@@ -47,7 +47,7 @@ class NationRepository extends EloquentRepository implements NationInterface
             ->select($columns)
             ->where(function ($query) use ($id) {
                 return $query->where('id', $id)
-                ->where('del_flag', Constant::DELETE_FLAG_FALSE);
+                    ->where('del_flag', Constant::DELETE_FLAG_FALSE);
             })
             ->orWhere(function ($query) use ($id, $name) {
                 if (!$id) {

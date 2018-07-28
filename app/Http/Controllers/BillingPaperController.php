@@ -3,7 +3,7 @@
  * Create billing paper controller
  *
  * @package App\Http\Controllers
- * @author Rikkei.quangpm
+ * @author Rikkei.Quangpm
  * @date 2018/06/19
  */
 
@@ -138,7 +138,7 @@ class BillingPaperController extends Controller
     {
 
         // Check empty companyId
-        if (empty($request->deliveryBillingPaper['companyId'])) {
+        if (empty($request->deliveryBillingPaper['historyBillingId'])) {
             return response()->json([
                 'code' => Constant::HTTP_CODE_ERROR_404,
                 'title' => Lang::get('billing.title_popup_delivery'),

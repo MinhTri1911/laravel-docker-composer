@@ -298,6 +298,10 @@ and open the template in the editor.
 */
 
 .create-company, .update-company {
+  .alert-danger {
+    display: none;
+  }
+
   .block-input {
     display: flex;
 
@@ -307,6 +311,54 @@ and open the template in the editor.
 
     .form-input {
       width: 75%;
+    }
+  }
+
+  .modal-normal {
+    .modal-row {
+      padding-bottom: 10px;
+      &::after{
+          content: '';
+          display: table;
+          clear: both;
+      }
+      .modal-left{
+          float: left;
+          width: 60%;
+      }
+      .modal-right{
+          float: right;
+          width: 40%;
+      }
+    }
+
+    table {
+      .tbody-popup{
+        max-height: 300px;
+        overflow-y: auto;
+        tr, th, td{
+          text-align: center;
+        }
+      }
+      .col-nation-id {
+        width: 20%;
+      }
+
+      .col-nation-name {
+        width: 70%;
+      }
+
+      .col-action {
+        width: 10%;
+      }
+
+      .col-currency-id {
+        width: 20%;
+      }
+
+      .col-currency-code {
+        width: 70%;
+      }
     }
   }
 }

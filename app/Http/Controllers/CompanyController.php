@@ -194,7 +194,25 @@ class CompanyController extends Controller
      */
     public function create()
     {
-        return view('company.create');
+        try {
+            $data = $this->_companyBusiness->initCreateCompany();
+
+            return view('company.create', [
+                'companyOpe' => $data['companyOpe'],
+                'nations' => $data['nations'],
+                'currency' => $data['currency'],
+                'billingMethod' => $data['billingMethod'],
+                'shipTypes' => $data['shipTypes'],
+                'classificationies' => $data['classificationies'],
+            ]);
+        } catch (\Exception $e) {
+            abort(500);
+        }
+    }
+
+    public function store(Request $request)
+    {
+
     }
 
     /**

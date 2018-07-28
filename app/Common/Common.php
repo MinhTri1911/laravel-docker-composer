@@ -4,7 +4,7 @@
  * Configure logging common
  *
  * @package App\Common
- * @author Rikkei.quangpm
+ * @author Rikkei.Quangpm
  * @date 2018/06/19
 */
 

@@ -185,8 +185,7 @@ class ShipContractController extends Controller
         try {
             $data = $this->_shipContractBusiness->initCreateShipContract($request->get('company-id'));
         } catch (\Exception $e) {
-            // abort(404);
-            dd($e);
+            abort(404);
         }
 
         return view('ship.create-ship-contract', [
@@ -197,6 +196,7 @@ class ShipContractController extends Controller
             'companyId' => $request->get('company-id'),
             'services' => $data['services'],
             'currencyId' => $request->get('currency-id'),
+            'spotDefault' => $data['spotDefault'],
         ]);
     }
 

@@ -7,11 +7,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  *
- * @author quangpm
+ * @author Rikkei.Quangpm
  * @date 2018/06/19
 */
 
-Route::group([ 'prefix' => 'billing', 'as' => 'billing.'], function () {
+Route::group(['middleware' => 'auth', 'prefix' => 'billing', 'as' => 'billing.'], function () {
 
     // Index create billing
     Route::get('/', 'BillingPaperController@index')->name('index');
@@ -33,4 +33,5 @@ Route::group([ 'prefix' => 'billing', 'as' => 'billing.'], function () {
 Route::group(['middleware' => 'auth', 'prefix' => 'billing-method','as' => 'billing.method.'], function () {
     Route::get('/{id}', 'BillingMethodCompanyController@show')->name('show');
     Route::post('/update', 'BillingMethodCompanyController@update')->name('update');
+    Route::get('/get', 'BillingMethodCompanyController@get')->name('get.by.currency');
 });

@@ -39,4 +39,15 @@ class BillingMethodRepository extends EloquentRepository implements BillingMetho
             ->where('del_flag', Constant::DELETE_FLAG_FALSE)
             ->get();
     }
+
+    /**
+     * Function get all billing method
+     *
+     * @param array $columns
+     * @return Collection
+     */
+    public function getAllBillingMethod($columns = ['*'])
+    {
+        return $this->where('del_flag', Constant::DELETE_FLAG_FALSE)->get($columns);
+    }
 }

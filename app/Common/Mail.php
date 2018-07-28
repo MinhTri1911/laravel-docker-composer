@@ -4,7 +4,7 @@
  * Configure mail common
  *
  * @package App\Common
- * @author Rikkei.quangpm
+ * @author Rikkei.Quangpm
  * @date 2018/07/19
 */
 

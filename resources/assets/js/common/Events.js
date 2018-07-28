@@ -83,6 +83,36 @@ var Events = {
         return value
                 .replace(/\D/g, "")
                 .replace(/\B(?=(\d{3})+(?!\d)\.?)/g, ",");
+    },
+
+    /**
+     * Initialize select2 after render
+     * @returns void
+     */
+    initSelect2: function () {
+        $(".custom-select select" ).select2({
+            theme: "bootstrap",
+            width: '100%',
+            minimumResultsForSearch: Infinity,
+            allowClear: true
+        });
+
+        var ps;
+
+        $(".custom-select select, .custom-select-table:not(.multiple-select) .table-select").on("select2:open", function(e) {
+            if (ps) ps.destroy();
+
+            var ps;
+            setTimeout(function(){
+                ps = new PerfectScrollbar('.select2-container .select2-results > .select2-results__options', {
+                    minScrollbarLength: 90
+                })
+            }, 5);
+        }).on("select2:close", function(e) {
+            if (ps) ps.destroy();
+
+            ps = null;
+        });
     }
 };
 

@@ -599,7 +599,7 @@ class ShipRepository extends EloquentRepository implements ShipInterface
      * Get list nation
      *
      * @access public
-     * @return array
+     * @return mixed Laravel collection
      */
     public function getListNation()
     {

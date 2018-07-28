@@ -39,7 +39,7 @@ class NationController extends Controller
             $request->get('search-nation-name')
         );
 
-        $response = view('common.table-nation-search', ['nations' => $dataSearch])->render();
+        $response = view('common.table-nation-search', ['nations' => $dataSearch, 'type' => $request->get('search-type')])->render();
 
         return $this->returnJson(Constant::HTTP_CODE_SUCCESS, '', [
             'dataTable' => $response,

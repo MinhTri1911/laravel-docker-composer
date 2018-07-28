@@ -96,7 +96,6 @@ var billingPaper = new function () {
     };
     window.localStorage.setItem(ID_SCREEN, JSON.stringify(param));
 
-    //  billingPaper.events.initScrollbar();
     billingPaper.events.initPopup();
 
     // Event change combobox
@@ -158,20 +157,6 @@ var billingPaper = new function () {
   };
 
   this.events = {
-
-    /**
-     * Init scrollbar
-     *
-     * @returns void
-     */
-    initScrollbar: function () {
-      var scroll;
-
-      scroll = document.querySelector('#block-tbl-company');
-      new PerfectScrollbar(scroll, function () {
-        table.style.width = '880px'
-      });
-    },
 
     /**
      * Init popup
@@ -264,7 +249,8 @@ var billingPaper = new function () {
           'endYear': $(billingPaper.models.sltEndYear).val(),
           'endMonth': $(billingPaper.models.sltEndMonth).val(),
           'numberRecord': $(billingPaper.models.sltNumberRecord).val()
-        }
+        },
+        'page' : 1
       };
 
       // Ajax
@@ -274,12 +260,8 @@ var billingPaper = new function () {
           // Set localstorage
           window.localStorage.setItem(ID_SCREEN, JSON.stringify(param));
 
-          // Append data
-          $(billingPaper.models.areaResultSearch).empty();
-          $(billingPaper.models.areaResultSearch).append(res.html);
-
-          // Set display item
-          billingPaper.events.displayProcessBilling();
+          //Render partialview after call ajax
+          billingPaper.events.renderPartialView(res);
         }
       })
         .fail(function (res) {
@@ -303,8 +285,8 @@ var billingPaper = new function () {
       // Get condition search from screen
       if (param !== null) {
         if (itemType == 1) {
-          param['page'] = 1;
           param['conditionSearch']['numberRecord'] = $(billingPaper.models.sltNumberRecord).val();
+          param['page'] = 1;
         } else {
           param['page'] = $(item).html();
         }
@@ -316,12 +298,8 @@ var billingPaper = new function () {
             // Set localstorage
             window.localStorage.setItem(ID_SCREEN, JSON.stringify(param));
 
-            // Append data
-            $(billingPaper.models.areaResultSearch).empty();
-            $(billingPaper.models.areaResultSearch).append(res.html);
-
-            // Set display item
-            billingPaper.events.displayProcessBilling();
+           //Render partialview after call ajax
+            billingPaper.events.renderPartialView(res);
 
             // Set radio checked
             billingPaper.events.autoCheckedRadioCompany(param['companyId']);
@@ -387,14 +365,8 @@ var billingPaper = new function () {
           $(billingPaper.models.popupInform).modal('show');
         }
 
-        // Append data
-        if (res.html !== undefined) {
-          $(billingPaper.models.areaResultSearch).empty();
-          $(billingPaper.models.areaResultSearch).append(res.html);
-        }
-
-        // Set display item
-        billingPaper.events.displayProcessBilling();
+        //Render partialview after call ajax
+        billingPaper.events.renderPartialView(res);
       })
         .fail(function (res) {
           // Set display item
@@ -432,22 +404,19 @@ var billingPaper = new function () {
      */
     deliverySubmit: function () {
 
-      var companyId = $("input:radio[name='rdo_company']:checked").val();
+      var historyBillingId = $("input:radio[name='rdo_company']:checked").attr('hb-id');
 
       // Create parameter
       var param = JSON.parse(window.localStorage.getItem(ID_SCREEN));
       param['deliveryBillingPaper'] = {
-        'companyId': companyId
+        'historyBillingId' : historyBillingId
       };
 
       // Ajax
       $.post(billingPaper.url.deliveryBillingPaper, param, function (res) {
 
-        // Append data
-        if (res.html !== undefined) {
-          $(billingPaper.models.areaResultSearch).empty();
-          $(billingPaper.models.areaResultSearch).append(res.html);
-        }
+        //Render partialview after call ajax
+        billingPaper.events.renderPartialView(res);
 
         if (res.code === HTTP_SUCCESS) {
 
@@ -468,8 +437,6 @@ var billingPaper = new function () {
           $(billingPaper.models.popupInform).modal('show');
         }
 
-        // Set display item
-        billingPaper.events.displayProcessBilling();
       })
         .fail(function (res) {
           // Set display item
@@ -522,7 +489,28 @@ var billingPaper = new function () {
           billingPaper.events.displayProcessBilling();
           return;
         });
+    },
+    
+    /**
+     * Render partialview after call ajax
+     * 
+     * @param object res response
+     * @returns void
+     */
+    renderPartialView: function (res){
+      // Append data
+      if (res.html !== undefined) {
+        $(billingPaper.models.areaResultSearch).empty();
+        $(billingPaper.models.areaResultSearch).append(res.html);
+      }
+
+      // Set display item
+      billingPaper.events.displayProcessBilling();
+
+      // Init select2
+      Events.initSelect2();
     }
+
   };
 };
 

@@ -133,5 +133,9 @@ return [
     'btn_back_to_list' => '戻る',
     'btn_create_company' => '新規登録',
     'btn_update_company' => '更新',
+
+    // Popup search currency
+    'lbl_title_currency_id' => 'currency id',
+    'lbl_title_currency_code' => 'currency code',
 ];
 

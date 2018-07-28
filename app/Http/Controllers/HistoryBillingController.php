@@ -3,7 +3,7 @@
  * History billing controller
  *
  * @package App\Http\Controllers
- * @author quangpm
+ * @author Rikkei.Quangpm
  * @date 2018/06/27
 */
 

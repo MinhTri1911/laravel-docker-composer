@@ -128,7 +128,7 @@
                             </div>
 
                             <div class="col-md-8">
-                                <div class="input-group">
+                                <div class="input-group-search-popup">
                                     {{ Form::text('nation', null, [
                                             'class' => 'form-control search-nation',
                                             'placeholder' => trans('ship.lbl_title_nation'),
@@ -384,17 +384,19 @@
                     <div class="row">
                         <div class="col-md-8 col-md-offset-2 mg-t-20">
                             <div class="block-button">
+                                @if (Roles::checkPermission(Constant::ALLOW_SHIP_CREATE, Constant::IS_CHECK_BUTTON))
                                 {{ Form::button(trans('ship.btn_create_ship'), [
                                         'class' => 'btn btn-green-dark btn-w150 btn-right',
                                         'type' => 'submit',
                                         'tabindex' => 20,
                                     ])
                                 }}
-                                {{ Form::button(trans('ship.btn_back'), [
-                                        'class' => 'btn btn-gray-dark btn-w150 btn-right',
-                                        'tabindex' => 19,
-                                    ])
-                                }}
+                                @endif
+                                @php
+                                    $companyId = \Request::get('company-id');
+                                    $backUrl = !empty($companyId) ? route('ship.index') . '?company-id=' . $companyId : route('ship.index');
+                                @endphp
+                                <a href="{{ $backUrl }}" class="btn btn-gray-dark btn-w150 btn-right" tabindex="19">{{ trans('ship.btn_back') }}</a>
                             </div>
                         </div>
                     </div>

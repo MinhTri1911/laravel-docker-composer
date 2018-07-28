@@ -764,7 +764,7 @@ class ShipContractBusiness
     public function initCreateShipContract($companyId)
     {
         $companyRepository = app(\App\Repositories\Company\CompanyInterface::class);
-        $companyData = $companyRepository->findOrFail($companyId, ['id', 'name_en', 'name_jp']);
+        $companyData = $companyRepository->getCompanyDetail($companyId, ['id', 'name_en', 'name_jp']);
 
         $shipTypeRepository = app(\App\Repositories\ShipType\ShipTypeInterface::class);
         $shipTypes = $shipTypeRepository->getAllShipType([
@@ -782,7 +782,7 @@ class ShipContractBusiness
         ]);
 
         $nationRepository = app(\App\Repositories\Nation\NationInterface::class);
-        $nations = $nationRepository->getNationByIdOrName(0, '', [
+        $nations = $nationRepository->getAllNation([
             'id',
             'name_jp',
             'name_en',
@@ -791,12 +791,24 @@ class ShipContractBusiness
         $serviceRepository = app(\App\Repositories\Service\ServiceInterface::class);
         $services = $serviceRepository->getServiceValidWithCompany($companyId);
 
+        $spotRepository = app(\App\Repositories\MSpot\MSpotInterface::class);
+        $spotDefault = $spotRepository->getExistsSpotTypeWithCurrency($companyId, [
+            Constant::SPOT_TYPE_REGISTER,
+            Constant::SPOT_TYPE_CREATE_DATA
+        ], [
+            'm_spot.id',
+            'm_spot.name_jp',
+            'm_spot.name_en',
+            'm_spot.type',
+        ]);
+
         return [
             'company' => $companyData,
             'shipTypes' => $shipTypes,
             'classificationies' => $classificationies,
             'nations' => $nations,
             'services' => $services,
+            'spotDefault' => $spotDefault,
         ];
     }
 
@@ -841,7 +853,7 @@ class ShipContractBusiness
 
         // Check currency company
         if ($dataService['currency-id'] && $company['currency_id'] != $dataService['currency-id']) {
-            throw new Exception("Invalid currency id with company", Constant::HTTP_CODE_ERROR_500);
+            throw new \Exception("Invalid currency id with company", Constant::HTTP_CODE_ERROR_500);
         }
 
         $dataInsertToShip = [
@@ -865,6 +877,7 @@ class ShipContractBusiness
             'remark' => $dataShip['txt-remark'],
             'del_flag' => Constant::DELETE_FLAG_FALSE,
             'created_by' => auth()->id(),
+            'created_at' => date('Y-m-d H:i:s'),
         ];
 
         // Save ship
@@ -876,24 +889,26 @@ class ShipContractBusiness
         }
 
         // Save contract
-        $this->_storeServiceShipContract($dataService, $id);
+        $contractIds = $this->_storeServiceShipContract($dataService, $id);
 
         // Save spot
-        $this->_storeSpotShipContract($dataSpot, $id);
+        $this->_storeSpotShipContract($dataSpot, $id, array_column($contractIds, 'id'));
 
         return true;
     }
 
     /**
-     * Function create contract with ship id
+     * Function create contract with ship id and return ids contract after insert
      *
      * @param array $dataService
      * @param int $shipId
-     * @return boolean
+     * @return array
      */
     private function _storeServiceShipContract($dataService, $shipId)
     {
         $dataInsertContract = [];
+        $now = date('Y-m-d H:i:s');
+        $serviceIds = [];
 
         foreach ($dataService['service'] as $service) {
             $dataInsertContract[] = [
@@ -906,15 +921,28 @@ class ShipContractBusiness
                 'currency_id' => $dataService['currency-id'],
                 'approved_flag' => Constant::STATUS_WAITING_APPROVE,
                 'created_by' => auth()->id(),
-                'created_at' => date('Y-m-d H:i:s'),
+                'created_at' => $now,
                 'revision_number' => 1,
             ];
+
+            $serviceIds[] = $service['id'];
         }
 
         $contractRepository = app(\App\Repositories\Contract\ContractInterface::class);
         $contractRepository->insert($dataInsertContract);
 
-        return true;
+        $contractInsert = $contractRepository->getContractAfterInsert([
+            'ship_id' => $shipId,
+            'status' => Constant::STATUS_CONTRACT_ACTIVE,
+            'currency_id' => $dataService['currency-id'],
+            'approved_flag' => Constant::STATUS_WAITING_APPROVE,
+            'created_by' => auth()->id(),
+            'created_at' => $now,
+            'revision_number' => 1,
+        ], $serviceIds, ['id'])
+        ->toArray();
+
+        return $contractInsert;
     }
 
     /**
@@ -924,41 +952,40 @@ class ShipContractBusiness
      * @param int $shipId
      * @return boolean
      */
-    private function _storeSpotShipContract($dataSpot, $shipId)
+    private function _storeSpotShipContract($dataSpot, $shipId, $contractIds)
     {
         $dataInsertSpot = [];
         $now = date('Y/m/d H:i:s');
 
+        //  Reset index of array start with 0
+        $dataSpot['spot'] = array_values($dataSpot['spot']);
+        $contractIds = array_values($contractIds);
+
+        if (empty($contractIds)) {
+            return true;
+        }
+
         foreach ($dataSpot['spot'] as $index => $arrSpot) {
-            // Setting spot register
-            $dataInsertSpot[] = [
-                'spot_id' => $arrSpot[1]['id'],
-                'amount_charge' => ($arrSpot[1]['charge'] > 0) ? Common::foramtNumber($arrSpot[1]['charge']) : 0,
-                'ship_id' => $shipId,
-                'currency_id' => $dataSpot['currency-id'],
+            foreach ($arrSpot as $key => $spot) {
+                // Check charge is have value then insert
+                if (is_numeric($spot['charge']) && $spot['charge'] > 0) {
+                    // Setting spot register
+                    $dataInsertSpot[] = [
+                        'spot_id' => $spot['id'],
+                        'amount_charge' => ($spot['charge'] > 0) ? Common::foramtNumber($spot['charge']) : 0,
+                        'ship_id' => $shipId,
+                        'currency_id' => $dataSpot['currency-id'],
 
-                // Set first date of this month when create spot
-                'month_usage' => date('Y/m/01'),
-                'approved_flag' => Constant::STATUS_WAITING_APPROVE,
-                'created_by' => auth()->id(),
-                'created_at' => $now,
-                'del_flag' => Constant::DELETE_FLAG_FALSE,
-            ];
-
-            // Setting spot create data
-            $dataInsertSpot[] = [
-                'spot_id' => $arrSpot[2]['id'],
-                'amount_charge' => ($arrSpot[2]['charge'] > 0) ? Common::foramtNumber($arrSpot[2]['charge']) : 0,
-                'ship_id' => $shipId,
-                'currency_id' => $dataSpot['currency-id'],
-
-                // Set first date of this month when create spot
-                'month_usage' => date('Y/m/01'),
-                'approved_flag' => Constant::STATUS_WAITING_APPROVE,
-                'created_by' => auth()->id(),
-                'created_at' => $now,
-                'del_flag' => Constant::DELETE_FLAG_FALSE,
-            ];
+                        // Set first date of this month when create spot
+                        'month_usage' => date('Y/m/01'),
+                        'approved_flag' => Constant::STATUS_WAITING_APPROVE,
+                        'created_by' => auth()->id(),
+                        'created_at' => $now,
+                        'del_flag' => Constant::DELETE_FLAG_FALSE,
+                        // 'contract_id' => $contractIds[$index], // Đợi a Dung tạo column
+                    ];
+                }
+            }
         }
 
         $tShipSpotRepository = app(\App\Repositories\TShipSpot\TShipSpotInterface::class);

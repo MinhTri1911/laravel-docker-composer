@@ -85,4 +85,14 @@ interface CompanyInterface
      * @return boolean
      */
     public function checkCompanyExists($companyId);
+
+    /**
+     * Function get company
+     *
+     * @param int $companyId
+     * @param array $columns
+     * @throws Exception
+     * @return App\Models\MCompany
+     */
+    public function getCompanyDetail($companyId, $columns = ['*']);
 }

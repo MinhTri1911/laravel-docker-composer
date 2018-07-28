@@ -78,6 +78,5 @@ return [
     'modal' => [
         'title_search_nation' => '国家を検索しています。',
 
-        'title_search_nation_1' => '国家検索',
     ],
 ];

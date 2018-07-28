@@ -14,9 +14,9 @@ class ValidatorServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Validator::extend('money', "App\Validators\CustomValidate@validateMoneySpot", 'msg_default');
-        Validator::extend('after_date_custom', "App\Validators\CustomValidate@validateAfterDateCustom");
-        Validator::extend('exists_service', "App\Validators\CustomValidate@validateExistsService");
+        Validator::extend('money', "App\Validators\CustomValidateSpot@validateMoneySpot", 'msg_default');
+        Validator::extend('after_date_custom', "App\Validators\CustomValidateSpot@validateAfterDateCustom");
+        Validator::extend('exists_service', "App\Validators\CustomValidateSpot@validateExistsService");
     }
 
     /**

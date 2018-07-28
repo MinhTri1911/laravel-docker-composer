@@ -129,20 +129,21 @@
                         <tr>
                             <td>1</td>
                             <td>{{__('contract.lbl_spot_regist')}}</td>
-                            <td class="{{ $errors->has('chargeRegister') ? ' has-error' : '' }}">{!! Form::text('chargeRegister', old('chargeRegister'), ['tabindex' => '5','class' => 'form-control', 'placeholder' => "初期登録費"]) !!}</td>
+                            <td class="{{ $errors->has('chargeRegister') ? ' has-error' : '' }}">{!! Form::text('chargeRegister', old('chargeRegister'), ['tabindex' => '5','class' => 'form-control', 'placeholder' => __('contract.lbl_spot_regist')]) !!}</td>
                         </tr>
                         <tr>
                             <td>2</td>
                             <td>{{__('contract.lbl_spot_data')}}</td>
-                            <td class="{{ $errors->has('chargeCreate') ? ' has-error' : '' }}">{!! Form::text('chargeCreate', old('chargeCreate'), ['tabindex' => '6','class' => 'form-control', 'placeholder' => "データ作成費"]) !!}</td>
+                            <td class="{{ $errors->has('chargeCreate') ? ' has-error' : '' }}">{!! Form::text('chargeCreate', old('chargeCreate'), ['tabindex' => '6','class' => 'form-control', 'placeholder' => __('contract.lbl_spot_data')]) !!}</td>
                         </tr>
                     </tbody>
                 </table>
-                <div class="block-handle align-right">
-                    <a href="{{ route('ship.contract.detail', $ship->id) }}"><div class="btn btn-blue-light btn-w150 pull-left" tabindex=7 >{{__('contract.btn_back')}}</div></a>
-                    <button type="submit" class="btn btn-blue-dark btn-w190" tabindex=8>{{__('contract.btn_create')}}</button>
-                </div>
+                
             </div>
+        </div>
+        <div class="block-handle align-right">
+            <a href="{{ route('ship.contract.detail', $ship->id) }}"><div class="btn btn-blue-light btn-w150 pull-left" tabindex=7 >{{__('contract.btn_back')}}</div></a>
+            <button type="submit" class="btn btn-blue-dark btn-w190" tabindex=8>{{__('contract.btn_create')}}</button>
         </div>
         {{-- End List contract --}}
     </div>

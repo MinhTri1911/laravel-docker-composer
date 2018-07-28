@@ -103,6 +103,9 @@ class ShipController extends Controller
      */
     public function filterShip(Request $request)
     {
+        // Check permission
+        $this->checkPermission(Constant::ALLOW_SHIP_VIEW, Constant::IS_CHECK_SCREEN);
+
         // Check ajax error request
         if (!$request->ajax()) {
             return response()->json(['code' => Constant::HTTP_CODE_ERROR_500]);
@@ -172,6 +175,9 @@ class ShipController extends Controller
      */
     public function showCreate(Request $request)
     {
+        // Check permission
+        $this->checkPermission(Constant::ALLOW_SHIP_CREATE, Constant::IS_CHECK_SCREEN);
+
         // Initial create ship view data
         $companyId = $request->get('company-id');
         $viewData = $this->_shipBusiness->getViewData($companyId);
@@ -187,6 +193,9 @@ class ShipController extends Controller
      */
     public function create(ShipRequest $request)
     {
+        // Check permission
+        $this->checkPermission(Constant::ALLOW_SHIP_CREATE, Constant::IS_CHECK_SCREEN);
+
         // Get validated request data
         $validatedData = $request->validated();
 
