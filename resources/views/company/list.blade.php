@@ -43,6 +43,14 @@
                         }}
                     </div>
 
+                    <div class="form-input custom-select">
+                        {{ Form::select('show-type', [
+                                0 => 'Active',
+                                1 => 'Tất cả',
+                            ], 0, ['class' => 'form-control', 'tabindex' => 2, 'id' => 'show-type'])
+                        }}
+                    </div>
+
                     {{ Form::button(trans('company.btn_search_company'), [
                             'class' => 'btn btn-blue-dark btn-w150',
                             'tabindex' => 3,
@@ -61,6 +69,7 @@
                         }', [
                             'id' => 'sort-value',
                             'data-url' => $url,
+                            'data-current-sort' => 'filter-company',
                         ])
                     }}
                 </div>
@@ -120,10 +129,10 @@
                 table.style.width = '100%'
             });
 
-            const content = document.querySelector('.table-content');
-            const psHeight = new PerfectScrollbar(content, function () {
-                content.style.height = '300px'
-            });
+            // const content = document.querySelector('.table-content');
+            // const psHeight = new PerfectScrollbar(content, function () {
+            //     content.style.height = '300px'
+            // });
 
             // Remove class when init
             $('.block-table').removeClass('ps--active-y');

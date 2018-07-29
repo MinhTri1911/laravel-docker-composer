@@ -13,17 +13,20 @@
                 <table class="table table-blue table-dropdown table-result table-popup">
                     <thead>
                         <tr>
-                            <th class="col-xs-3">
+                            <th class="col-xs-2">
                                 {{ trans('company.header_company_name') }}
                             </th>
-                            <th class="col-xs-3">
+                            <th class="col-xs-2">
                                 {{ trans('company.header_system_name') }}
                             </th>
-                            <th class="col-xs-3">
+                            <th class="col-xs-2">
                                 {{ trans('company.header_ship_name') }}
                             </th>
-                            <th class="col-xs-3">
+                            <th class="col-xs-2">
                                 {{ trans('company.header_start_date') }}
+                            </th>
+                            <th class="col-xs-2">
+                                Status
                             </th>
                         </tr>
                     </thead>
@@ -36,7 +39,7 @@
                                 <tr>
 
                                     <!-- Show first row detail -->
-                                    <td rowspan="{{ $detailGroup->count() + 1 }}" class="col-xs-3">{{ $detailGroup->first()->company_jp }}</td>
+                                    <td rowspan="{{ $detailGroup->count() + 1 }}" class="col-xs-2">{{ $detailGroup->first()->company_jp }}</td>
                                 </tr>
 
                                 <!-- Init variable for count row span and tracker row for group -->
@@ -44,7 +47,27 @@
 
                                 <!-- Loop result -->
                                 @foreach ($detailGroup as $index => $company)
-
+                                    @php
+                                        $status;
+                                        
+                                        if ($company->contract_status == 0 && $company->contract_approve == 1) {
+                                            $status = 'Active';
+                                        } elseif ($company->contract_status == 0 && $company->contract_approve == 2) {
+                                            $status = 'Create New';
+                                        } elseif ($company->contract_status == 0 && $company->contract_approve == 3) {
+                                            $status = 'Reject create';
+                                        } elseif ($company->contract_status == 1 && $company->contract_approve == 1) {
+                                            $status = 'Pedding';
+                                        } elseif ($company->contract_status == 1 && $company->contract_approve == 2) {
+                                            $status = 'Pedding Watting Approve';
+                                        } elseif ($company->contract_status == 2) {
+                                            $status = 'Het han';
+                                        } elseif ($company->contract_status == 3) {
+                                            $status = 'Da bi xoa';
+                                        } elseif ($company->contract_status == null && $company->contract_approve == null) {
+                                            $status = 'N/A';
+                                        }
+                                    @endphp
                                     <!-- Count rowspan and tracker for group -->
                                     @for ($i = $index + 1; $i < $detailGroup->count(); $i++)
 
@@ -61,16 +84,18 @@
                                     <!-- Check service[index] was tracked, if not add rowspan -->
                                     @if (!in_array($index, $tracker))
                                         <tr>
-                                            <td rowspan="{{ $count }}" class="col-xs-3">{{ $company->service_jp }}</td>
-                                            <td class="col-xs-3">{{ $company->ship_name }}</td>
-                                            <td class="col-xs-3">{{ $company->contract_start_date }}</td>
+                                            <td rowspan="{{ $count }}" class="col-xs-2">{{ $company->service_jp }}</td>
+                                            <td class="col-xs-2">{{ $company->ship_name }}</td>
+                                            <td class="col-xs-2">{{ $company->contract_start_date }}</td>
+                                            <td class="col-xs-2">{{ $status }}</td>
                                         </tr>
 
                                     <!-- Check service[index] was tracked -->
                                     @elseif (in_array($index, $tracker))
                                         <tr>
-                                            <td class="col-xs-3">{{ $company->ship_name }}</td>
-                                            <td class="col-xs-3">{{ $company->contract_start_date }}</td>
+                                            <td class="col-xs-2">{{ $company->ship_name }}</td>
+                                            <td class="col-xs-2">{{ $company->contract_start_date }}</td>
+                                            <td class="col-xs-2">{{ $status }}</td>
                                         </tr>
 
                                         <!-- Check id service[index] != id service[index + 1] and reset variabel count and tracker -->

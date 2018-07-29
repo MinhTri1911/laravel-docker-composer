@@ -6,7 +6,7 @@ services:
         dockerfile: web.dockerfile
     container_name: cmaxs-server
     volumes:
-      - /cmaxs:/var/www/html
+      - ../:/var/www/html
     ports:
       - "80:80"
     links:
@@ -18,6 +18,6 @@ services:
       - "MYSQL_ROOT_PASSWORD=rikkei"
       - "MYSQL_DATABASE=cmaxs"
     volumes:
-      - /cmaxs-db:/var/lib/mysql
+      - ./db/mysql:/var/lib/mysql
     ports:
       - "3306:3306"
