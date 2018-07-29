@@ -94,9 +94,18 @@ class BillingMethodCompanyController extends Controller
     public function get(Request $request)
     {
         if (!$request->ajax()) {
-
+            return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('error.500'));
         }
 
+        try {
+            $billingMethod = $this->_billingMethodBusiness
+                ->getAllBillingMethodForCompany($request->get('currencyId'));
 
+            return $this->returnJson(Constant::HTTP_CODE_SUCCESS, '', [
+                'billing' => json_encode($billingMethod->toArray()),
+            ]);
+        } catch (\Exception $e) {
+            return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('error.500'));
+        }
     }
 }

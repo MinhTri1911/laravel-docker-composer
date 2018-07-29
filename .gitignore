@@ -17,3 +17,4 @@
 /data
 /composer.lock
 /package-lock.json
+/docker-config/db

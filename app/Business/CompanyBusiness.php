@@ -59,7 +59,7 @@ class CompanyBusiness
      * @param int orderBy asc = 0 or null / desc = 1
      * @return Paginate
      */
-    public function searchCompany($groupType = 0, $pagination = 10, $column = null, $orderBy = null)
+    public function searchCompany($groupType = 0, $pagination = 10, $column = null, $orderBy = null, $showType = 0)
     {
         // Check group type is exists if not set default group company
         if ($groupType != config('company.group_company') && $groupType != config('company.group_service')) {
@@ -75,7 +75,7 @@ class CompanyBusiness
         $orderBy = $orderBy ? 'desc' : 'asc';
 
         // Return limit companies
-        return $this->companyRepository->getListCompanyCommon($groupType)
+        return $this->companyRepository->getListCompanyCommon($groupType, $showType)
             ->groupBy([
                 !$groupType ? 'm_company.id' : 'm_service.id',
                 !$groupType ? 'm_service.id' : 'm_company.id',
@@ -107,7 +107,7 @@ class CompanyBusiness
         $param = $this->_checkValueExists($param);
         $option['sortBy'] = $option['sortBy'] ? 'desc' : 'asc';
 
-        return $this->companyRepository->getListCompanyCommon($groupType)
+        return $this->companyRepository->getListCompanyCommon($groupType, $option['showType'])
             ->conditionSearchCompany($param)
             ->groupBy([
                 !$groupType ? 'm_company.id' : 'm_service.id',
@@ -115,7 +115,8 @@ class CompanyBusiness
             ])
             ->orderBy($this->_transFormNameToColumn($option['field'], $groupType), $option['sortBy'])
             ->orderBy(!$groupType ? 'm_company.id' : 'm_service.id', $option['sortBy'])
-            ->paginate($pagination);
+            // ->paginate($pagination);
+            ->paginate(2);
     }
 
     /**

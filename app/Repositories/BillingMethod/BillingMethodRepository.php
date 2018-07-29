@@ -30,11 +30,7 @@ class BillingMethodRepository extends EloquentRepository implements BillingMetho
      */
     public function getBillingMethodByCurrency($currencyId, $columns = ['*'])
     {
-        return $this->select([
-                'id',
-                'name_jp',
-                'name_en',
-            ])
+        return $this->select($columns)
             ->where('currency_id', $currencyId)
             ->where('del_flag', Constant::DELETE_FLAG_FALSE)
             ->get();

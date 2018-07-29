@@ -33,10 +33,10 @@ function restartPs() {
         table.style.width = '100%'
     });
 
-    const content = document.querySelector('.table-content');
-    const psHeight = new PerfectScrollbar(content, function () {
-        content.style.height = '300px'
-    });
+    // const content = document.querySelector('.table-content');
+    // const psHeight = new PerfectScrollbar(content, function () {
+    //     content.style.height = '300px'
+    // });
 
     // remove class when init
     $('.block-table').removeClass('ps--active-y');
@@ -57,11 +57,14 @@ function replaceUrlPagination() {
                 'sortBy': obj[key]
             }
             break;
-        } else {
+        } 
+        
+        if ($('#sort-value').attr('data-current-sort') === key && obj[key] == 0) {
             query = {
-                'field': '',
+                'field': key,
                 'sortBy': 0
             }
+            break;
         }
     }
 
@@ -203,7 +206,7 @@ function removeStateChecked () {
 function changeTotalResultByGroup () {
     // Replace total result grouping
     $('#total-result').empty();
-    $('#total-result').append($('.table-content .table-result').attr('data-total'));
+    $('#total-result').append($('.tbody-result').attr('data-total'));
 }
 
 /**
@@ -235,8 +238,8 @@ $(document).on('click', '.pagination li a', function (event) {
     $.get(url, function (res) {
         if (res.code == 200) {
             if (res.typeRender === 'filter') {
-                $('.table-content').empty()
-                $('.table-content').append(res.table)
+                $('.tbody-result').empty();
+                $('.tbody-result').html(res.table);
             } else {
                 $('.block-table').empty()
                 $('.block-table').append(res.table)
@@ -280,12 +283,13 @@ $(document).on('click', '#btn-filter', function (event) {
     let query = {
         'group': searchValue.group,
         'load': searchValue.load,
+        'showType': searchValue.showType,
     }
 
     $.get(url, query, function (res) {
         if (res.code == 200) {
-            $('.table-content').empty();
-            $('.table-content').append(res.table);
+            $('.tbody-result').empty();
+            $('.tbody-result').html(res.table);
             $('#area-paginate').empty();
             $('#area-paginate').append(res.paginate);
             restartPs();
@@ -310,6 +314,7 @@ $('#btn-search-company').on('click', function () {
     let query = {
         'group': $('#group-type').val(),
         'load': $('#load-result').val(),
+        'showType': $('#show-type option:selected').val(),
     }
 
     // Set value select after click search
@@ -331,6 +336,9 @@ $('#btn-search-company').on('click', function () {
 
             // Replace total result
             changeTotalResultByGroup();
+
+            // Reset resize column after render table
+            ColumnResize(document.querySelector('.table-result'));
         }
     });
 });
@@ -350,6 +358,7 @@ $(document).on('click', '.th-line-one i', function (event) {
         'field': dataSort,
         'group': searchValue.group,
         'load': searchValue.load,
+        'showType': searchValue.showType,
     }
 
     // Set status for sort 1 is desc, 0 is asc
@@ -360,13 +369,16 @@ $(document).on('click', '.th-line-one i', function (event) {
         }
     }
 
+    // Reset current sort field
+    $('#sort-value').attr('data-current-sort', dataSort);
+
     $('#sort-value').val(JSON.stringify(obj));
 
     $.get(url, query, function (res) {
         if (res.code == 200) {
             if (res.typeRender === 'filter') {
-                $('.table-content').empty();
-                $('.table-content').append(res.table);
+                $('.tbody-result').empty();
+                $('.tbody-result').html(res.table);
             } else {
                 $('.block-table').empty();
                 $('.block-table').append(res.table);
@@ -411,7 +423,7 @@ $(document).on('change', '.checkbox-table', function (event) {
     }
 
     // Check if checked all checkbox in result then mark checked checkbox check all
-    if ($("input[name='cb-get-id[]']").serializeArray().length == $('.table-content .table-result').attr('data-total-checkbox')) {
+    if ($("input[name='cb-get-id[]']").serializeArray().length == $('.tbody-result').attr('data-total-checkbox')) {
         $('#cb-all').prop('checked', true);
     }
 });

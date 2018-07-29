@@ -1,8 +1,10 @@
 @php $totalResult = count(collect($companies->items())->groupBy('service_id')); @endphp
-<table class="table table-blue table-result"
+<!-- <table class="table table-blue table-result"
     data-total="{{ trans('company.lbl_total_result', ['total' => $totalResult]) }}"
-    data-total-checkbox="{{ $totalResult }}">
-    <tbody>
+    data-total-checkbox="{{ $totalResult }}"> -->
+    <tbody class="tbody-result" 
+        data-total="{{ trans('company.lbl_total_result', ['total' => $totalResult]) }}"
+        data-total-checkbox="{{ $totalResult }}">
 
         <!-- Init variable count and tracker for group -->
         @php $count = 1; $tracker = []; $groupCompanyId = []; @endphp
@@ -128,4 +130,4 @@
             @endif
         @endforeach
     </tbody>
-</table>
+<!-- </table> -->

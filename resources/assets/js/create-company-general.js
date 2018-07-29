@@ -126,19 +126,41 @@ var company = new function () {
         );
     }
 
-    this.selectCurrnecy = function () {
-        $(ship.models.btnOkeSelectCurrency).on('click', function () {
+    this.selectCurrency = function () {
+        $(this.models.btnOkeSelectCurrency).bind('click', {company: this}, function (event) {
+            console.log(123);
+            let company = event.data.company;
+
             if ($("input:radio[name='choose-currency-id']:checked").val() != undefined) {
                 let currencyCode = $("input:radio[name='choose-currency-id']:checked").attr('data-currency-code');
                 let currencyId = $("input:radio[name='choose-currency-id']:checked").val();
 
                 // Set name for text box currency
-                $(ship.models.txtCurrency).val(currencyCode);
+                $(company.models.txtCurrency).val(currencyCode);
 
                 // Set id for text box currency id
-                $(ship.models.txtCurrencyId).val(currencyId);
+                $(company.models.txtCurrencyId).val(currencyId);
 
-                $.get()
+                let query = {
+                    'currencyId': currencyId
+                }
+
+                $.get(company.urls.urlGetBillingByCurrency, query, function (res) {
+                    console.log(res);
+                    if (res.code === HTTP_SUCCESS) {
+                        console.log(JSON.parse(res.data.billing));
+                        var openDiv = "<div class='form-input custom-select'>";
+                        var openSelect = "<select class='form-control' tabindex='-1' name='slb-company-billing-method' aria-hidden='true'>";
+
+                        var closeDiv = "</div>";
+                        let str = '';
+                        let billings = JSON.parse(res.data.billing);
+
+                        for (var data in billings) {
+                            str += "<option value=" + billings[data].id + ">" + billings[data].name_jp + "</option>"
+                        }
+                    }
+                });
             }
         });
     }
@@ -160,4 +182,5 @@ $(document).ready(function () {
     company.searchCurrency();
     company.searchNationCompany();
     company.searchNationShip();
+    company.selectCurrency();
 });
