@@ -302,6 +302,13 @@ and open the template in the editor.
     display: none;
   }
 
+  .alert-warning {
+    display: none;
+  }
+  .alert {
+    margin-bottom: 2px;
+  }
+
   .block-input {
     display: flex;
 

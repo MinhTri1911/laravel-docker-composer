@@ -97,4 +97,13 @@ interface CompanyInterface
      * @return App\Models\MCompany
      */
     public function getCompanyDetail($companyId, $columns = ['*']);
+
+    /**
+     * Check exists name company
+     *
+     * @param string $name
+     * @param integer $type
+     * @return void
+     */
+    public function existsName($name, $type = 0);
 }

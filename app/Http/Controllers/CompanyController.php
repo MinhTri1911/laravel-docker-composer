@@ -331,7 +331,7 @@ class CompanyController extends Controller
         $checkExists = $this->_companyBusiness->checkExistsByName($request->get('name'), $request->get('type'));
 
         return $this->returnJson(Constant::HTTP_CODE_SUCCESS, ['error' => [
-
+                'status' => $checkExists,
             ]
         ]);
     }

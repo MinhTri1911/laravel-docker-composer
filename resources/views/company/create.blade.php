@@ -41,6 +41,21 @@
                     </label>
                 </div>
             </div>
+
+            <div class="alert alert-warning">
+                <div class="block-warning">
+                    <label class="control-label" id="lbl-warning-name-jp">
+                   </label>
+                </div>
+
+            </div>
+
+            <div class="alert alert-warning">
+                <div class="block-warning">
+                    <label class="control-label" id="lbl-warning-name-en">
+                   </label>
+                </div>
+            </div>
             <!-- end alert errors -->
             {{ Form::open(['url' => route('company.store')]) }}
                 <!-- begin form input company infomation -->

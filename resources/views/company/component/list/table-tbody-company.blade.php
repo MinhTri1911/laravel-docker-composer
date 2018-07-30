@@ -65,8 +65,8 @@
                     {{ $company->ope_phone_2 }}
                 </td>
                 <td class="col-service-name">{{ $company->service_name_jp }}</td>
-                <td class="col-license">{{ $company->license }}</td>
-                <td rowspan="{{ $count }}" class="col-toltal-license">{{ $company->total_license ?: '' }}</td>
+                <td class="col-license">{{ $company->license ?: '' }}</td>
+                <td rowspan="{{ $count }}" class="col-toltal-license">{{ $company->total_license }}</td>
                 <td rowspan="{{ $count }}" class="table-action col-action">
                     <a href="{{ route('company.show', $company->id) }}" class="btn btn-blue-dark btn-custom-sm btn-lock">
                         {{ trans('company.btn_detail') }}
