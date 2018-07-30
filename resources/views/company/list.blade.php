@@ -35,23 +35,41 @@
 
                 <div class="block-right">
                     <div class="lbl-text">
+                        <label class="label-control" for="show-type">{{ trans('company.lbl_show_type') }}</label>
+                    </div>
+                    @php
+                        $showType = [
+                            Constant::SHOW_ACTIVE => trans('company.lbl_not_show'),
+                            Constant::SHOW_NOT_ACTIVE => trans('company.lbl_show'),
+                        ];
+                    @endphp
+                    <div class="form-input custom-select">
+                        {{ Form::select('show-type', $showType, Constant::SHOW_ACTIVE, [
+                                'class' => 'form-control',
+                                'tabindex' => 2,
+                                'id' => 'show-type'
+                            ])
+                        }}
+                    </div>
+
+                    <div class="lbl-text">
                         <label class="label-control" for="paginate-record">{{ trans('company.lbl_paginate_record') }}</label>
                     </div>
                     <div class="form-input custom-select">
                         {{ Form::select('paginate-record', config('pagination.paginate_value'), config('pagination.default'),
-                            ['class' => 'form-control', 'tabindex' => 2, 'id' => 'load-result'])
+                            ['class' => 'form-control', 'tabindex' => 3, 'id' => 'load-result'])
                         }}
                     </div>
 
                     {{ Form::button(trans('company.btn_search_company'), [
                             'class' => 'btn btn-blue-dark btn-w150',
-                            'tabindex' => 3,
+                            'tabindex' => 4,
                             'name' => 'search-company',
                             'id' => 'btn-search-company',
                             'data-url' => route('company.search'),
                         ])
                     }}
-                    {{ Form::hidden('value-after-search', '{"group": "0", "load": "10"}', ['id' => 'value-after-search']) }}
+                    {{ Form::hidden('value-after-search', '{"group": "0", "load": "10", "showType": "0"}', ['id' => 'value-after-search']) }}
                     {{ Form::hidden('sort-value', '{
                             "filter-company": "0",
                             "filter-service": "0",
@@ -61,6 +79,7 @@
                         }', [
                             'id' => 'sort-value',
                             'data-url' => $url,
+                            'data-current-sort' => 'filter-company',
                         ])
                     }}
                 </div>
@@ -84,20 +103,20 @@
             <div class="row"></div>
 
             <div class="col-md-12 block-button">
-                <a class="btn btn-green-dark btn-w150" href="{{ route('company.create') }}" tabindex="19">
+                <a class="btn btn-green-dark btn-w150" href="{{ route('company.create') }}" tabindex="8">
                     {{ trans('company.go_to_create_company') }}
                 </a>
                 <a class="btn btn-green-dark btn-w150"
                     data-url="{{ route('billing.history.billing') }}"
                     href="javascript:void(0)"
                     id="history-billing"
-                    tabindex="18">
+                    tabindex="7">
                     {{ trans('company.go_to_history_billing') }}
                 </a>
-                <a class="btn btn-green-dark btn-w150" href="{{ route('billing.index') }}" tabindex="17">
+                <a class="btn btn-green-dark btn-w150" href="{{ route('billing.index') }}" tabindex="6">
                     {{ trans('company.go_to_create_billing_paper') }}
                 </a>
-                <a href="{{ route('ship.index') }}" class="btn btn-green-dark btn-w150" tabindex="16">{{ trans('company.go_to_list_ship') }}</a>
+                <a href="{{ route('ship.index') }}" class="btn btn-green-dark btn-w150" tabindex="5">{{ trans('company.go_to_list_ship') }}</a>
             </div>
 
             <div class="row"></div>
@@ -118,11 +137,6 @@
             const table = document.querySelector('.block-table');
             const psWidth = new PerfectScrollbar(table, function () {
                 table.style.width = '100%'
-            });
-
-            const content = document.querySelector('.table-content');
-            const psHeight = new PerfectScrollbar(content, function () {
-                content.style.height = '300px'
             });
 
             // Remove class when init

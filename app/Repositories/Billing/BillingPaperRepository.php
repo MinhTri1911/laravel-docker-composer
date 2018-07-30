@@ -74,6 +74,8 @@ class BillingPaperRepository extends EloquentRepository implements BillingPaperI
             })
              ->leftJoin('t_history_billing AS HB', function ($join) {
                 $join->on('HB.company_id', '=', 'C.id')
+                    ->whereRaw('YEAR(HB.claim_date) = ? AND MONTH(HB.claim_date) = ?'
+                            , [(integer)date('Y'), (integer)date('m')])
                     ->where(function ($query) {
                         $query->where('HB.approved_flag', '=', Constant::STATUS_WAITING_APPROVE)
                             ->orWhere('HB.approved_flag', '=', Constant::STATUS_REJECT_APPROVE);

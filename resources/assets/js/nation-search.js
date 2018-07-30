@@ -83,7 +83,7 @@ var ship = new function () {
                 let query = {
                     'search-nation-id': $(ship.models.nationId).val(),
                     'search-nation-name': $(ship.models.nationName).val(),
-                }
+                };
 
                 $.get(ship.urls.urlSearchNation, query, function (res) {
                     if (res.code === HTTP_SUCCESS) {
@@ -96,9 +96,9 @@ var ship = new function () {
                         });
                     }
                 })
-                    .fail(function (res) {
-                        return;
-                    });
+                .fail(function (res) {
+                    return false;
+                });
             }
         });
     };
@@ -108,9 +108,9 @@ var ship = new function () {
      */
     this.selectNation = function () {
         $(ship.models.btnOkeSelectNation).on('click', function () {
-            if ($("input:radio[name='choose-nation-id']:checked").val() != undefined) {
-                let nationName = $("input:radio[name='choose-nation-id']:checked").attr('data-nation-name');
-                let nationId = $("input:radio[name='choose-nation-id']:checked").val();
+            if ($("input:radio[name='ship-choose-nation-id']:checked").val() != undefined) {
+                let nationName = $("input:radio[name='ship-choose-nation-id']:checked").attr('data-nation-name');
+                let nationId = $("input:radio[name='ship-choose-nation-id']:checked").val();
 
                 // Set name for text box nation
                 $(ship.models.txtNation).val(nationName);
@@ -119,65 +119,19 @@ var ship = new function () {
                 $(ship.models.txtNationId).val(nationId);
             }
         });
+
+        $(ship.models.seachNation).on('click', function () {
+            if ($(ship.models.txtNationId).val() !== '') {
+                let nationId = "#choose-nation-id-" + $(ship.models.txtNationId).val() + '-ship';
+                $(nationId).prop("checked", true);
+            }
+        });
     }
 };
 
-var ObjCommon = {
-    /**
-     * Function init for multi scroll height
-     *
-     * @param {*} arrIds
-     * @return void
-     */
-    initScrollForMultiTable: function (arrIds) {
-        const table = document.querySelector('.tbody-scroll');
-        const ps = new PerfectScrollbar(table, function () {
-            table.style.height = '50px'
-        });
-
-        for (var i = 0; i < arrIds.length; i++) {
-            var obj = document.querySelector(arrIds[i]);
-            var psRender = new PerfectScrollbar(obj, function () {
-                obj.style.height = '500px'
-            });
-        }
-    },
-
-    /**
-     * Function call ajax common
-     * @param string dom
-     * @param {*} parent
-     * @param {*} data
-     * @param callback callbackSuccress
-     * @param callback callbackError
-     * @returns void
-     */
-    ajaxSearchCommon: function (dom, parent, data, callbackSuccess, callbackError) {
-        $(dom).bind('click', {parentObject: parent, content: data}, function (event) {
-            let parentObj = event.data.parentObject;
-            let data = event.data.content;
-
-            let query = data.query;
-
-            let param = {};
-            for (var par in query) {
-                param[par] = $(query[par]).val();
-            }
-
-            $.get(data.url, param, function (res) {
-                if (res.code === HTTP_SUCCESS) {
-                    callbackSuccess(res.data, parentObj);
-                } else {
-                    callbackError(res.message, parentObj);
-                }
-            });
-        });
-    },
-}
-
 $(document).ready(function () {
-    // ship.initScrollForTable();
-    // ship.showSearchNation();
-    // ship.searchNation();
-    // ship.selectNation();
+    ship.initScrollForTable();
+    ship.showSearchNation();
+    ship.searchNation();
+    ship.selectNation();
 });

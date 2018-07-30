@@ -296,6 +296,20 @@ abstract class EloquentRepository implements RepositoryInterface
     }
 
     /**
+     * Where not in
+     *
+     * @param string $column
+     * @param array $array
+     * @return mixed
+     */
+    public function whereNotIn($column, $array)
+    {
+        $this->_model = $this->_model->whereNotIn($column, $array);
+
+        return $this;
+    }
+
+    /**
      * Check result is exists
      *
      * @return boolean
@@ -506,5 +520,20 @@ abstract class EloquentRepository implements RepositoryInterface
         $this->setModel();
 
         return $id;
+    }
+
+    /**
+     * Function where raw using with sql string
+     *
+     * @param string $sql
+     * @param array $bindings
+     * @param string $boolean
+     * @return void
+     */
+    public function whereRaw(string $sql, array $bindings = [], string $boolean = 'and')
+    {
+        $this->_model = $this->_model->whereRaw($sql, $bindings, $boolean);
+
+        return $this;
     }
 }

@@ -1,5 +1,5 @@
 {{-- Table head --}}
-<table class="table table-blue table-result">
+<table class="table table-blue table-result resizable">
     <thead>
         <tr>
             <th class="col-ship-name">
@@ -83,9 +83,8 @@
             </th>
         </tr>
     </thead>
+    @php $totalResult = $ships->total(); @endphp
+    <tbody class="table-content" data-total="{{ trans('ship.lbl_total_result', ['total' => $totalResult]) }}">
+        @include('ship.component.list.table-data')
+    </tbody>
 </table>
-
-{{-- Table content --}}
-<div class="table-content">
-    @include('ship.component.list.table-data')
-</div>

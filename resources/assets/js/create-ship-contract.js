@@ -176,6 +176,7 @@ var ship = new function () {
                 let query = {
                     'search-nation-id': $(ship.models.nationId).val(),
                     'search-nation-name': $(ship.models.nationName).val(),
+                    'search-type': 'ship',
                 }
 
                 $.get(ship.urls.urlSearchNation, query, function (res) {
@@ -201,9 +202,9 @@ var ship = new function () {
      */
     this.selectNation = function () {
         $(ship.models.btnOkeSelectNation).on('click', function () {
-            if ($("input:radio[name='choose-nation-id']:checked").val() != undefined) {
-                let nationName = $("input:radio[name='choose-nation-id']:checked").attr('data-nation-name');
-                let nationId = $("input:radio[name='choose-nation-id']:checked").val();
+            if ($("input:radio[name='ship-choose-nation-id']:checked").val() != undefined) {
+                let nationName = $("input:radio[name='ship-choose-nation-id']:checked").attr('data-nation-name');
+                let nationId = $("input:radio[name='ship-choose-nation-id']:checked").val();
 
                 // Set name for text box nation
                 $(ship.models.txtNation).val(nationName);

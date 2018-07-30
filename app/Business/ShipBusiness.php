@@ -217,41 +217,125 @@ class ShipBusiness
         // Convert insert data
         $insertData = $this->_convertInsertData($validatedData);
 
-        // Register database
         return $this->_shipRepository->createShip($insertData);
+    }
+
+    /**
+     * Call repository and update ship data
+     *
+     * @access public
+     * @param int $shipId
+     * @param array $validatedData
+     * @return bool
+     */
+    public function updateShip($shipId, $validatedData)
+    {
+        // Convert update data
+        $updateData = $this->_convertUpdateData($validatedData);
+
+        return $this->_shipRepository->updateShip($shipId, $updateData);
+    }
+
+    /**
+     * Get common input ship data
+     *
+     * @access private
+     * @param array $shipData
+     * @return array
+     */
+    private function _getCommonShipData($shipData)
+    {
+        return [
+            'name' => $shipData['txt-ship-name'],
+            'company_id' => $shipData['slb-company'],
+            'imo_number' => $shipData['txt-imo-number'],
+            'mmsi_number' => $shipData['txt-mmsi-number'],
+            'nation_id' => $shipData['nation-id'],
+            'classification_id' => $shipData['slb-classification'],
+            'register_number' => $shipData['txt-register-number'],
+            'type_id' => $shipData['slb-ship-type'],
+            'height' => $shipData['txt-ship-length'],
+            'width' => $shipData['txt-ship-width'],
+            'water_draft' => $shipData['txt-water-draft'],
+            'total_weight_ton' => $shipData['txt-total-weight-ton'],
+            'total_ton' => $shipData['txt-weight-ton'],
+            'member_number' => $shipData['txt-member-number'],
+            'remark' => $shipData['txt-remark'],
+            'url_1' => $shipData['txt-url-1'],
+            'url_2' => $shipData['txt-url-2'],
+            'url_3' => $shipData['txt-url-3'],
+        ];
     }
 
     /**
      * Convert data to insert
      *
      * @access private
-     * @param array $insertData
+     * @param array $commonData
      * @return array
      */
-    private function _convertInsertData($insertData)
+    private function _convertInsertData($commonData)
     {
-        return [
-            'name' => $insertData['txt-ship-name'],
-            'company_id' => $insertData['slb-company'],
-            'imo_number' => $insertData['txt-imo-number'],
-            'mmsi_number' => $insertData['txt-mmsi-number'],
-            'nation_id' => $insertData['nation-id'],
-            'classification_id' => $insertData['slb-classification'],
-            'register_number' => $insertData['txt-register-number'],
-            'type_id' => $insertData['slb-ship-type'],
-            'height' => $insertData['txt-ship-length'],
-            'width' => $insertData['txt-ship-width'],
-            'water_draft' => $insertData['txt-water-draft'],
-            'total_weight_ton' => $insertData['txt-total-weight-ton'],
-            'total_ton' => $insertData['txt-weight-ton'],
-            'member_number' => $insertData['txt-member-number'],
-            'remark' => $insertData['txt-remark'],
-            'url_1' => $insertData['txt-url-1'],
-            'url_2' => $insertData['txt-url-2'],
-            'url_3' => $insertData['txt-url-3'],
+        $data = $this->_getCommonShipData($commonData);
+
+        $createData = [
             'created_by' => auth()->id(),
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')
         ];
+
+        return array_merge($data, $createData);
+    }
+
+    /**
+     * Convert data to update
+     *
+     * @access private
+     * @param array $commonData
+     * @return array
+     */
+    private function _convertUpdateData($commonData)
+    {
+        $data = $this->_getCommonShipData($commonData);
+
+        $updateData = [
+            'updated_by' => auth()->id(),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ];
+
+        return array_merge($data, $updateData);
+    }
+
+    /**
+     * Check exist ship name
+     *
+     * @param string $name
+     * @return bool
+     */
+    public function checkExistShipName($name)
+    {
+        return $this->_shipRepository->checkExistShipName($name);
+    }
+
+    /**
+     * Check exist ship ImoNumber
+     *
+     * @param string $imoNumber
+     * @return bool
+     */
+    public function checkExistShipImoNumber($imoNumber)
+    {
+        return $this->_shipRepository->checkExistShipImoNumber($imoNumber);
+    }
+
+    /**
+     * Get edit ship data by id
+     *
+     * @param int $shipId
+     * @return array
+     */
+    public function getEditShipData($shipId)
+    {
+        return $this->_shipRepository->getEditShipData($shipId);
     }
 }

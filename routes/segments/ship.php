@@ -19,8 +19,12 @@ Route::group(['middleware' => 'auth'], function() {
         Route::get('/create-ship-contract', 'ShipContractController@create')->name('contract.create');
         Route::post('/create-ship-contract', 'ShipContractController@store')->name('contract.store');
 
-        Route::get('/{id}/edit', 'ShipController@edit')->name('edit');
+        Route::get('/{id}/edit', 'ShipController@showEdit')->name('edit');
+        Route::post('/{id}/edit', 'ShipController@edit')->name('update');
         Route::get('/create', 'ShipController@showCreate')->name('create');
         Route::post('/create', 'ShipController@create')->name('create');
+
+        Route::post('/check-create-exist', 'ShipController@checkExistCreateShipData');
+        Route::post('/check-edit-exist', 'ShipController@checkExistEditShipData');
     });
 });

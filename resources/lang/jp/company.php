@@ -39,6 +39,11 @@ return [
     'btn_filter' => 'フィルター',
     'btn_prev' => '<前',
     'btn_next' => '次>',
+    'lbl_show_type' => '有効契約が無い会社',
+    'lbl_not_show' => '表示しない',
+    'lbl_show' => '表示する',
+    'header_contract_status' => '状態',
+    'header_contract_approve' => '承認',
 
     // detail company
     'head_detail_company' => '顧客会社管理',

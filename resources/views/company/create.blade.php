@@ -44,6 +44,7 @@
             <!-- end alert errors -->
             {{ Form::open(['url' => route('company.store')]) }}
                 <!-- begin form input company infomation -->
+                {{ Form::hidden('url-check-name-company', route('company.check.duplicate.name', '', ''), ['id' => 'url-check-name-company']) }}
                 <div class="row">
                     <div class="col-md-6 block-input">
                         <div class="lbl-title">
@@ -58,6 +59,9 @@
                                     'tabindex' => 1,
                                     'require' => true,
                                     'placeholder' => trans('company.lbl_title_company_name_jp'),
+                                    'id' => 'txt-company-name-jp',
+                                    'data-name-remark' => '',
+                                    'data-url' => route('company.check.duplicate.name'),
                                 ])
                             }}
                         </div>
@@ -76,6 +80,9 @@
                                     'tabindex' => 2,
                                     'require' => true,
                                     'placeholder' => trans('company.lbl_title_company_name_en'),
+                                    'id' => 'txt-company-name-en',
+                                    'data-name-remark' => '',
+                                    'data-url' => route('company.check.duplicate.name'),
                                 ])
                             }}
                         </div>
@@ -90,7 +97,7 @@
                                 <span class="require">*</span>
                             </label>
                         </div>
-                        <div class="form-input input-group-search-popup {{ $errors->has('nation-id') ? ' has-error' : '' }}">
+                        <div class="form-input input-group-search-popup {{ $errors->has('company-nation-id') ? ' has-error' : '' }}">
                             {{ Form::text('company-nation', $nations->first() ? $nations->first()->name_jp : null, [
                                         'class' => 'form-control',
                                         'placeholder' => trans('ship.lbl_title_nation'),
@@ -115,7 +122,7 @@
                                 {{ trans('company.lbl_title_company_postal_code') }}
                             </label>
                         </div>
-                        <div class="form-input {{ $errors->has('nation-id') ? ' has-error' : '' }}">
+                        <div class="form-input {{ $errors->has('txt-company-postal-code') ? ' has-error' : '' }}">
                             {{ Form::text('txt-company-postal-code', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 4,
@@ -133,7 +140,7 @@
                                 {{ trans('company.lbl_title_company_address') }}
                             </label>
                         </div>
-                        <div class="form-input {{ $errors->has('nation-id') ? ' has-error' : '' }}">
+                        <div class="form-input {{ $errors->has('txt-company-address') ? ' has-error' : '' }}">
                             {{ Form::text('txt-company-address', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 5,
@@ -150,7 +157,7 @@
                                 <span class="require">*</span>
                             </label>
                         </div>
-                        <div class="form-input {{ $errors->has('nation-id') ? ' has-error' : '' }}">
+                        <div class="form-input {{ $errors->has('txt-company-represent-person') ? ' has-error' : '' }}">
                             {{ Form::text('txt-company-represent-person', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 6,
@@ -169,7 +176,7 @@
                                 {{ trans('company.lbl_title_company_fund') }}
                             </label>
                         </div>
-                        <div class="form-input {{ $errors->has('nation-id') ? ' has-error' : '' }}">
+                        <div class="form-input {{ $errors->has('txt-company-fund') ? ' has-error' : '' }}">
                             {{ Form::text('txt-company-fund', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 7,
@@ -186,13 +193,13 @@
                                 <span class="require">*</span>
                             </label>
                         </div>
-                        <div class="form-input input-group-search-popup {{ $errors->has('nation-id') ? ' has-error' : '' }}">
+                        <div class="form-input input-group-search-popup {{ $errors->has('company-currency-id') ? ' has-error' : '' }}">
                             {{ Form::text('company-currency', $currency->first() ? $currency->first()->name_jp : null, [
                                         'class' => 'form-control',
-                                        'placeholder' => trans('ship.lbl_title_nation'),
+                                        'placeholder' => trans('company.lbl_title_company_currency'),
                                         'readonly' => 'readonly',
                                         'id' => 'company-currency',
-                                        'tabindex' => 3,
+                                        'tabindex' => 8,
                                     ])
                                 }}
                                 <div class="input-group-addon show-modal-service"
@@ -213,7 +220,7 @@
                                 {{ trans('company.lbl_title_company_employee_number') }}
                             </label>
                         </div>
-                        <div class="form-input {{ $errors->has('nation-id') ? ' has-error' : '' }}">
+                        <div class="form-input {{ $errors->has('txt-company-employee-number') ? ' has-error' : '' }}">
                             {{ Form::text('txt-company-employee-number', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 9,
@@ -225,15 +232,15 @@
 
                     <div class="col-md-6 block-input">
                         <div class="lbl-title">
-                            <label for="txt-company-year-reseach">
+                            <label for="txt-company-year-research">
                                 {{ trans('company.lbl_title_company_year_research') }}
                             </label>
                         </div>
-                        <div class="form-input {{ $errors->has('nation-id') ? ' has-error' : '' }}">
-                            {{ Form::text('txt-company-year-reseach', '', [
+                        <div class="form-input {{ $errors->has('txt-company-year-research') ? ' has-error' : '' }}">
+                            {{ Form::text('txt-company-year-research', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 10,
-                                    'placeholder' => trans('company.lbl_title_company_employee_number'),
+                                    'placeholder' => trans('company.lbl_title_company_year_research'),
                                 ])
                             }}
                         </div>
@@ -248,7 +255,7 @@
                                 <span class="require">*</span>
                             </label>
                         </div>
-                        <div class="form-input custom-select {{ $errors->has('nation-id') ? ' has-error' : '' }}">
+                        <div class="form-input custom-select {{ $errors->has('slb-company-billing-method') ? ' has-error' : '' }}" id="select2-billing-method">
                             @php
                                 $billingData = [];
                                 $firstBilling = $billingMethod->first() ? $billingMethod->first()->id : null;
@@ -256,7 +263,10 @@
                                     $billingData[$billing->id] = $billing->name_jp;
                                 }
                             @endphp
-                            {{ Form::select('slb-company-billing-method', $billingData, $firstBilling, ['class' => 'form-control', 'tabindex' => 11,
+                            {{ Form::select('slb-company-billing-method', $billingData, $firstBilling, [
+                                    'class' => 'form-control',
+                                    'tabindex' => 11,
+                                    'id' => 'slb-company-billing-method'
                                 ])
                             }}
                         </div>
@@ -268,7 +278,7 @@
                                 {{ trans('company.lbl_title_company_month_billing') }}
                             </label>
                         </div>
-                        <div class="form-input custom-select">
+                        <div class="form-input custom-select {{ $errors->has('slb-company-month-billing') ? ' has-error' : '' }}">
                             @php
                                 $dataMonth = [];
                                 for ($month = 1; $month <= 12; $month++) {
@@ -291,9 +301,10 @@
                         <div class="lbl-title">
                             <label for="txt-company-payment-deadline-no">
                                 {{ trans('company.lbl_title_company_payment_deadline_no') }}
+                                <span class="require">*</span>
                             </label>
                         </div>
-                        <div class="form-input">
+                        <div class="form-input {{ $errors->has('txt-company-payment-deadline-no') ? ' has-error' : '' }}">
                             {{ Form::text('txt-company-payment-deadline-no', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 13,
@@ -309,7 +320,7 @@
                                 {{ trans('company.lbl_title_company_site') }}
                             </label>
                         </div>
-                        <div class="form-input">
+                        <div class="form-input {{ $errors->has('txt-company-site') ? ' has-error' : '' }}">
                             {{ Form::text('txt-company-site', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 14,
@@ -370,7 +381,7 @@
                                 {{ trans('company.lbl_title_company_url') }}
                             </label>
                         </div>
-                        <div class="form-input">
+                        <div class="form-input {{ $errors->has('txt-company-url') ? ' has-error' : '' }}">
                             {{ Form::text('txt-company-url', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 17,
@@ -400,7 +411,7 @@
                                 <span class="require">*</span>
                             </label>
                         </div>
-                        <div class="form-input">
+                        <div class="form-input {{ $errors->has('txt-ope-name-1') ? ' has-error' : '' }}">
                             {{ Form::text('txt-ope-name-1', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 18,
@@ -417,7 +428,7 @@
                                 {{ trans('company.lbl_title_ope_position') }}
                             </label>
                         </div>
-                        <div class="form-input">
+                        <div class="form-input {{ $errors->has('txt-ope-position-1') ? ' has-error' : '' }}">
                             {{ Form::text('txt-ope-position-1', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 19,
@@ -435,7 +446,7 @@
                                 {{ trans('company.lbl_title_ope_department') }}
                             </label>
                         </div>
-                        <div class="form-input">
+                        <div class="form-input {{ $errors->has('txt-ope-department-1') ? ' has-error' : '' }}">
                             {{ Form::text('txt-ope-department-1', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 20,
@@ -451,7 +462,7 @@
                                 {{ trans('company.lbl_title_ope_postal_code') }}
                             </label>
                         </div>
-                        <div class="form-input">
+                        <div class="form-input {{ $errors->has('txt-ope-postal-code-1') ? ' has-error' : '' }}">
                             {{ Form::text('txt-ope-postal-code-1', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 21,
@@ -469,7 +480,7 @@
                                 {{ trans('company.lbl_title_ope_address') }}
                             </label>
                         </div>
-                        <div class="form-input">
+                        <div class="form-input {{ $errors->has('txt-ope-address-1') ? ' has-error' : '' }}">
                             {{ Form::text('txt-ope-address-1', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 22,
@@ -485,7 +496,7 @@
                                 {{ trans('company.lbl_title_ope_phone') }}
                             </label>
                         </div>
-                        <div class="form-input">
+                        <div class="form-input {{ $errors->has('txt-ope-phone-1') ? ' has-error' : '' }}">
                             {{ Form::text('txt-ope-phone-1', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 23,
@@ -503,7 +514,7 @@
                                 {{ trans('company.lbl_title_ope_fax') }}
                             </label>
                         </div>
-                        <div class="form-input">
+                        <div class="form-input {{ $errors->has('txt-ope-fax-1') ? ' has-error' : '' }}">
                             {{ Form::text('txt-ope-fax-1', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 24,
@@ -520,7 +531,7 @@
                                 <span class="require">*</span>
                             </label>
                         </div>
-                        <div class="form-input">
+                        <div class="form-input {{ $errors->has('txt-ope-email-1') ? ' has-error' : '' }}">
                             {{ Form::text('txt-ope-email-1', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 25,
@@ -550,7 +561,7 @@
                                 {{ trans('company.lbl_title_ope_name') }}
                             </label>
                         </div>
-                        <div class="form-input">
+                        <div class="form-input {{ $errors->has('txt-ope-name-2') ? ' has-error' : '' }}">
                             {{ Form::text('txt-ope-name-2', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 26,
@@ -566,7 +577,7 @@
                                 {{ trans('company.lbl_title_ope_position') }}
                             </label>
                         </div>
-                        <div class="form-input">
+                        <div class="form-input {{ $errors->has('txt-ope-position-2') ? ' has-error' : '' }}">
                             {{ Form::text('txt-ope-position-2', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 27,
@@ -584,7 +595,7 @@
                                 {{ trans('company.lbl_title_ope_department') }}
                             </label>
                         </div>
-                        <div class="form-input">
+                        <div class="form-input {{ $errors->has('txt-ope-department-2') ? ' has-error' : '' }}">
                             {{ Form::text('txt-ope-department-2', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 28,
@@ -600,7 +611,7 @@
                                 {{ trans('company.lbl_title_ope_postal_code') }}
                             </label>
                         </div>
-                        <div class="form-input">
+                        <div class="form-input {{ $errors->has('txt-ope-postal-code-2') ? ' has-error' : '' }}">
                             {{ Form::text('txt-ope-postal-code-2', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 29,
@@ -618,7 +629,7 @@
                                 {{ trans('company.lbl_title_ope_address') }}
                             </label>
                         </div>
-                        <div class="form-input">
+                        <div class="form-input {{ $errors->has('txt-ope-address-2') ? ' has-error' : '' }}">
                             {{ Form::text('txt-ope-address-2', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 30,
@@ -634,7 +645,7 @@
                                 {{ trans('company.lbl_title_ope_phone') }}
                             </label>
                         </div>
-                        <div class="form-input">
+                        <div class="form-input {{ $errors->has('txt-ope-phone-2') ? ' has-error' : '' }}">
                             {{ Form::text('txt-ope-phone-2', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 31,
@@ -652,7 +663,7 @@
                                 {{ trans('company.lbl_title_ope_fax') }}
                             </label>
                         </div>
-                        <div class="form-input">
+                        <div class="form-input {{ $errors->has('txt-ope-fax-2') ? ' has-error' : '' }}">
                             {{ Form::text('txt-ope-fax-2', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 32,
@@ -668,7 +679,7 @@
                                 {{ trans('company.lbl_title_ope_email') }}
                             </label>
                         </div>
-                        <div class="form-input">
+                        <div class="form-input {{ $errors->has('txt-ope-email-2') ? ' has-error' : '' }}">
                             {{ Form::text('txt-ope-email-2', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 33,
@@ -698,8 +709,8 @@
                                 <span class="require">*</span>
                             </label>
                         </div>
-                        <div class="form-input">
-                            {{ Form::text('txt-ship-name', '本社（英文名：Headquarters)', [
+                        <div class="form-input {{ $errors->has('txt-ship-name') ? ' has-error' : '' }}">
+                            {{ Form::text('txt-ship-name', @Constant::DEFAULT_SHIP_NAME, [
                                     'class' => 'form-control',
                                     'tabindex' => 34,
                                     'placeholder' => trans('ship.lbl_title_ship_name'),
@@ -716,7 +727,7 @@
                                 <span class="require">*</span>
                             </label>
                         </div>
-                        <div class="form-input">
+                        <div class="form-input {{ $errors->has('txt-ship-imo-number') ? ' has-error' : '' }}">
                             {{ Form::text('txt-ship-imo-number', '0', [
                                     'class' => 'form-control',
                                     'tabindex' => 35,
@@ -736,7 +747,7 @@
                                 <span class="require">*</span>
                             </label>
                         </div>
-                        <div class="form-input input-group-search-popup {{ $errors->has('nation-id') ? ' has-error' : '' }}">
+                        <div class="form-input input-group-search-popup {{ $errors->has('ship-nation-id') ? ' has-error' : '' }}">
                             {{ Form::text('ship-nation', $nations->first() ? $nations->first()->name_jp : null, [
                                         'class' => 'form-control',
                                         'placeholder' => trans('ship.lbl_title_nation'),
@@ -761,13 +772,15 @@
                                 <span class="require">*</span>
                             </label>
                         </div>
-                        <div class="form-input custom-select">
-                            {{ Form::select('slb-ship-classification', [
-                                    1 => 'Cap 1',
-                                    2 => 'Cap 2',
-                                    3 => 'Cap 3',
-                                    4 => 'Cap 4',
-                                ], 1, [
+                        <div class="form-input custom-select {{ $errors->has('slb-ship-classification') ? ' has-error' : '' }}">
+                            @php
+                                $shipClassData = [];
+                                $firstDataShipClass = $classificationies->first() ? $classificationies->first()->id : null;
+                                foreach ($classificationies as $class) {
+                                    $shipClassData[$class->id] = $class->name_jp;
+                                }
+                            @endphp
+                            {{ Form::select('slb-ship-classification', $shipClassData, $firstDataShipClass, [
                                     'class' => 'form-control',
                                     'tabindex' => 37,
                                     'require' => true,
@@ -785,12 +798,15 @@
                                 <span class="require">*</span>
                             </label>
                         </div>
-                        <div class="form-input custom-select">
-                            {{ Form::select('slb-ship-type', [
-                                    1 => 'Type 1',
-                                    2 => 'Type 2',
-                                    3 => 'Type 3',
-                                ], 1, [
+                        <div class="form-input custom-select {{ $errors->has('slb-ship-type') ? ' has-error' : '' }}">
+                            @php
+                                $shipTypesData = [];
+                                $firstDataShipType = $shipTypes->first() ? $shipTypes->first()->id : null;
+                                foreach ($shipTypes as $shipType) {
+                                    $shipTypesData[$shipType->id] = $shipType->type;
+                                }
+                            @endphp
+                            {{ Form::select('slb-ship-type', $shipTypesData, $firstDataShipType, [
                                     'class' => 'form-control',
                                     'tabindex' => 38,
                                     'require' => true,
@@ -800,13 +816,13 @@
                     </div>
                 </div>
                 <!-- end form input ship information -->
-            {{ Form::close() }}
-            <div class="row">
-                <div class="col-md-12 block-button">
-                    {{ Form::button(trans('company.btn_create_company'), ['class' => 'btn btn-green-dark btn-w150', 'tabindex' => 40]) }}
-                    {{ Form::button(trans('company.btn_back_to_list'), ['class' => 'btn btn-gray-dark btn-w150', 'tabindex' => 39]) }}
+                <div class="row">
+                    <div class="col-md-12 block-button">
+                        {{ Form::button(trans('company.btn_create_company'), ['class' => 'btn btn-green-dark btn-w150', 'tabindex' => 40, 'type' => 'submit']) }}
+                        {{ Form::button(trans('company.btn_back_to_list'), ['class' => 'btn btn-gray-dark btn-w150', 'tabindex' => 39]) }}
+                    </div>
                 </div>
-            </div>
+            {{ Form::close() }}
         </div>
     </div>
 
@@ -829,6 +845,6 @@
 @endsection
 
 @section('javascript')
-    <script type="text/javascript" src="{{ asset('js/nation-search.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/search-common.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/create-company-general.js') }}"></script>
 @endsection

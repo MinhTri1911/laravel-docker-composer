@@ -8,6 +8,8 @@
 
 const HTTP_SUCCESS = 200;
 const HTTP_ERROR = 500;
+const CHECK_NAME_JP = 0;
+const CHECK_NAME_EN = 1;
 
 var company = new function () {
 
@@ -21,12 +23,19 @@ var company = new function () {
         txtTypeShip: '#type-ship',
         txtCurrency: '#company-currency',
         txtCurrencyId: '#company-currency-id',
+        sl2BillingMethod: '#slb-company-billing-method',
+        txtNationNameCompany: '#company-nation',
+        txtNationCompany: '#company-nation-id',
+        txtNationNameShip: '#ship-nation',
+        txtNationShip: '#ship-nation-id',
+        txtCompanyNameJp: '#txt-company-name-jp',
+        txtCompanyNameEn: '#txt-company-name-en',
 
         // Button
         btnSearchCurrency: '#btn-search-currency',
         btnSearchNation: '#btn-search-nation',
         btnOkeSelectCurrency: '#btn-currency-ok',
-        btnOkeSelectNation: '#btn-oke',
+        btnOkeSelectNation: '#btn-ok',
 
         // Table append data
         tbodyAppendCurrency: '#currency-data-scroll',
@@ -41,12 +50,16 @@ var company = new function () {
         // Popup
         popupSearchCompanyNation: '#popup-company-search-nation',
         popupSearchShipNation: '#popup-ship-search-nation',
+
+        // Div
+        divSelect2BillingMethod: '#select2-billing-method',
     }
 
     this.urls = {
         urlSearchCurrency: $(this.models.btnSearchCurrency).attr('data-url'),
         urlSearchNation: $('#url-search-nation').val(),
         urlGetBillingByCurrency: $('#url-get-billing-method').val(),
+        urlCheckNameCompany: $('#url-check-name-company').val(),
     }
 
     /**
@@ -126,28 +139,100 @@ var company = new function () {
         );
     }
 
+    /**
+     * Function choose currency and get billing
+     */
     this.selectCurrnecy = function () {
-        $(ship.models.btnOkeSelectCurrency).on('click', function () {
+        $(this.models.btnOkeSelectCurrency).bind('click', {company: this}, function (event) {
+            let company = event.data.company;
+
             if ($("input:radio[name='choose-currency-id']:checked").val() != undefined) {
                 let currencyCode = $("input:radio[name='choose-currency-id']:checked").attr('data-currency-code');
                 let currencyId = $("input:radio[name='choose-currency-id']:checked").val();
 
                 // Set name for text box currency
-                $(ship.models.txtCurrency).val(currencyCode);
+                $(company.models.txtCurrency).val(currencyCode);
 
                 // Set id for text box currency id
-                $(ship.models.txtCurrencyId).val(currencyId);
+                $(company.models.txtCurrencyId).val(currencyId);
 
-                $.get()
+                let query = {
+                    'currencyId': currencyId
+                }
+
+                $.get(company.urls.urlGetBillingByCurrency, query, function (res) {
+                    if (res.code === HTTP_SUCCESS) {
+                        // Remove old option in billing method
+                        $(company.models.sl2BillingMethod).html('');
+                        let billings = JSON.parse(res.data.billing);
+
+                        let index = 0;
+
+                        // Setting new billing method after get by currency
+                        for (var data in billings) {
+                            var option = {
+                                id: billings[data].id,
+                                text: billings[data].name_jp
+                            };
+
+                            var newOption = new Option(option.text, option.id, false, false);
+
+                            $(company.models.sl2BillingMethod).append(newOption).trigger('change');
+
+                            if (index == 0) {
+                                $(company.models.sl2BillingMethod + ' option[value=' + option.id + ']').attr('selected', 'selected');
+                            }
+
+                            index++;
+                        }
+                    }
+                });
             }
         });
     }
 
     /**
-     * Function search currency
+     * Function select nation of company
      */
-    this.getBilling = function () {
+    this.selectNationCompany = function () {
+        $(this.models.popupSearchCompanyNation + ' ' + this.models.btnOkeSelectNation).bind('click', {company: this},function (event) {
+            let company = event.data.company;
 
+            let nationId = $(company.models.popupSearchCompanyNation + " input[type='radio']:checked").val();
+            let nationName = $(company.models.popupSearchCompanyNation + " input[type='radio']:checked").attr('data-nation-name');
+            $(company.models.txtNationNameCompany).val(nationName);
+            $(company.models.txtNationCompany).val(nationId);
+        });
+    }
+
+    /**
+     * Function select nation of ship
+     */
+    this.selectNationShip = function () {
+        $(this.models.popupSearchShipNation + ' ' + this.models.btnOkeSelectNation).bind('click', {company: this},function (event) {
+            let company = event.data.company;
+
+            let nationId = $(company.models.popupSearchShipNation + " input[type='radio']:checked").val();
+            let nationName = $(company.models.popupSearchShipNation + " input[type='radio']:checked").attr('data-nation-name');
+            $(company.models.txtNationNameShip).val(nationName);
+            $(company.models.txtNationShip).val(nationId);
+        });
+    }
+
+    this.checkExistsNameCompany = function () {
+        $(document).on('blur', this.models.txtCompanyNameJp, function (e) {
+            let nameJp = $(this).val();
+
+            if (nameJp != '' && nameJp !=  $(this).attr('data-name-remark')) {
+                $.get($(this).attr('data-url'), {name: nameJp, type: CHECK_NAME_JP}, function (res) {
+                    console.log(res);
+                });
+            }
+        });
+
+        $(document).on('blur', this.models.txtCompanyNameEn, function (e) {
+            console.log($(this).val());
+        });
     }
 }
 
@@ -160,4 +245,8 @@ $(document).ready(function () {
     company.searchCurrency();
     company.searchNationCompany();
     company.searchNationShip();
+    company.selectCurrnecy();
+    company.selectNationCompany();
+    company.selectNationShip();
+    company.checkExistsNameCompany();
 });

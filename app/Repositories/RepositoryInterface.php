@@ -226,6 +226,15 @@ interface RepositoryInterface
     public function orWhereNull($column);
 
     /**
+     * Where not in
+     *
+     * @param string $column
+     * @param array $array
+     * @return mixed
+     */
+    public function whereNotIn($column, $array);
+
+    /**
      * Insert multi record
      * @param array data
      * @return bool

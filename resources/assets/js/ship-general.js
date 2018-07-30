@@ -2,7 +2,6 @@
  * Define ship constant
  */
 const $tableContent = $('.table-content');
-const $blockTable = $('.block-table');
 const $areaPaginate = $('#area-paginate');
 const $sortValue = $('#sort-value');
 const $totalResult = $('#total-result');
@@ -84,9 +83,6 @@ $(document).on('click', '.th-line-one i', function (event) {
             $areaPaginate.empty();
             $areaPaginate.append(res.paginate);
 
-            // Restart perfect scroll
-            restartScroll();
-
             // Reset url for sort action
             $sortValue.attr('data-url', url);
 
@@ -134,9 +130,6 @@ $(document).on('click', '#btn-filter', function (event) {
             // Insert paginate content, specified by the parameter
             $areaPaginate.empty();
             $areaPaginate.append(res.paginate);
-
-            // Restart perfect scroll
-            restartScroll();
 
             // Reset url for sort action
             $('#sort-value').attr('data-url', url);
@@ -189,9 +182,6 @@ $(document).on('change', '#load-result', function() {
             $areaPaginate.empty();
             $areaPaginate.append(res.paginate);
 
-            // Restart perfect scroll
-            restartScroll();
-
             // Update total result
             changeTotalResultByGroup();
 
@@ -203,26 +193,6 @@ $(document).on('change', '#load-result', function() {
         }
     });
 });
-
-/**
- * Restart perfect scroll
- *
- * @returns void
- */
-function restartScroll() {
-    const table = document.querySelector('.block-table');
-    const psWidth = new PerfectScrollbar(table, function () {
-        table.style.width = '100%'
-    });
-
-    const content = document.querySelector('.table-content');
-    const psHeight = new PerfectScrollbar(content, function () {
-        content.style.height = '300px'
-    });
-
-    // remove class when init
-    $blockTable.removeClass('ps--active-y');
-}
 
 /**
  * Replace url paginate when sort data
@@ -272,7 +242,7 @@ function replaceUrlPagination() {
  */
 function changeTotalResultByGroup () {
     $totalResult.empty();
-    $totalResult.append($('.table-content .table-result').attr('data-total'));
+    $totalResult.append($('.table-content').attr('data-total'));
 }
 
 /**

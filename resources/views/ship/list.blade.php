@@ -97,14 +97,11 @@
                     <div class="block-list-ship-bottom">
                         <div class="block-button block-button-right">
                             @if (Roles::checkPermission(Constant::ALLOW_SHIP_CREATE, Constant::IS_CHECK_BUTTON))
-                                @php
-                                    $createWithCompanyId = $companyId ? '?company-id=' . $companyId : '';
-                                @endphp
-                                <a href="{{ route('ship.create') }}{{ $createWithCompanyId }}" class="btn btn-green-dark btn-w150" tabindex="12">
+                                <a href="{{ route('ship.create', ['company-id' => $companyId]) }}" class="btn btn-green-dark btn-w150" tabindex="12">
                                     {{ trans('ship.btn_create_ship') }}
                                 </a>
                             @endif
-                            <a href="{{ $backButton }}" class="btn btn-gray btn-w150" tabindex="11">{{ trans('ship.btn_back') }}</a>
+                            <a href="{{ $backButton }}" class="btn btn-blue-light btn-w150" tabindex="11">{{ trans('ship.btn_back') }}</a>
                         </div>
                     </div>
                 </div>
@@ -121,20 +118,4 @@
 @section('javascript')
     {{-- Include ship general JS --}}
     <script src="{{ asset('js/ship-general.js') }}"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            const table = document.querySelector('.block-table');
-            const psWidth = new PerfectScrollbar(table, function () {
-                table.style.width = '100%'
-            });
-
-            const content = document.querySelector('.table-content');
-            const psHeight = new PerfectScrollbar(content, function () {
-                content.style.height = '300px'
-            });
-
-            // remove class when init
-            $('.block-table').removeClass('ps--active-y');
-        });
-    </script>
 @endsection

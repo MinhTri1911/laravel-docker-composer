@@ -56,10 +56,10 @@ class ShipController extends Controller
 
         // Get sort request data
         $data = [
-            'companyId' => $request->get('company-id'), // Company id
-            'field' => $request->get('field'), // Request sort field
-            'orderBy' => $request->get('orderBy'), // Request sort is DESC or ASC
-            'perPage' => $request->get('load') // Load total record per page
+            'companyId' => $request->get('company-id'),
+            'field' => $request->get('field'),
+            'orderBy' => $request->get('orderBy'),
+            'perPage' => $request->get('load')
         ];
 
         // Handle and get list ship data
@@ -124,23 +124,19 @@ class ShipController extends Controller
 
         // Set data field column to order by
         $filters['field'] = $request->get('field');
-        // Set data order by
         $filters['orderBy'] = $request->get('orderBy');
-        // Set data load result
         $filters['load'] = $request->get('load');
-        // Get company id from filter ajax request
         $filters['companyId'] = $request->get('company-id');
 
         // Get data filter company
-        $ships = $this->_shipBusiness->filterCompany(
-            $filters, // Conditions filter
-            $filters['load'], // Record per page
+        $ships = $this->_shipBusiness->filterCompany($filters, $filters['load'],
             [
-                'field' => $filters['field'], // Filter column
-                'orderBy' =>  $filters['orderBy'], // Sort type
+                'field' => $filters['field'],
+                'orderBy' => $filters['orderBy'],
             ],
-            $filters['companyId'] // Filter by company id
+            $filters['companyId']
         );
+        $ships->companyId = $filters['companyId'];
 
         // Check total record per page, if it not have set default it
         if (!in_array($filters['load'], Constant::ARY_PAGINATION_PER_PAGE)) {
@@ -148,8 +144,7 @@ class ShipController extends Controller
         }
 
         // Render data result after filter
-        $viewData = view('ship.component.list.table-data', ['ships' => $ships])
-            ->render();
+        $viewData = view('ship.component.list.table-data', ['ships' => $ships])->render();
 
         // Render data pagination after filter
         $paginationView = view('ship.component.paginate',
@@ -193,20 +188,17 @@ class ShipController extends Controller
      */
     public function create(ShipRequest $request)
     {
-        // Check permission
         $this->checkPermission(Constant::ALLOW_SHIP_CREATE, Constant::IS_CHECK_SCREEN);
 
         // Get validated request data
         $validatedData = $request->validated();
 
-        try {
-            // Begin transaction
-            DB::beginTransaction();
+        // Begin transaction
+        DB::beginTransaction();
 
+        try {
             // Insert ship
             $this->_shipBusiness->createShip($validatedData);
-
-            // Commit a transaction via the commit method
             DB::commit();
 
             // Redirect to list ship screen
@@ -222,13 +214,162 @@ class ShipController extends Controller
     }
 
     /**
+     * Check exist ship name or imo number
+     *
+     * @param Request $request
+     * @return bool|\Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
+    public function checkExistCreateShipData(Request $request)
+    {
+        if ($request->ajax()) {
+            // Get status
+            $statusShipName = $this->_shipBusiness->checkExistShipName($request->get('shipName'));
+            $statusImoNumber = $this->_shipBusiness->checkExistShipImoNumber($request->get('imoNumber'));
+
+            $messages = [];
+            if ($statusShipName === true) {
+                $messages[] = trans(
+                    'common-message.warning.W004',
+                    ['attribute' => trans('ship.lbl_title_ship_name')]
+                );
+            }
+
+            if ($statusImoNumber === true) {
+                $messages[] = trans(
+                    'common-message.warning.W004',
+                    ['attribute' => trans('ship.lbl_title_imo_number')]
+                );
+            }
+
+            return response()->json([
+                'code' => Constant::HTTP_CODE_SUCCESS,
+                'html' => !empty($messages)
+                    ? $warningHtml = view('ship.component.warning', ['warningMessages' => $messages])->render()
+                    : ''
+            ]);
+        }
+
+        return false;
+    }
+
+    /**
+     * Check exist ship name or imo number
+     *
+     * @param Request $request
+     * @return bool|\Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
+    public function checkExistEditShipData(Request $request)
+    {
+        if ($request->ajax()) {
+            // Get status
+            $statusShipName = $this->_shipBusiness->checkExistShipName($shipName = $request->get('shipName'));
+            $statusImoNumber = $this->_shipBusiness->checkExistShipImoNumber($imoNumber = $request->get('imoNumber'));
+
+            // Check exist ship id
+            $ship = $this->_shipBusiness->getEditShipData($request->get('shipId'));
+            if (!empty($ship)) {
+                $messages = [];
+                if ($ship->name == $shipName && $ship->imo_number == $imoNumber) {
+                    $messages = '';
+                } else {
+                    if ($ship->name != $shipName) {
+                        if ($statusShipName === true) {
+                            $messages[] = trans(
+                                'common-message.warning.W004',
+                                ['attribute' => trans('ship.lbl_title_ship_name')]
+                            );
+                        }
+                    }
+                    if ($ship->imo_number != $imoNumber) {
+                        if ($statusImoNumber === true) {
+                            $messages[] = trans(
+                                'common-message.warning.W004',
+                                ['attribute' => trans('ship.lbl_title_imo_number')]
+                            );
+                        }
+                    }
+                }
+                // Render html warning messages
+                return response()->json([
+                    'code' => Constant::HTTP_CODE_SUCCESS,
+                    'html' => !empty($messages)
+                        ? view('ship.component.warning', ['warningMessages' => $messages])->render()
+                        : ''
+                ]);
+            }
+
+            // Return not found if ship id invalid
+            return response()->json([
+                'code' => Constant::HTTP_CODE_ERROR_404,
+                'html' => ''
+            ]);
+        }
+
+        return false;
+    }
+
+    /**
      * Show form edit Ship
      *
-     * @param string $id
+     * @param null|int $shipId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function edit($id = '')
+    public function showEdit($shipId = null)
     {
-        return view('ship.edit');
+        // Check permission
+        $this->checkPermission(Constant::ALLOW_SHIP_EDIT, Constant::IS_CHECK_SCREEN);
+
+        // Get edit ship data by id
+        $ship = $this->_shipBusiness->getEditShipData($shipId);
+
+        if (!empty($ship)) {
+            // Initial edit ship view data
+            $viewData = $this->_shipBusiness->getViewData();
+            $viewData['ship'] = $ship;
+
+            return view('ship.edit', compact('viewData'));
+        }
+
+        return abort(Constant::HTTP_CODE_ERROR_404, trans('common-message.error.E001'));
+    }
+
+    /**
+     * Handle edit ship by id
+     *
+     * @param null|int $shipId
+     * @param ShipRequest $request
+     * @return mixed \Illuminate\Http\RedirectResponse|void
+     */
+    public function edit($shipId = null, ShipRequest $request)
+    {
+        // Check permission
+        $this->checkPermission(Constant::ALLOW_SHIP_EDIT, Constant::IS_CHECK_SCREEN);
+
+        // Check exist ship id
+        $ship = $this->_shipBusiness->getEditShipData($shipId);
+
+        if (!empty($ship)) {
+            $validatedData = $request->validated();
+            DB::beginTransaction();
+
+            try {
+                // Update ship
+                $this->_shipBusiness->updateShip($shipId, $validatedData);
+                DB::commit();
+
+                // Redirect to list ship screen
+                return redirect()->route('ship.contract.detail', ['id' => $shipId]);
+
+            } catch (Exception $e) {
+                // Rollback the transaction
+                DB::rollBack();
+
+                return abort(Constant::HTTP_CODE_ERROR_500, Constant::ID_SCREEN['SMB0003']);
+            }
+        }
+
+        return abort(Constant::HTTP_CODE_ERROR_404, trans('common-message.error.E001'));
     }
 }

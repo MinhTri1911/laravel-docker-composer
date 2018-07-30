@@ -13,16 +13,22 @@
                 <table class="table table-blue table-dropdown table-result table-popup">
                     <thead>
                         <tr>
-                            <th class="col-xs-3">
+                            <th class="col-xs-2">
                                 {{ trans('company.header_system_name') }}
                             </th>
-                            <th class="col-xs-3">
+                            <th class="col-xs-2">
                                 {{ trans('company.header_company_name') }}
                             </th>
-                            <th class="col-xs-3">
+                            <th class="col-xs-2">
                                 {{ trans('company.header_ship_name') }}
                             </th>
-                            <th class="col-xs-3">
+                            <th class="col-xs-2">
+                                {{ trans('company.header_contract_status') }}
+                            </th>
+                            <th class="col-xs-2">
+                                {{ trans('company.header_contract_approve') }}
+                            </th>
+                            <th class="col-xs-4">
                                 {{ trans('company.header_start_date') }}
                             </th>
                         </tr>
@@ -38,7 +44,7 @@
                             <tr>
 
                                 <!-- Show first row detail -->
-                                <td rowspan="{{ $detailGroup->count() + 1 }}" class="col-xs-3">{{ $detailGroup->first()->service_jp }}</td>
+                                <td rowspan="{{ $detailGroup->count() + 1 }}" class="col-xs-2">{{ $detailGroup->first()->service_jp }}</td>
                             </tr>
 
                             <!-- Loop result -->
@@ -60,16 +66,20 @@
                                 <!-- Check company[index] was tracked, if not add rowspan -->
                                 @if (!in_array($index, $tracker))
                                     <tr>
-                                        <td rowspan="{{ $count }}" class="col-xs-3">{{ $service->company_jp }}</td>
-                                        <td class="col-xs-3">{{ $service->ship_name }}</td>
-                                        <td class="col-xs-3">{{ $service->contract_start_date }}</td>
+                                        <td rowspan="{{ $count }}" class="col-xs-2">{{ $service->company_jp }}</td>
+                                        <td class="col-xs-2">{{ $service->ship_name }}</td>
+                                        <td class="col-xs-2">{{ @Constant::CONTRACT_O[$service->contract_status] }}</td>
+                                        <td class="col-xs-2">{{ @Constant::APPROVED_O[$service->contract_approve] }}</td>
+                                        <td class="col-xs-4">{{ $service->contract_start_date }}</td>
                                     </tr>
 
                                 <!-- Check company[index] was tracked -->
                                 @elseif (in_array($index, $tracker))
                                     <tr>
-                                        <td class="col-xs-3">{{ $service->ship_name }}</td>
-                                        <td class="col-xs-3">{{ $service->contract_start_date }}</td>
+                                        <td class="col-xs-2">{{ $service->ship_name }}</td>
+                                        <td class="col-xs-2">{{ @Constant::CONTRACT_O[$service->contract_status] }}</td>
+                                        <td class="col-xs-2">{{ @Constant::APPROVED_O[$service->contract_approve] }}</td>
+                                        <td class="col-xs-4">{{ $service->contract_start_date }}</td>
                                     </tr>
 
                                     <!-- Check id company[index] != id company[index + 1] and reset variabel count and tracker -->

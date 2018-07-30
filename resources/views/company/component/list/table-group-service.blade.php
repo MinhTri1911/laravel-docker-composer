@@ -1,4 +1,4 @@
-<table class="table table-blue table-result">
+<table class="table table-blue table-result resizable">
     <thead>
         <tr>
             <th class="th-checkbox col-checkbox">
@@ -93,7 +93,5 @@
             </th>
         </tr>
     </thead>
-</table>
-<div class="table-content">
     @include('company.component.list.table-tbody-service')
-</div>
+</table>

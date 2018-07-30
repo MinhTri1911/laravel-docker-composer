@@ -10,6 +10,7 @@
  */
 
 namespace App\Repositories\Company;
+use App\Common\Constant;
 
 interface CompanyInterface
 {
@@ -17,9 +18,10 @@ interface CompanyInterface
      * Function get list company common
      * @access public
      * @param int groupType company = 0/ service = 1
+     * @param int $showType select company have contract active and not have contrct active
      * @return mixed
      */
-    public function getListCompanyCommon($groupType = 0);
+    public function getListCompanyCommon($groupType = 0, $showType = Constant::SHOW_ACTIVE);
 
     /**
      * Function make condition for search company

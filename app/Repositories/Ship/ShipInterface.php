@@ -200,4 +200,37 @@ interface ShipInterface
      * @return bool
      */
     public function createShip($data);
+
+    /**
+     * Check exist ship name
+     *
+     * @param string $name
+     * @return bool
+     */
+    public function checkExistShipName($name);
+
+    /**
+     * Check exist ship ImoNumber
+     *
+     * @param string $imoNumber
+     * @return bool
+     */
+    public function checkExistShipImoNumber($imoNumber);
+
+    /**
+     * Get edit ship data by id
+     *
+     * @param int $shipId
+     * @return array
+     */
+    public function getEditShipData($shipId);
+
+    /**
+     * Update ship to database
+     *
+     * @param int $shipId
+     * @param array $data
+     * @return bool
+     */
+    public function updateShip($shipId, $data);
 }

@@ -248,4 +248,11 @@ class Constant
     // Constant spot type
     const SPOT_TYPE_REGISTER = 1;
     const SPOT_TYPE_CREATE_DATA = 2;
+
+    // Show type list company
+    const SHOW_ACTIVE = 0;
+    const SHOW_NOT_ACTIVE = 1;
+
+    // Ship default
+    const DEFAULT_SHIP_NAME = '本社（英文名：Headquarters)';
 }

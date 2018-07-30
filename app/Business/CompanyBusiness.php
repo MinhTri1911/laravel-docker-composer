@@ -59,8 +59,13 @@ class CompanyBusiness
      * @param int orderBy asc = 0 or null / desc = 1
      * @return Paginate
      */
-    public function searchCompany($groupType = 0, $pagination = 10, $column = null, $orderBy = null)
-    {
+    public function searchCompany(
+        $groupType = 0,
+        $pagination = 10,
+        $column = null,
+        $orderBy = null,
+        $showType = Constant::SHOW_ACTIVE
+    ) {
         // Check group type is exists if not set default group company
         if ($groupType != config('company.group_company') && $groupType != config('company.group_service')) {
             $groupType = config('company.group_company');
@@ -75,7 +80,7 @@ class CompanyBusiness
         $orderBy = $orderBy ? 'desc' : 'asc';
 
         // Return limit companies
-        return $this->companyRepository->getListCompanyCommon($groupType)
+        return $this->companyRepository->getListCompanyCommon($groupType, $showType)
             ->groupBy([
                 !$groupType ? 'm_company.id' : 'm_service.id',
                 !$groupType ? 'm_service.id' : 'm_company.id',
@@ -107,7 +112,7 @@ class CompanyBusiness
         $param = $this->_checkValueExists($param);
         $option['sortBy'] = $option['sortBy'] ? 'desc' : 'asc';
 
-        return $this->companyRepository->getListCompanyCommon($groupType)
+        return $this->companyRepository->getListCompanyCommon($groupType, $option['showType'])
             ->conditionSearchCompany($param)
             ->groupBy([
                 !$groupType ? 'm_company.id' : 'm_service.id',
@@ -375,5 +380,23 @@ class CompanyBusiness
             'shipTypes' => $shipTypes,
             'classificationies' =>  $classificationies,
         ];
+    }
+
+    /**
+     * Function check name company is duplicate
+     *
+     * @param string $name
+     * @param integer $type
+     * @return boolean
+     */
+    public function checkExistsByName($name, $type = 0)
+    {
+        return $this->companyRepository->where(function ($query) use ($name, $type) {
+            if ($type == 0) {
+                return $query->where('name_jp', $name);
+            }
+
+            return $query->where('name_en', $name);
+        })->exists();
     }
 }

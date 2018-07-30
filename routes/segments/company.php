@@ -31,4 +31,8 @@ Route::group(['middleware' => 'auth'], function() {
         Route::post('/delete-service', 'CompanyServiceController@delete')->name('delete');
         Route::post('/delete-all-service', 'CompanyServiceController@deleteAll')->name('deleteAll');
     });
+
+    Route::group(['prefix' => 'company/check', 'as' => 'company.check.'], function () {
+        Route::get('/duplicate/name', 'CompanyController@checkName')->name('duplicate.name');
+    });
 });

@@ -39,6 +39,8 @@
                         </div>
                     @endif
 
+                    <div id="warning-messages"></div>
+
                     <div class="row">
                         <div class="col-md-12{{ $errors->has('txt-ship-name') ? ' has-error' : '' }}">
                             <div class="col-md-4">
@@ -53,6 +55,7 @@
                                         'placeholder' => trans('ship.lbl_title_ship_name'),
                                         'tabindex' => 1,
                                         'require' => true,
+                                        'id' => 'ship-name',
                                     ])
                                 }}
                             </div>
@@ -94,6 +97,7 @@
                                         'class' => 'form-control',
                                         'placeholder' => trans('ship.lbl_title_imo_number'),
                                         'tabindex' => 3,
+                                        'id' => 'imo-number'
                                     ])
                                 }}
                             </div>
@@ -396,7 +400,7 @@
                                     $companyId = \Request::get('company-id');
                                     $backUrl = !empty($companyId) ? route('ship.index') . '?company-id=' . $companyId : route('ship.index');
                                 @endphp
-                                <a href="{{ $backUrl }}" class="btn btn-gray-dark btn-w150 btn-right" tabindex="19">{{ trans('ship.btn_back') }}</a>
+                                <a href="{{ $backUrl }}" class="btn btn-blue-light btn-w150 btn-right" tabindex="19">{{ trans('ship.btn_back') }}</a>
                             </div>
                         </div>
                     </div>
@@ -408,11 +412,70 @@
 
     {{-- Include common nation search --}}
     <div class="modal modal-protector modal-normal fade" id="popup-search-nation" tabindex="-1" role="dialog">
-        @php $nations = $viewData['nation']; @endphp
+        @php
+            $nations = $viewData['nation'];
+            $type = 'ship';
+        @endphp
         @include('common.popup-search-nation')
     </div>
 @endsection
 
 @section('javascript')
+    <script type="text/javascript">
+        var checkExist = new function () {
+
+            this.models = {
+                shipName: "#ship-name",
+                imoNumber: '#imo-number',
+                warning: '#warning-messages',
+            };
+
+            this.init = function () {
+
+                $(document).on('blur', checkExist.models.shipName, function (e) {
+                    var shipName = $(this).val();
+                    var imoNumber = $(checkExist.models.imoNumber).val();
+                    checkExist.events.checkExistShipName(shipName, imoNumber);
+                });
+
+                $(document).on('blur', checkExist.models.imoNumber, function (e) {
+                    var imoNumber = $(this).val();
+                    var shipName = $(checkExist.models.shipName).val();
+                    checkExist.events.checkExistShipName(shipName, imoNumber);
+                });
+
+            };
+
+            this.events = {
+
+                checkExistShipName: function (shipName, imoNumber) {
+
+                    var url = location.protocol + "//" + location.host + '/ship/check-create-exist';
+
+                    // Handle ajax send data to server
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        data: {
+                            "shipName": shipName,
+                            "imoNumber": imoNumber
+                        },
+                        success: function (res) {
+                            $(checkExist.models.warning).html(res.html);
+                        },
+                        // Not do anything when error
+                        error: function (error) {
+                            return false;
+                        }
+                    });
+                }
+            };
+
+        };
+
+        $(document).ready(function () {
+            checkExist.init();
+        });
+    </script>
     <script type="text/javascript" src="{{ asset('js/nation-search.js') }}"></script>
 @endsection

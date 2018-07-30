@@ -57,8 +57,8 @@ var billingPaper = new function () {
 
   // Status approve
   const SELECT_ALL = 0;
-  const WAITING_APPROVE = 1;
-  const APPROVED = 2;
+  const APPROVED = 1;
+  const WAITING_APPROVE = 2;
   const REJECT = 3;
 
   // Status billing paper
@@ -130,6 +130,7 @@ var billingPaper = new function () {
       var localStorage = JSON.parse(window.localStorage.getItem(ID_SCREEN));
       var btnRadioId = $(this).attr('for');
 
+      localStorage['historyBillingId'] = $('#' + btnRadioId).attr('hb-id');
       localStorage['companyId'] = $('#' + btnRadioId).val();
       window.localStorage.setItem(ID_SCREEN, JSON.stringify(localStorage));
     });
@@ -262,6 +263,9 @@ var billingPaper = new function () {
 
           //Render partialview after call ajax
           billingPaper.events.renderPartialView(res);
+
+          // Refresh local storge after call ajax
+          billingPaper.events.refreshLocalStore();
         }
       })
         .fail(function (res) {
@@ -339,7 +343,12 @@ var billingPaper = new function () {
      */
     createBillingPaper: function () {
 
+      // Get companyId
       var companyId = $("input:radio[name='rdo_company']:checked").val();
+      if (companyId === undefined) {
+        var localStorage = JSON.parse(window.localStorage.getItem(ID_SCREEN));
+        companyId = localStorage['companyId'];
+      }
 
       // Create parameter
       var param = JSON.parse(window.localStorage.getItem(ID_SCREEN));
@@ -358,6 +367,8 @@ var billingPaper = new function () {
           $(billingPaper.models.messagePopupInform).html(res.message);
           $(billingPaper.models.popupInform).modal('show');
 
+          // Refresh local storge after call ajax
+          billingPaper.events.refreshLocalStore();
         } else {
           // Show alert inform
           $(billingPaper.models.titlePopupInform).html(res.title);
@@ -404,7 +415,12 @@ var billingPaper = new function () {
      */
     deliverySubmit: function () {
 
+      // Get historyBillingId
       var historyBillingId = $("input:radio[name='rdo_company']:checked").attr('hb-id');
+      if (historyBillingId === undefined) {
+        var localStorage = JSON.parse(window.localStorage.getItem(ID_SCREEN));
+        historyBillingId = localStorage['historyBillingId'];
+      }
 
       // Create parameter
       var param = JSON.parse(window.localStorage.getItem(ID_SCREEN));
@@ -430,6 +446,8 @@ var billingPaper = new function () {
             window.open($url, '_blank');
           }
 
+          // Refresh local storge after call ajax
+          billingPaper.events.refreshLocalStore();
         } else {
           // Show alert inform
           $(billingPaper.models.titlePopupInform).html(res.title);
@@ -490,7 +508,7 @@ var billingPaper = new function () {
           return;
         });
     },
-    
+
     /**
      * Render partialview after call ajax
      * 
@@ -509,8 +527,20 @@ var billingPaper = new function () {
 
       // Init select2
       Events.initSelect2();
-    }
+    },
 
+    /**
+     * Refresh local storge after call ajax
+     * 
+     * @returns void
+     */
+    refreshLocalStore: function (){
+      var localStorage = JSON.parse(window.localStorage.getItem(ID_SCREEN));
+
+      localStorage['companyId'] = '';
+      localStorage['historyBillingId'] = '';
+      window.localStorage.setItem(ID_SCREEN, JSON.stringify(localStorage));
+    }
   };
 };
 

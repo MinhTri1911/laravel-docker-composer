@@ -33,5 +33,5 @@ Route::group(['middleware' => 'auth', 'prefix' => 'billing', 'as' => 'billing.']
 Route::group(['middleware' => 'auth', 'prefix' => 'billing-method','as' => 'billing.method.'], function () {
     Route::get('/{id}', 'BillingMethodCompanyController@show')->name('show');
     Route::post('/update', 'BillingMethodCompanyController@update')->name('update');
-    Route::get('/get', 'BillingMethodCompanyController@get')->name('get.by.currency');
+    Route::get('/search/currency', 'BillingMethodCompanyController@get')->name('get.by.currency');
 });

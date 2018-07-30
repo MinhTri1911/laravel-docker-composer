@@ -94,6 +94,9 @@ mix.babel([
             'resources/assets/js/nation-search.js'
         ], 'public/js/nation-search.js')
         .babel([
+            'resources/assets/js/search-common.js'
+        ], 'public/js/search-common.js')
+        .babel([
             'resources/assets/js/create-company-general.js',
         ], 'public/js/create-company-general.js')
         .sass('resources/assets/sass/vendor.scss', 'public/css')

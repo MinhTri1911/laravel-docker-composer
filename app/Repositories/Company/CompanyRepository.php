@@ -31,28 +31,52 @@ class CompanyRepository extends EloquentRepository implements CompanyInterface
      * Function get list company common
      * @access public
      * @param int groupType company = 0/ service = 1
+     * @param int $showType select company have contract active and not have contrct active
      * @return mixed
      */
-    public function getListCompanyCommon($groupType = 0)
+    public function getListCompanyCommon($groupType = 0, $showType = Constant::SHOW_ACTIVE)
     {
         // Check group type and set subquery for count total license
         if (!$groupType) {
-            $subQuery = '(select count(contract.id) as count , company.id
-                FROM m_company as company
-                JOIN m_ship as ship ON ship.company_id = company.id
-                JOIN m_contract as contract ON ship.id = contract.ship_id
-                WHERE ship.del_flag = 0 AND company.del_flag = 0
-                group by company.id
-            ) as sumTotalLicense';
+            $subQuery = ($showType == Constant::SHOW_ACTIVE)
+                ? '(select count(contract.id) as count , company.id
+                    FROM m_company as company
+                    JOIN m_ship as ship ON ship.company_id = company.id
+                    JOIN m_contract as contract ON ship.id = contract.ship_id
+                    WHERE contract.status = 0 AND ship.del_flag = 0 AND company.del_flag = 0
+                        AND (contract.approved_flag = 1
+                            OR (contract.approved_flag IN (2, 3) AND contract.updated_at IS NOT NULL)
+                        )
+                    group by company.id
+                ) as sumTotalLicense'
+                : '(select count(contract.id) as count , company.id
+                    FROM m_company as company
+                    JOIN m_ship as ship ON ship.company_id = company.id
+                    JOIN m_contract as contract ON ship.id = contract.ship_id
+                    WHERE ship.del_flag = 0 AND company.del_flag = 0
+                    GROUP BY company.id
+                ) as sumTotalLicense' ;
         } else {
-            $subQuery = '(select count(service.id) as count , service.id
-                FROM m_company as company
-                JOIN m_ship as ship ON ship.company_id = company.id
-                JOIN m_contract as contract ON ship.id = contract.ship_id
-                JOIN m_service as service on service.id = contract.service_id
-                WHERE ship.del_flag = 0 AND company.del_flag = 0
-                group by service.id
-            ) as sumTotalLicense';
+            $subQuery = ($showType == Constant::SHOW_ACTIVE)
+                ? '(select count(service.id) as count , service.id
+                    FROM m_company as company
+                    JOIN m_ship as ship ON ship.company_id = company.id
+                    JOIN m_contract as contract ON ship.id = contract.ship_id
+                    JOIN m_service as service on service.id = contract.service_id
+                    WHERE contract.status = 0 AND ship.del_flag = 0 AND company.del_flag = 0
+                        AND (contract.approved_flag = 1
+                            OR (contract.approved_flag IN (2, 3) AND contract.updated_at IS NOT NULL)
+                        )
+                    GROUP BY service.id
+                ) as sumTotalLicense'
+                : '(select count(service.id) as count , service.id
+                    FROM m_company as company
+                    JOIN m_ship as ship ON ship.company_id = company.id
+                    JOIN m_contract as contract ON ship.id = contract.ship_id
+                    JOIN m_service as service on service.id = contract.service_id
+                    WHERE ship.del_flag = 0 AND company.del_flag = 0
+                    GROUP BY service.id
+                ) as sumTotalLicense';
         }
 
         return $this->select([
@@ -78,7 +102,40 @@ class CompanyRepository extends EloquentRepository implements CompanyInterface
             ->join('m_company_operation', 'm_company.ope_company_id', 'm_company_operation.id')
             ->join('m_nation', 'm_nation.id', 'm_company.nation_id')
             ->join('m_ship','m_ship.company_id', 'm_company.id')
-            ->leftJoin('m_contract', 'm_ship.id', 'm_contract.ship_id')
+            ->_joinWithShowType($subQuery, $groupType, $showType)
+            ->where('m_nation.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->where('m_ship.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->where('m_company_operation.del_flag', Constant::DELETE_FLAG_FALSE);
+    }
+
+    /**
+     * Function join with condition show company have contract active or not active
+     *
+     * @param string $subQuery
+     * @param integer $groupType
+     * @param integer $showType
+     * @return void
+     */
+    private function _joinWithShowType($subQuery, $groupType = 0, $showType = Constant::SHOW_ACTIVE)
+    {
+        if ($showType == Constant::SHOW_ACTIVE) {
+            return $this->join('m_contract', 'm_ship.id', 'm_contract.ship_id')
+                ->join('m_service', 'm_contract.service_id', 'm_service.id')
+                ->join(\DB::raw($subQuery), function($join) use ($groupType) {
+                    $join->on('sumTotalLicense.id', '=', $groupType ? 'm_service.id' : 'm_company.id');
+                })
+                ->where('m_contract.status', Constant::STATUS_CONTRACT_ACTIVE)
+                ->where(function ($query) {
+                    return $query->where('m_contract.approved_flag', 1)
+                        ->orWhere(function ($sub) {
+                            return $sub->whereIn('m_contract.approved_flag', [Constant::STATUS_WAITING_APPROVE, Constant::STATUS_REJECT_APPROVE])
+                                ->whereNotNull('m_contract.updated_at');
+                        });
+                });
+        }
+
+        return $this->leftJoin('m_contract', 'm_ship.id', 'm_contract.ship_id')
             ->leftJoin('m_service', function ($join) {
                 $join->on( 'm_contract.service_id', 'm_service.id')
                     ->where('m_service.del_flag', Constant::DELETE_FLAG_FALSE);
@@ -86,10 +143,14 @@ class CompanyRepository extends EloquentRepository implements CompanyInterface
             ->leftJoin(\DB::raw($subQuery), function($join) use ($groupType) {
                 $join->on('sumTotalLicense.id', '=', $groupType ? 'm_service.id' : 'm_company.id');
             })
-            ->where('m_nation.del_flag', Constant::DELETE_FLAG_FALSE)
-            ->where('m_ship.del_flag', Constant::DELETE_FLAG_FALSE)
-            ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE)
-            ->where('m_company_operation.del_flag', Constant::DELETE_FLAG_FALSE);
+            ->where(function ($query) {
+                return $query->where(function ($query) {
+                        return $query->whereNull('sumTotalLicense.count')->whereNull('m_contract.service_id');
+                    })
+                    ->orWhere(function ($query) {
+                        return $query->whereNotNull('sumTotalLicense.count')->whereNotNull('m_contract.service_id');
+                    });
+            });
     }
 
     /**
@@ -101,8 +162,10 @@ class CompanyRepository extends EloquentRepository implements CompanyInterface
     public function conditionSearchCompany($param)
     {
         return $this->where(function ($query) use ($param) {
-                return $query->where('m_company.name_jp', 'LIKE', '%' . $param['filter-company'] . '%')
-                    ->orWhere('m_company.name_en', 'LIKE', '%' . $param['filter-company'] . '%');
+                if ($param['filter-company']) {
+                    return $query->where('m_company.name_jp', 'LIKE', '%' . $param['filter-company'] . '%')
+                        ->orWhere('m_company.name_en', 'LIKE', '%' . $param['filter-company'] . '%');
+                }
             })
             ->where(function ($query) use ($param) {
                 return $query->where('m_nation.name_jp', 'LIKE', '%' .$param['filter-nation'] . '%')
@@ -137,8 +200,10 @@ class CompanyRepository extends EloquentRepository implements CompanyInterface
                 }
             })
             ->where(function ($query) use ($param) {
-                return $query->where('m_service.name_jp', 'LIKE', '%' . $param['filter-service'] . '%')
-                    ->orWhere('m_service.name_en', 'LIKE', '%' . $param['filter-service'] . '%');
+                if ($param['filter-service']) {
+                    return $query->where('m_service.name_jp', 'LIKE', '%' . $param['filter-service'] . '%')
+                        ->orWhere('m_service.name_en', 'LIKE', '%' . $param['filter-service'] . '%');
+                }
             });
     }
 
@@ -160,6 +225,8 @@ class CompanyRepository extends EloquentRepository implements CompanyInterface
                 'm_service.name_en as service_en',
                 'm_ship.name as ship_name',
                 'm_contract.start_date as contract_start_date',
+                'm_contract.status as contract_status',
+                'm_contract.approved_flag as contract_approve',
             ])
             ->join('m_ship', 'm_ship.company_id', 'm_company.id')
             ->join('m_contract', 'm_ship.id', 'm_contract.ship_id')

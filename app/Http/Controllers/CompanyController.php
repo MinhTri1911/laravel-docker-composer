@@ -80,10 +80,19 @@ class CompanyController extends Controller
             'load' => $request->load,
             'field' => $request->field,
             'sortBy' => $request->sortBy,
+            'showType' => in_array($request->showType, [Constant::SHOW_ACTIVE, Constant::SHOW_NOT_ACTIVE])
+                ? $request->showType
+                : Constant::SHOW_ACTIVE,
         ];
 
         // Get data search company
-        $companies = $this->_companyBusiness->searchCompany($data['group'], $data['load'], $data['field'], $data['sortBy']);
+        $companies = $this->_companyBusiness->searchCompany(
+            $data['group'],
+            $data['load'],
+            $data['field'],
+            $data['sortBy'],
+            $data['showType']
+        );
 
         // Check exists group type if not set default is group company
         if ($data['group'] != config('company.group_company') && $data['group'] != config('company.group_service')) {
@@ -153,10 +162,16 @@ class CompanyController extends Controller
         // Set data load result
         $data['load'] = $request->load;
 
+        // Set data load result
+        $data['showType'] = in_array($request->showType, [Constant::SHOW_ACTIVE, Constant::SHOW_NOT_ACTIVE])
+            ? $request->showType
+            : Constant::SHOW_ACTIVE;
+
         // Get data filter company
         $companies = $this->_companyBusiness->filterCompany($data, $data['group'], $data['load'], [
             'field' => $data['field'],
             'sortBy' =>  $data['sortBy'],
+            'showType' => $data['showType'],
         ]);
 
         // Check group type is exists if not set default is group company
@@ -212,7 +227,7 @@ class CompanyController extends Controller
 
     public function store(Request $request)
     {
-
+        dd($request->all());
     }
 
     /**
@@ -299,5 +314,25 @@ class CompanyController extends Controller
         }
 
         return $this->returnJson(Constant::HTTP_CODE_SUCCESS);
+    }
+
+    /**
+     * Function check name company
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function checkName(Request $request)
+    {
+        if (!$request->ajax()) {
+            return $this->returnJson(Constant::HTTP_CODE_SUCCESS, trans('error.500'));
+        }
+
+        $checkExists = $this->_companyBusiness->checkExistsByName($request->get('name'), $request->get('type'));
+
+        return $this->returnJson(Constant::HTTP_CODE_SUCCESS, ['error' => [
+
+            ]
+        ]);
     }
 }
