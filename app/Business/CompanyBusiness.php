@@ -391,12 +391,18 @@ class CompanyBusiness
      */
     public function checkExistsByName($name, $type = 0)
     {
-        return $this->companyRepository->where(function ($query) use ($name, $type) {
-            if ($type == 0) {
-                return $query->where('name_jp', $name);
-            }
+        $exists = $this->companyRepository->existsName($name, $type);
 
-            return $query->where('name_en', $name);
-        })->exists();
+        if ($type == 0) {
+            return [
+                'exists' => $exists,
+                'message' => trans('common-message.duplicate_name_jp'),
+            ];
+        }
+
+        return [
+            'exists' => $exists,
+            'message' => trans('common-message.duplicate_name_en'),
+        ];
     }
 }

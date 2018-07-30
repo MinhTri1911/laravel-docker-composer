@@ -350,4 +350,22 @@ class CompanyRepository extends EloquentRepository implements CompanyInterface
         return $this->where('del_flag', Constant::DELETE_FLAG_FALSE)
             ->findOrFail($companyId, $columns);
     }
+
+    /**
+     * Check exists name company
+     *
+     * @param string $name
+     * @param integer $type
+     * @return void
+     */
+    public function existsName($name, $type = 0)
+    {
+        return $this->where(function ($query) use ($name, $type) {
+            if ($type == 0) {
+                return $query->where('name_jp', $name);
+            }
+
+            return $query->where('name_en', $name);
+        })->exists();
+    }
 }

@@ -44,6 +44,10 @@ var company = new function () {
         // Label Error
         lblErrorSearchCurrency: '#lblErrorSearchCurrency',
 
+        // Label warning
+        lblWarningNameJp: '#lbl-warning-name-jp',
+        lblWarningNameEn: '#lbl-warning-name-en',
+
         // Class error
         classAlertError: '.alert-danger',
 
@@ -225,13 +229,29 @@ var company = new function () {
 
             if (nameJp != '' && nameJp !=  $(this).attr('data-name-remark')) {
                 $.get($(this).attr('data-url'), {name: nameJp, type: CHECK_NAME_JP}, function (res) {
-                    console.log(res);
+                    $(this).attr('data-name-remark', nameJp);
+
+                    if (res.message[error][status].exists) {
+                        $(company.models.lblWarningNameJp).empty();
+                        $(company.models.lblWarningNameJp).append(res.message[error][status].message);
+                    }
                 });
             }
         });
 
         $(document).on('blur', this.models.txtCompanyNameEn, function (e) {
-            console.log($(this).val());
+            let nameEn = $(this).val();
+
+            if (nameEn != '' && nameEn !=  $(this).attr('data-name-remark')) {
+                $.get($(this).attr('data-url'), {name: nameEn, type: CHECK_NAME_EN}, function (res) {
+                    $(this).attr('data-name-remark', nameEn);
+
+                    if (res.message[error][status].exists) {
+                        $(company.models.lblWarningNameEn).empty();
+                        $(company.models.lblWarningNameEn).append(res.message[error][status].message);
+                    }
+                });
+            }
         });
     }
 }
