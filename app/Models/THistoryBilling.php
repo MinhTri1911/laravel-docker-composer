@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 04 Jul 2018 03:46:32 +0000.
+ * Date: Mon, 06 Aug 2018 04:29:17 +0000.
  */
 
 namespace App\Models;
@@ -28,6 +28,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property string $pdf_original_link
  * @property int $approved_flag
  * @property string $reason_reject
+ * @property bool $delivered_flag
  * @property string $created_by
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
@@ -48,7 +49,8 @@ class THistoryBilling extends Eloquent
         'total_amount_billing' => 'float',
         'total_money' => 'float',
         'ope_company_id' => 'int',
-        'approved_flag' => 'int'
+        'approved_flag' => 'int',
+        'delivered_flag' => 'bool'
     ];
 
     protected $dates = [
@@ -73,6 +75,7 @@ class THistoryBilling extends Eloquent
         'pdf_original_link',
         'approved_flag',
         'reason_reject',
+        'delivered_flag',
         'created_by',
         'updated_by'
     ];

@@ -80,6 +80,10 @@ class CustomValidateSpot
             // Convert value to Object Datetime
             $startDate = date_create($dataValidator[$parameters[0]]);
             $endDate = date_create($value);
+            if (!$startDate || !$endDate) {
+                return false;
+            }
+            
             $dateDiff = date_diff($startDate, $endDate);
             // Check valid value date end and date start
             if($dateDiff->days == 0 || ($dateDiff->days > 0 && $dateDiff->invert > 0)) {

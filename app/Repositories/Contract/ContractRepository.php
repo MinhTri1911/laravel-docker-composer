@@ -91,7 +91,9 @@ class ContractRepository extends EloquentRepository implements ContractInterface
      */
     public function selectContractIdsNotYetDelete($companyId, $serviceIds)
     {
-        return $this->selectContractIds($companyId, $serviceIds)->whereNull('m_contract.deleted_at');
+        return $this->selectContractIds($companyId, $serviceIds)
+            ->whereNull('m_contract.deleted_at')
+            ->where('m_contract.del_flag', Constant::DELETE_FLAG_FALSE);
     }
 
     /**
@@ -119,9 +121,7 @@ class ContractRepository extends EloquentRepository implements ContractInterface
     public function getContractActiveOrPendingById($companyId, $serviceIds)
     {
         return $this->selectContractIdsNotYetDelete($companyId, $serviceIds)
-            ->whereIn('m_contract.approved_flag', [Constant::STATUS_APPROVED, Constant::STATUS_REJECT_APPROVE])
             ->whereIn('m_contract.status', [Constant::STATUS_CONTRACT_ACTIVE, Constant::STATUS_CONTRACT_PENDING])
-            ->whereNotNull('m_contract.updated_at')
             ->get()
             ->toArray();
     }
@@ -142,68 +142,36 @@ class ContractRepository extends EloquentRepository implements ContractInterface
     }
 
     /**
-     * Function update delete contract waiting approve
+     * Function update delete contract
      * @param array id
      * @param array data
      * @param string|null column
      * @return boolean
      */
-    public function updateDeleteContractWattingApprove($ids, $data, $column = null)
+    public function updateDeleteContract($ids, $data, $column = null)
     {
         $data = is_array($data) ? $data : [$data];
         return $this
-            ->whereIn('approved_flag', [Constant::STATUS_APPROVED, Constant::STATUS_REJECT_APPROVE])
             ->whereIn('status', [Constant::STATUS_CONTRACT_ACTIVE, Constant::STATUS_CONTRACT_PENDING])
-            ->whereNotNull('m_contract.updated_at')
             ->multiUpdate($ids, $data, $column);
     }
 
     /**
-     * Function select service of company
+     * Function select service not delete or not expired
      * @param int companyId
      * @param array columns
      * @return Collection
      */
-    public function selectServiceOfCompany($companyId, $columns = ['*'])
+    public function selectServiceNotDeleteOfCompany($companyId, $columns = ['*'])
     {
         return $this->select($columns)
             ->join('m_service', 'm_service.id', 'm_contract.service_id')
             ->join('m_ship', 'm_ship.id', 'm_contract.ship_id')
             ->where('m_ship.company_id', $companyId)
             ->where('m_ship.del_flag', Constant::DELETE_FLAG_FALSE)
-            ->where(function ($query) {
-                return $query->where('m_contract.status', Constant::STATUS_CONTRACT_ACTIVE)
-                    ->orWhere('m_contract.status', Constant::STATUS_CONTRACT_PENDING);
-            })
+            ->whereIn('m_contract.status', [Constant::STATUS_CONTRACT_ACTIVE, Constant::STATUS_CONTRACT_PENDING])
             ->whereNull('m_contract.deleted_at')
-            ->groupBy(['m_contract.service_id'])
-            ->get();
-    }
-
-    /**
-     * Function select service not watting approve of company
-     * @param int companyId
-     * @param array columns
-     * @return Collection
-     */
-    public function selectServiceNotWattingApproveOfCompany($companyId, $columns = ['*'])
-    {
-        return $this->select($columns)
-            ->join('m_service', 'm_service.id', 'm_contract.service_id')
-            ->join('m_ship', 'm_ship.id', 'm_contract.ship_id')
-            ->leftJoin('m_contract as contract', function ($join) {
-                $join->on('contract.id', '=', 'm_contract.id')
-                    ->where('contract.approved_flag', Constant::STATUS_WAITING_APPROVE)
-                    ->whereNotNull('contract.updated_at');
-            })
-            ->where('m_ship.company_id', $companyId)
-            ->where('m_ship.del_flag', Constant::DELETE_FLAG_FALSE)
-            ->where(function ($query) {
-                return $query->where('m_contract.status', Constant::STATUS_CONTRACT_ACTIVE)
-                    ->orWhere('m_contract.status', Constant::STATUS_CONTRACT_PENDING);
-            })
-            ->whereNull('m_contract.deleted_at')
-            ->whereNull('contract.id')
+            ->where('m_contract.del_flag', Constant::DELETE_FLAG_FALSE)
             ->groupBy(['m_contract.service_id'])
             ->get();
     }
@@ -236,35 +204,35 @@ class ContractRepository extends EloquentRepository implements ContractInterface
         $contract = DB::table('m_contract')
                 ->join('m_ship', function($join) {
                     $join->on('m_ship.id', '=', 'm_contract.ship_id')
-                    ->where('m_ship.del_flag', Constant::DELETE_FLAG_FALSE);
+                         ->where('m_ship.del_flag', Constant::DELETE_FLAG_FALSE);
                 })
                 // Check company sync to ship
                 ->join('m_company', function($join) use ($paramCondition) {
                     if (isset($paramCondition['company']) && count($paramCondition['company']) > 0) {
                         $join->on('m_ship.company_id', '=', 'm_company.id')
-                            ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE)
-                            ->whereIn('m_company.id', $paramCondition['company']);
+                             ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE)
+                             ->whereIn('m_company.id', $paramCondition['company']);
                         unset($paramCondition['company']);
                     } else {
                         $join->on('m_ship.company_id', '=', 'm_company.id')
-                            ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE);
+                             ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE);
                     }
                 })
                 ->join('m_service', function($join) {
                     $join->on('m_service.id', '=', 'm_contract.service_id')
-                        ->where('m_service.del_flag', Constant::DELETE_FLAG_FALSE);
+                         ->where('m_service.del_flag', Constant::DELETE_FLAG_FALSE);
                 })
                 ->join('t_price_service', function($join) {
                     $join->on('m_service.id', '=', 't_price_service.service_id')
-                        ->where('t_price_service.del_flag', Constant::DELETE_FLAG_FALSE);
+                         ->where('t_price_service.del_flag', Constant::DELETE_FLAG_FALSE);
                 })
                 ->join('m_nation', function($join) {
                     $join->on('m_ship.nation_id', '=', 'm_nation.id')
-                            ->where('m_nation.del_flag', Constant::DELETE_FLAG_FALSE);
+                         ->where('m_nation.del_flag', Constant::DELETE_FLAG_FALSE);
                 })
                 ->join('m_currency', function($join) {
                     $join->on('m_company.currency_id', '=', 'm_currency.id')
-                            ->where('m_currency.del_flag', Constant::DELETE_FLAG_FALSE);
+                         ->where('m_currency.del_flag', Constant::DELETE_FLAG_FALSE);
                 })
                 ->select([
                     "m_contract.id as contract_id",
@@ -284,13 +252,18 @@ class ContractRepository extends EloquentRepository implements ContractInterface
                     "m_ship.name as contract_ship_name",
                     'm_currency.id as contract_currency_id',
                     'm_currency.code as contract_currency_name',
+                    'm_company.id as contract_company_id',
+                    't_price_service.charge_register as contract_charge_register',
+                    't_price_service.charge_create_data as contract_charge_create_data',
                     DB::raw(
                         "DATE_FORMAT(m_contract.start_date, '%Y/%m/%d') as contract_start_date, "
                         . "DATE_FORMAT(m_contract.end_date, '%Y/%m/%d') as contract_end_date")
                 ])
-                ->whereIn('approved_flag', [
+                ->whereIn('m_contract.approved_flag', [
                     Constant::STATUS_APPROVED,
                     Constant::STATUS_REJECT_APPROVE]);
+                // Add condition query status of contract
+                $contract = $this->_addConditionStatusForContract($contract, $paramCondition);
 
         // Check if get all contract inside all ship
         if (empty($idShip) || is_null($idShip)) {
@@ -323,6 +296,34 @@ class ContractRepository extends EloquentRepository implements ContractInterface
         return $contract
                         ->where('m_ship.id', $idShip)
                         ->get();
+    }
+
+    /**
+     * Add condition status for sql query contract
+     * 
+     * @param Illuminate\Database\Query\Builder $query
+     * @param type $condition
+     * @return Illuminate\Database\Query\Builder
+     */
+    protected function _addConditionStatusForContract($queryContract = null, $paramCondition = [])
+    {
+        // Check if where status contract
+        if (isset($paramCondition['contractStatus']) 
+                && count($paramCondition['contractStatus']) > 0) {
+            // Check user get contract was deleted
+            if (isset($paramCondition['contractDelete']) && $paramCondition['contractDelete']) {
+                $queryContract->where(function ($query) use ($paramCondition) {
+                    $query->whereIn('m_contract.status', $paramCondition['contractStatus'])
+                            ->orWhere('m_contract.del_flag', Constant::DELETE_FLAG_TRUE);
+                });
+                unset($paramCondition['contractDelete']);
+            } else {
+                $queryContract->whereIn('m_contract.status', $paramCondition['contractStatus']);
+            }
+            unset($paramCondition['contractStatus']);
+        }
+
+        return $queryContract;
     }
 
     /**
@@ -398,5 +399,37 @@ class ContractRepository extends EloquentRepository implements ContractInterface
             ->where($condition)
             ->whereIn('service_id', $serviceIds)
             ->get();
+    }
+
+    /**
+     * Check exists contract was enabled with this ship
+     * 
+     * @access public
+     * @param type $shipId
+     * @param type $serviceId
+     * @param type $oldContract
+     * @return boolean
+     */
+    public function getAllContractEnablingOfShip($shipId, $serviceId, $oldContract = null)
+    {
+        return DB::table('m_contract')
+                ->where(function($query) use ($shipId, $serviceId, $oldContract){
+                    $query->where('ship_id', $shipId)
+                          ->where('service_id', $serviceId);
+                    // Get list contract except to current contract
+                    if (!is_null($oldContract)) {
+                        $query->where('ship_id', '<>', $oldContract->contract_ship_id)
+                              ->where('service_id', '<>', $oldContract->contract_service_id);
+                    }
+                })
+                ->orWhere(function($query) use ($shipId, $serviceId){
+                    $query->where('ship_id', $shipId)
+                          ->where(function($inQuery) use ($serviceId) {
+                            // Get contract waiting accpet approve
+                            $inQuery->where('reason_reject', 'LIKE', '%"service_id":"'.$serviceId.'"%')
+                                    ->orWhere('reason_reject', 'LIKE', '%"service_id":'.$serviceId.'%');
+                        });
+                })
+                ->get();
     }
 }

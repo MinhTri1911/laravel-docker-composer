@@ -35,9 +35,9 @@ return [
         'lbl_ship_url1' => '関連情報URL1',
         'lbl_ship_url2' => '関連情報URL2',
         'lbl_ship_url3' => '関連情報URL3',
-        
+
         'btn_edit_ship' => '編集',
-        
+
         'lbl_ship_contract' => '契約',
         'lbl_no_ship_contract' => '合計:number件',
         'lbl_contract_id' => '契約ID',
@@ -50,13 +50,13 @@ return [
         'lbl_contract_date_create' => '作成日',
         'lbl_contract_date_update' => '更新日',
         'lbl_contract_no' => '作成した契約がありません。',
-        
+
         'btn_contract_create' => '作成',
         'btn_contract_disable' => '中断',
         'btn_contract_delete' => '削除',
         'btn_contract_edit' => '編集',
         'btn_contract_restore' => 'Restore',
-        
+
         'lbl_ship_spot' => 'スポット費用',
         'lbl_no_ship_spot' => '合計:number件',
         'lbl_spot_id' => 'スポットID',
@@ -69,7 +69,7 @@ return [
         'lbl_limit' => '表示件数',
         'lbl_error_contract_pending' => '表示件数',
         'lbl_spot_no' => '作成したスポット費用がありません。',
-       
+
         'btn_back' => '戻る',
         'btn_create' => '作成',
         'btn_disable' => '中断',
@@ -78,53 +78,66 @@ return [
         'btn_contract_restore' => '復活',
         'btn_cancel' => 'キャンセル',
         'btn_ok' => 'OK',
-        
+
         'res_tit_restore_contract' => '契約復活確認',
         'msg_restore_success' => '契約が有効化されました。',
         'msg_restore_failed' => '契約が無効化失敗しました。',
-        
+
         'res_tit_disable_contract' => '契約無効化確認',
         'msg_disable_success' => ':contractの契約が無効にされました。',
-        'msg_disable_failed' => '契約が無効化失敗しました。',
+        'msg_disable_failed' => '契約:contractが無効化失敗しました。',
+        'msg_disable_no' => '無効化された契約がありません。',
+        'msg_disable_error' => '契約の無効化にエラーが発生しました。',
         
         'res_tit_delete_contract' => '契約削除確認',
         'msg_delete_success' => ':contractの契約が削除されました。',
-        'msg_delete_failed' => 'Delete không thành công',
+        'msg_delete_failed' => '契約:contractが削除失敗しました。',
+        'msg_delete_no' => '削除した契約がありません。',
+        'msg_delete_error' => '契約の削除にエラーが発生しました。',
         
+//
+//        'msg_disable_failed' => '契約が無効化失敗しました。',
+//
+//        'res_tit_delete_contract' => '契約削除確認',
+//        'msg_delete_success' => ':contractの契約が削除されました。',
+//        'msg_delete_failed' => 'Delete không thành công',
+
         'res_tit_delete_spot' => 'スポット費用削除確認',
         'msg_delete_spot_success' => 'スポット費用が削除されました。',
         'msg_delete_spot_failed' => 'スポット費用の削除にエラーが発生しました。',
-        
+
         'res_tit_delete_ship' => '船舶削除確認ポップアップ',
         'msg_delete_ship_success' => '船舶削除が成功しました。',
-        'msg_delete_ship_failed' => 'Delete ship không thành công',
+        'msg_delete_ship_failed' => '船舶削除が失敗しました。',
         'msg_delete_ship_failed_auth' => '認証エラーが発生しました。',
-        
-        'pop_auth_delete_ship' => '船舶削除確認ポップアップ',
+
+        'msg_delete_ship_only_ship' => 'この船舶を削除することができません。これは会社の唯一の船舶です。',
+
+        'pop_auth_delete_ship' => 'パスワード認証',
         'lbl_input_pw' => 'パスワード入力',
-        
+
         'lbl_popup_del_contract' => '契約を削除確認',
         'lbl_popup_del_contract_msg' => '選択した契約を削除してもよろしいですか?',
-        
+
         'pop_title_contract_del' => '契約を削除確認',
         'pop_message_contract_del' => '選択した契約を削除してもよろしいですか?',
         'pop_title_contract_error' => 'エラー',
         'pop_message_contract_unselect' => '契約を選択してください。',
-        
+
         'pop_title_contract_re' => "契約を復活確認",
         'pop_message_contract_re' => "の契約を復活してもよろしいですか?",
-        
+
         'pop_title_contract_dis' => "船舶削除確認ポップアップ",
         'pop_message_contract_dis' => "船舶を承認してもよろしいですか?",
-        
+
         'pop_title_spot_del' => "スポット費用を削除確認",
         'pop_message_spot_del' => "を削除してもよろしいですか?",
-        
+
         'pop_title_ship_del' => "船舶削除確認ポップアップ",
         'pop_message_ship_del' => "船舶を承認してもよろしいですか?",
-        
+
         'pop_message_auth_pw' => "パスワードを入力してください。",
-        
+
         'pop_title_reject' => '却下理由'
     ]
 ];

@@ -1,6 +1,6 @@
 <?php
 
-Route::group(['middleware' => 'auth', 'prefix' => 'ship/contract', 'as' => 'ship.contract'], function() {
+Route::group(['middleware' => 'auth', 'prefix' => 'ship', 'as' => 'ship.contract'], function() {
    Route::get('/{id?}/detail', 'ShipContractController@detail')->name('.detail');
    Route::post('/restore-contract', 'ShipContractController@restoreContract')->name('.restore');
    Route::post('/disable-contract', 'ShipContractController@disableContract')->name('.disable');

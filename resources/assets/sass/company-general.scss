@@ -161,6 +161,17 @@ and open the template in the editor.
       }
     }
   }
+
+  .tbody-result {
+    tr {
+      .col-company-name, .col-service-name {
+        a {
+          color: #5482f6;
+          text-decoration: underline;
+        }
+      }
+    }
+  }
 }
 /*
 * start css detail company
@@ -300,6 +311,10 @@ and open the template in the editor.
 .create-company, .update-company {
   .alert-danger {
     display: none;
+  }
+
+  .alert-show {
+    display: block !important;
   }
 
   .block-input {

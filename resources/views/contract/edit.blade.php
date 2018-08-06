@@ -154,6 +154,37 @@
                         </tbody>
                     </table>
                 </div>
+            @else
+                @if($contract->contract_approved_flag == \App\Common\Constant::STATUS_REJECT_APPROVE && $contract->contract_updated_at == null)
+                    <h4>{{__('contract.header_spot')}}</h4>     
+                    <div class="content-block table-block">
+                        <table class="table table-blue table-ship">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>{{__('contract.lbl_type_spot')}}</th>
+                                    <th>{{__('contract.lbl_cost_spot')}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>{{__('contract.lbl_spot_regist')}}</td>
+                                    <td class="{{ $errors->has('chargeRegister') ? ' has-error' : '' }}">
+                                        {!! Form::text('chargeRegister', $errors->has('chargeRegister')?old('chargeRegister'):(Str::convertMoneyComma($contract->contract_charge_register)??null), ['class' => 'form-control', 'placeholder' => __('contract.lbl_spot_regist')]) !!}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>{{__('contract.lbl_spot_data')}}</td>
+                                    <td class="{{ $errors->has('chargeCreate') ? ' has-error' : '' }}">
+                                        {!! Form::text('chargeCreate', $errors->has('chargeCreate')?old('chargeCreate'):(Str::convertMoneyComma($contract->contract_charge_create_data)??null), ['class' => 'form-control', 'placeholder' => __('contract.lbl_spot_data')]) !!}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
             @endif
             </div>
             <div class="block-handle align-right">
@@ -166,6 +197,7 @@
     {{ Form::hidden('currencyId', $contract->contract_currency_id) }}
     {{ Form::hidden('shipId', $contract->contract_ship_id) }}
     {{ Form::hidden('serviceIdHidden', $contract->contract_service_id) }}
+    {{ Form::hidden('serviceIdOld', $contract->contract_service_id) }}
     {!! Form::close() !!}
 </div>
 {{-- Popup --}}

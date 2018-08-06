@@ -177,7 +177,23 @@ class ShipBusiness
 
         return $dataQuery;
     }
-
+    
+    /**
+     * 
+     * @param type $request
+     */
+    public function getPriceService($request)
+    {
+        if (!$request->filled('serviceId') || !$request->filled('currencyId')) {
+            return null;
+        }
+        
+        return $this->_shipRepository->getPriceService([
+            't_price_service.service_id' => $request->get('serviceId'),
+            't_price_service.currency_id' => $request->get('currencyId')
+        ]);
+    }
+    
     /**
      * Get list view data
      * 1. Get list company

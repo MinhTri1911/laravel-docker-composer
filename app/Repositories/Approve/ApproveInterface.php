@@ -56,7 +56,15 @@ interface ApproveInterface
      * @return int
      */
     public function updateSpot($id, $dataUpdate);
-    
+
+    /**
+     * Handle delete spot out from system
+     * @access public
+     * @param array $arrIdSpot
+     * @return boolean Illuminate\Database\Query\Builder::delete()
+     */
+    public function deleteSpotApproval($arrIdSpot = []);
+
     /**
      * Execute query update data billing
      * 

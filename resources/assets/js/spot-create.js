@@ -36,6 +36,7 @@ var spotCreate = new function () {
                 },
                 success: function (data) {
                     $(spotCreate.models.amountCharge).val(data);
+                    Events.separateComma($("input[name='amountCharge']"));
                 },
                 // Not do anything when error
                 error: function (error) {
@@ -48,5 +49,6 @@ var spotCreate = new function () {
 };
 
 $(document).ready(function () {
+    Events.separateComma($("input[name='amountCharge']"));
     spotCreate.init();
 });

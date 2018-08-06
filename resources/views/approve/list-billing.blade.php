@@ -57,8 +57,8 @@
         @if(!request()->has('setting_status') || 
                 (request()->has('setting_status') && request()->get('setting_status') != \App\Common\Constant::STATUS_REJECT_APPROVE))
             <div class="block-handle align-right">
-                <div class="btn btn-red btn-w150 btn-reject" data-type="2">{{__('approve.btn_approve')}}</div>
-                <div class="btn btn-blue-dark btn-w150 btn-approve" data-type="2">{{__('approve.btn_reject')}}</div>
+                <div class="btn btn-red btn-w150 btn-reject" data-type="2">{{__('approve.btn_reject')}}</div>
+                <div class="btn btn-blue-dark btn-w150 btn-approve" data-type="2">{{__('approve.btn_approve')}}</div>
             </div>
         @endif
     @endif

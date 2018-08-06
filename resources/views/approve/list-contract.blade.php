@@ -1,7 +1,6 @@
  <h4 class="rs-title">{{__('approve.header_contract')}}</h4>
 <div class="content-block table-block">
     <div class="extra-block">
-        <a href="list-contract.blade.php"></a>
         <div class="pull-left lbl-page-text">{{__('approve.lbl_page_text', ['total' => $datas->total()])}}</div>
         <div class="limit-block pull-right">
             <span class="lbl_limit">{{__('ship-contract.detail.lbl_limit')}}</span>
@@ -66,7 +65,6 @@
                 @endforeach
             @else
             <tr>
-        <a href="list-billing.blade.php"></a>
                 <td colspan="9">{{__('approve.lbl_no_record')}}</td>
             </tr>
             @endif
@@ -76,8 +74,8 @@
         @if(!request()->has('setting_status') || 
             (request()->has('setting_status') && request()->get('setting_status') != \App\Common\Constant::STATUS_REJECT_APPROVE))
         <div class="block-handle align-right">
-            <div class="btn btn-red btn-w150 btn-reject" data-type="0">{{__('approve.btn_approve')}}</div>
-            <div class="btn btn-blue-dark btn-w150 btn-approve" data-type="0">{{__('approve.btn_reject')}}</div>
+            <div class="btn btn-red btn-w150 outModal btn-reject" data-type="0">{{__('approve.btn_reject')}}</div>
+            <div class="btn btn-blue-dark btn-w150 outModal btn-approve" data-type="0">{{__('approve.btn_approve')}}</div>
         </div>
         @endif
     @endif

@@ -1,0 +1,87 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/*
+    Author     : Rikkei.QuyenL
+*/
+// Import Mixin
+@import "option/mixins";
+// Import Header
+@import "elements/header";
+// Import Sidebar
+@import "elements/sidebar";
+// import Date Picker Jquery
+@import "option/datepicker";
+// import Time Picker Jquery
+@import "option/timepicker";
+// import variable
+@import "option/variable";
+
+/**
+  Stylesheet for list auth
+ */
+.auth-list {
+  .main-summary {
+
+    div.inline-select {
+      display: inline-block;
+    }
+
+    table.table-blue {
+
+      th.custom-width {
+        width: 220px;
+      }
+
+      tbody > tr > td {
+        padding-bottom: 3px;
+        vertical-align: middle;
+        .custom-checkbox {
+          padding-top: 5px;
+        }
+      }
+    }
+  }
+}
+
+/*
+  Custom distant element
+*/
+.mg-bt-60 {
+  margin-bottom: 60px !important;
+}
+
+.mg-t-30 {
+  margin-top: 30px !important;
+}
+
+.mg-l-30 {
+  margin-left: 30px !important;
+}
+
+@media screen and (min-width: 1024px) {
+  .inline-select {
+    width: 229px;
+  }
+}
+
+@media only screen and (max-width: 1860px) {
+  /*
+  * start css list ship
+  */
+  .block-table {
+    max-width: 100%;
+    position: relative;
+  }
+
+  .table-result {
+    width: 1700px;
+  }
+
+  .table-content {
+    width: 1700px;
+  }
+}
+

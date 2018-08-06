@@ -80,10 +80,12 @@ class ShipRepository extends EloquentRepository implements ShipInterface
                     "m_ship.url_1 as ship_url_1",
                     "m_ship.url_2 as ship_url_2",
                     "m_ship.url_3 as ship_url_3",
+                    "m_company.id as company_id",
                     "m_company.name_jp as company_name",
                     "m_nation.name_jp as nation_name",
                     "m_ship_classification.name_jp as ship_classify",
-                    "m_ship_type.type as ship_type"
+                    "m_ship_type.type as ship_type",
+                    DB::raw('(select count(m_ship_s.id) from m_ship m_ship_s where m_ship_s.company_id=m_ship.company_id) as total_ship')
                 ])
                 ->where('m_ship.del_flag', Constant::DELETE_FLAG_FALSE);
 
@@ -128,8 +130,14 @@ class ShipRepository extends EloquentRepository implements ShipInterface
                     "m_contract.created_at as contract_created_at",
                     "m_contract.updated_at as contract_updated_at",
                     "m_contract.approved_flag as contract_approved_flag",
+                    "m_contract.start_pending_date as contract_start_pending_date",
+                    "m_contract.end_pending_date as contract_end_pending_date",
+                    "m_contract.remark as contract_remark",
+                    "m_contract.del_flag as contract_del_flag",
+                    "m_contract.deleted_at as contract_deleted_at",
                     "m_service.id as service_id",
                     "m_service.name_jp as service_name",
+                    "m_ship.id as contract_ship_id",
                 ])
                 ->whereIn('approved_flag', [
                     Constant::STATUS_APPROVED,
@@ -141,32 +149,38 @@ class ShipRepository extends EloquentRepository implements ShipInterface
             if (!empty($idContract) && !is_null($idContract)) {
                 if (is_array($idContract))
                     return $contract
-                                    ->whereIn('m_contract.id', $idContract)
-                                    ->get();
+                        ->whereIn('m_contract.id', $idContract)
+                        ->orderBy('m_contract.id', 'DESC')
+                        ->get();
                 return $contract
                                 ->where('m_contract.id', $idContract)
                                 ->first();
             }
 
-            return $contract->get();
+            return $contract
+                    ->orderBy('m_contract.id', 'DESC')
+                    ->get();
         }
 
         // If get contract inside a ship
         if (!empty($idContract) && !is_null($idContract)) {
             if (is_array($idContract))
                 return $contract
-                                ->whereIn('m_contract.id', $idContract)
-                                ->where('m_ship.id', $idShip)
-                                ->get();
+                        ->whereIn('m_contract.id', $idContract)
+                        ->where('m_ship.id', $idShip)
+                        ->orderBy('m_contract.id', 'DESC')
+                        ->get();
             return $contract
-                            ->where('m_contract.id', $idContract)
-                            ->where('m_ship.id', $idShip)
-                            ->first();
+                    ->where('m_contract.id', $idContract)
+                    ->where('m_ship.id', $idShip)
+                    ->orderBy('m_contract.id', 'DESC')
+                    ->first();
         }
 
         return $contract
-                        ->where('m_ship.id', $idShip)
-                        ->get();
+                ->where('m_ship.id', $idShip)
+                ->orderBy('m_contract.id', 'DESC')
+                ->get();
     }
 
     /**
@@ -196,10 +210,17 @@ class ShipRepository extends EloquentRepository implements ShipInterface
                     "m_contract.end_date as contract_date_end",
                     "m_contract.status as contract_status",
                     "m_contract.approved_flag as contract_approved_flag",
+                    "m_contract.reason_reject as contract_reason_reject",
                     "m_contract.created_at as contract_created_at",
                     "m_contract.updated_at as contract_updated_at",
+                    "m_contract.approved_flag as contract_approved_flag",
+                    "m_contract.start_pending_date as contract_start_pending_date",
+                    "m_contract.end_pending_date as contract_end_pending_date",
+                    "m_contract.remark as contract_remark",
                     "m_service.id as service_id",
                     "m_service.name_jp as service_name",
+                    "m_service.del_flag as contract_del_flag",
+                    "m_ship.id as contract_ship_id"
                 ])
                 ->whereIn('approved_flag', [Constant::STATUS_APPROVED, Constant::STATUS_WAITING_APPROVE, Constant::STATUS_REJECT_APPROVE])
                 ->whereIn('status', [Constant::STATUS_CONTRACT_ACTIVE, Constant::STATUS_CONTRACT_PENDING]);
@@ -259,7 +280,7 @@ class ShipRepository extends EloquentRepository implements ShipInterface
      * @param int $idSpot
      * @return mixed Illuminate\Support\Collection
      */
-    public function getSpot($idShip = null, $idSpot = null, $limit = null) {
+    public function getSpot($idShip = null, $idSpot = null, $limit = null, $condition = []) {
         $spot = DB::table('t_ship_spot')
                 ->join('m_ship', function($join) use ($idShip) {
                     $join->on('m_ship.id', '=', 't_ship_spot.ship_id')
@@ -279,18 +300,30 @@ class ShipRepository extends EloquentRepository implements ShipInterface
                     "t_ship_spot.reason_reject as spot_reason_reject",
                     "t_ship_spot.created_at as spot_created_at",
                     "t_ship_spot.updated_at as spot_updated_at",
+                    "t_ship_spot.contract_id as spot_contract_id",
+                    "t_ship_spot.remark as spot_remark",
                 ])
                 ->where('t_ship_spot.del_flag', Constant::DELETE_FLAG_FALSE);
-
+        
+        if (isset($condition) && count($condition) > 0) {
+            if (isset($condition['idContract']) && is_array($condition['idContract']) && count($condition['idContract']) > 0) {
+                $spot->whereIn('t_ship_spot.contract_id', $condition['idContract']);
+            }
+        }
+        
         // Check exists param id ship
         if (empty($idShip) || is_null($idShip)) {
             if (!empty($idSpot) && !is_null($idSpot))
                 return $spot->where(['t_ship_spot.id' => $idSpot])->first();
 
             if (!is_null($limit)) {
-                return $spot->paginate($limit);
+                return $spot
+                        ->orderBy('t_ship_spot.id', 'DESC')
+                        ->paginate($limit);
             }
-            return $spot->get();
+            return $spot
+                    ->orderBy('t_ship_spot.id', 'DESC')
+                    ->get();
         }
 
         if (!empty($idSpot) && !is_null($idSpot))
@@ -299,10 +332,15 @@ class ShipRepository extends EloquentRepository implements ShipInterface
                                 'm_ship.id' => $idShip])
                             ->first();
         if (!is_null($limit)) {
-            return $spot->where('m_ship.id', $idShip)->paginate($limit);
+            return $spot
+                    ->where('m_ship.id', $idShip)
+                    ->orderBy('t_ship_spot.id', 'DESC')
+                    ->paginate($limit);
         }
 
-        return $spot->get();
+        return $spot
+                ->orderBy('t_ship_spot.id', 'DESC')
+                ->get();
     }
 
     /**
@@ -531,7 +569,7 @@ class ShipRepository extends EloquentRepository implements ShipInterface
      * @param array data
      * @return boolean
      */
-    public function updateDeleteShipWattingApprove($ids, $data)
+    public function updateDeleteShip($ids, $data)
     {
         $data = is_array($data) ? $data : [$data];
 
@@ -554,7 +592,10 @@ class ShipRepository extends EloquentRepository implements ShipInterface
             })
             ->leftJoin('m_contract', function ($join) use ($serviceId) {
                 $join->on('m_contract.ship_id', '=', 'm_ship.id');
-                $join->where('m_contract.service_id', $serviceId);
+                $join->where(function ($query) use ($serviceId) {
+                    return $query->where('m_contract.service_id', $serviceId)
+                        ->orWhere('m_contract.reason_reject', 'LIKE', '%"service_id":"' . $serviceId . '"%');
+                });
             })
             ->where('m_company.id', $companyId)
             ->whereNull('m_contract.id')
@@ -698,6 +739,24 @@ class ShipRepository extends EloquentRepository implements ShipInterface
     public function createShip($data)
     {
         return $this->insert($data);
+    }
+    
+    /**
+     * Get price of service 
+     * 
+     * @param integer $idPriceService
+     * @param array $condition
+     */
+    public function getPriceService($condition = []) {
+        $query = DB::table('t_price_service')
+                ->where('t_price_service.del_flag', Constant::DELETE_FLAG_FALSE);
+        if (count($condition) > 0) {
+            $query = $query->where($condition);
+        }
+        
+        return $query->get();
+        
+
     }
 
     /**

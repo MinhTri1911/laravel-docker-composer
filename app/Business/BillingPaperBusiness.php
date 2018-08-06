@@ -15,10 +15,10 @@ use App\Common\Constant;
 use \Illuminate\Support\Facades\Lang;
 use App\Repositories\Billing\BillingPaperInterface;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 use App\Common\RenderPDF as PDFRender;
 use App\Common\Mail;
 use PHPMailer\PHPMailer\Exception as MailException;
+use App\Common\LoggingCommon as Log;
 
 /**
  * Class BillingPaperBusiness Handle business related billing paper
@@ -28,6 +28,9 @@ class BillingPaperBusiness
 
     // Business billing paper
     private $_billingPaperRepository;
+
+    // The Object log.
+    private $_log = null;
 
     /**
      * BillingPaperBusiness constructor.
@@ -39,6 +42,7 @@ class BillingPaperBusiness
     public function __construct(BillingPaperInterface $billingPaperInterface)
     {
         $this->_billingPaperRepository = $billingPaperInterface;
+        $this->_log = Log::BillingLog();
     }
 
     /**
@@ -61,6 +65,7 @@ class BillingPaperBusiness
             'endMonth' => (integer)date('m'),
             'numberRecord' => @Constant::ARY_PAGINATION_PER_PAGE[10]
         ];
+
         $listSearch = $this->searchBillingPaper($conditionSearch);
         $models['resultSearch'] = $listSearch['resultSearch'];
 
@@ -86,7 +91,7 @@ class BillingPaperBusiness
             // Date of input search
             $startDate = date_create($conditionSearch['startYear'] . '-' . $conditionSearch['startMonth'] . '-1');
             $endDate = date_create($conditionSearch['endYear'] . '-' . $conditionSearch['endMonth'] . '-1');
-            $endDayTime = strtotime(date_format($endDate, "Y-m-d") . ' +' . 1 . ' month -1 days');
+            $endDayTime = strtotime(date_format($endDate, "Y-m-d") . ' last day of +0 month');
 
             // Interval input search
             $minMonth = date_diff($startDate, $monthNow);
@@ -100,13 +105,20 @@ class BillingPaperBusiness
             $conditionSearch['beginDate'] = date_format($startDate, "Y-m-d");
             $conditionSearch['endDate'] = date('Y-m-d', $endDayTime);
 
+            // Permission reference
+            $conditionSearch['auth_reference'] = auth()->user()->auth_reference;
+            $conditionSearch['ope_company_id'] = auth()->user()->ope_company_id;
+
             $models['resultSearch'] = $this->_getListSearchBilling($conditionSearch);
 
             // Set data number of record to display
             $models['numberRecord'] = Constant::ARY_PAGINATION_PER_PAGE;
 
             return $models;
-        } catch (Exception $e) {
+        } catch (Exception $ex) {
+            // Write log
+            $this->_log->err($ex->getMessage());
+
             $models['resultSearch'] = [];
         }
 
@@ -162,13 +174,11 @@ class BillingPaperBusiness
         // Get list search billing
         $listSearchBilling = $this->_billingPaperRepository->getListSearchBilling($conditionSearch);
 
-        $monthNow = date('Y-m') . '-01'; // Date 1 of current month
-
         // Process display data
         foreach ($listSearchBilling as $billing) {
 
             // Check month billing and handle data for display
-            $billing = $this->_handleDataBilling($billing, $monthNow);
+            $billing = $this->_handleDataBilling($billing);
 
             // Set text column money in screen
             $billing->total_money_yen = number_format($billing->total_money, 0);
@@ -199,15 +209,16 @@ class BillingPaperBusiness
      *
      * @access private
      * @param object $billing Object billing paper
-     * @param Date $monthNow Date 1 of current month
      * @return null|object
      */
-    private function _handleDataBilling($billing, $monthNow)
+    private function _handleDataBilling($billing)
     {
+        // Date current
+        $now = date('Y-m-d'); 
 
         // Set payment deadline
-        $monthChange = $billing->payment_deadline_no + 1;
-        $monthDeadline = strtotime(date('Y-m-d', strtotime($monthNow)) . ' +' . $monthChange . ' month -1 days');
+        $monthChange = $billing->payment_deadline_no ;
+        $monthDeadline = strtotime($now . ' last day of +' . $monthChange . ' month');
 
         // Billing paper create or waitng delivery or Delivered
         if ($billing->status == Constant::STATUS_BILLING_WAITING_DELIVERY
@@ -270,7 +281,7 @@ class BillingPaperBusiness
 
             // Set data create billing
             $billingPaper->remark = $model['remark'];
-            $billingPaper->user_login_id = Auth::id();
+            $billingPaper->user_login_id = auth()->id();
 
             // Begin transaction
             DB::beginTransaction();
@@ -281,11 +292,17 @@ class BillingPaperBusiness
             // Commit transaction
             DB::commit();
 
+            // Write log
+            $this->_log->info('Create billing paper company:' . $billingPaper->company_id . ' - ' . $billingPaper->company_name);
+
             return true;
-        } catch (Exception $e) {
+        } catch (Exception $ex) {
 
             // Rollback transaction
             DB::rollBack();
+
+            // Write log
+            $this->_log->err($ex->getMessage());
 
             return [
                 'error_message' => Lang::get('common-message.error.E002')
@@ -310,10 +327,9 @@ class BillingPaperBusiness
         }
 
         $billingPaperData = $billingPaperDatabase[0]; // Set object billing paper
-        $monthNow = date('Y-m') . '-01'; // Date 1 of current month
 
         // Handle data for create billing paper
-        $billingPaper = $this->_handleDataBilling($billingPaperData, $monthNow);
+        $billingPaper = $this->_handleDataBilling($billingPaperData);
 
         // Check month billing fail
         if ($billingPaper === null) {
@@ -391,17 +407,25 @@ class BillingPaperBusiness
             // Commit transaction
             DB::commit();
 
+            // Write log
+            $this->_log->info('Delivery billing paper company:' . $billingPaper->company_id . ' - ' . $billingPaper->company_name);
             return $result;
-        } catch (MailException $e) {
+        } catch (MailException $ex) {
             // Rollback transaction
             DB::rollBack();
+
+            // Write log
+            $this->_log->err($ex->getMessage());
 
             return [
                 'error_message' => Lang::get('common-message.error.E002')
             ];
-        } catch (Exception $e) {
+        } catch (Exception $ex) {
             // Rollback transaction
             DB::rollBack();
+
+            // Write log
+            $this->_log->err($ex->getMessage());
 
             return [
                 'error_message' => Lang::get('common-message.error.E002')
@@ -418,17 +442,16 @@ class BillingPaperBusiness
      */
     private function _prepareDataDelivery($billingPaper)
     {
-        $monthNow = date('Y-m') . '-01'; // Date 1 of current month
+        $now = date('Y-m-d'); // Date current
 
         // Set payment deadline
         if ($billingPaper->delivered_flag == Constant::DELIVERY_FLAG_FALSE) {
-            $monthChange = $billingPaper->payment_deadline_no + 1;
-            $monthDeadline = strtotime(date('Y-m-d', strtotime($monthNow)) . ' +' . $monthChange . ' month -1 days');
-            $billingPaper->payment_due_date = date('Y-m-d', $monthDeadline);
+            $monthChange = $billingPaper->payment_deadline_no ;
+            $billingPaper->payment_due_date = date('Y-m-d', strtotime($now . ' last day of +' . $monthChange . ' month'));
         }
 
         // Set user login
-        $billingPaper->user_login_id = Auth::id();
+        $billingPaper->user_login_id = auth()->id();
 
         return $billingPaper;
     }
@@ -462,7 +485,10 @@ class BillingPaperBusiness
             PDFRender::exportPDFWithView('billing.paper-billing-pdf', ['user' => 'QuangPM'], 'save');
 
             return 'Billing_Paper/' . date('Ym') . '/' . $pdfFileName . '.pdf';
-        } catch (Exception $e) {
+        } catch (Exception $ex) {
+            // Write log
+            $this->_log->err($ex->getMessage());
+
             return null;
         }
     }
@@ -544,6 +570,9 @@ class BillingPaperBusiness
             ];
 
         } catch (Exception $ex) {
+            // Write log
+            $this->_log->err($ex->getMessage());
+
             return [
                 'error_message' => Lang::get('common-message.error.E002')
             ];

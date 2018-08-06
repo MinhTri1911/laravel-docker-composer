@@ -25,11 +25,11 @@ class SearchServiceController extends Controller
     public function index(Request $request) 
     {
         try {
-            
             $shipId = $request->get('shipId');
             $currencyId = $request->get('currencyId');
-
-            return $this->_searchServiceBusiness->initSearchSevice($currencyId, $shipId);
+            $serviceId = $request->get('serviceId');
+            
+            return $this->_searchServiceBusiness->initSearchSevice($currencyId, $shipId, $serviceId);
             
         } catch (Exception $ex) {
             Log::info($ex);
@@ -44,16 +44,20 @@ class SearchServiceController extends Controller
     public function search(Request $request) 
     {
         try {
-            
             $shipId = $request->get('shipId');
             $currencyId = $request->get('currencyId');
             $idServiceSearch = $request->get('idServiceSearch');
             $nameServiceSearch = $request->get('nameServiceSearch');
+            $serviceId = $request->get('serviceId');
             
-            return $this->_searchServiceBusiness->searchSevice($currencyId, $shipId, $idServiceSearch , $nameServiceSearch);
+            return $this->_searchServiceBusiness->searchSevice(
+                        $currencyId, 
+                        $shipId, 
+                        $idServiceSearch, 
+                        $nameServiceSearch, 
+                        $serviceId);
             
         } catch (Exception $ex) {
-            dd($ex);
             Log::info($ex);
         }
     }

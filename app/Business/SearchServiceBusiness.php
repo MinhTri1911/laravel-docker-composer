@@ -32,15 +32,14 @@ class SearchServiceBusiness
      * @param int shipId
      * @return data query
      */
-    public function initSearchSevice($currencyId, $shipId)
+    public function initSearchSevice($currencyId, $shipId, $serviceId = null)
     {
-
         $dataQuery = [];
 
         if ($shipId == null || $shipId == '') {
             $dataQuery = $this->serviceRepository->getListService($currencyId);
         } else {
-            $dataQuery = $this->serviceRepository->getListServiceByShipId($currencyId, $shipId);
+            $dataQuery = $this->serviceRepository->getListServiceByShipId($currencyId, $shipId, $serviceId);
         }
 
         return $dataQuery;
@@ -55,13 +54,16 @@ class SearchServiceBusiness
      * @param string nameServiceSearch
      * @return data query
      */
-    public function searchSevice($currencyId, $shipId, $idServiceSearch, $nameServiceSearch)
+    public function searchSevice($currencyId, $shipId, $idServiceSearch, $nameServiceSearch, $serviceId)
     {
-
         $dataQuery = [];
 
-        $dataQuery = $this->serviceRepository->searchListService($currencyId,$shipId,$idServiceSearch,$nameServiceSearch);
-
+        $dataQuery = $this->serviceRepository->searchListService(
+                $currencyId, 
+                $shipId, 
+                $idServiceSearch, 
+                $nameServiceSearch, 
+                $serviceId);
         return $dataQuery;
     }
 

@@ -29,7 +29,7 @@ interface ServiceInterface
      * @param int shipId
      * @return mixed
     */
-    public function getListServiceByShipId($currencyId, $shipId);
+    public function getListServiceByShipId($currencyId, $shipId, $serviceId);
 
     /**
      * Function search list service
@@ -40,7 +40,7 @@ interface ServiceInterface
      * @param string nameServiceSearch
      * @return mixed
     */
-    public function searchListService($currencyId, $shipId , $idServiceSearch , $nameServiceSearch);
+    public function searchListService($currencyId, $shipId , $idServiceSearch , $nameServiceSearch, $serviceId);
 
     /**
      * Function check exits service by idService

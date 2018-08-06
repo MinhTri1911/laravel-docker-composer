@@ -22,6 +22,7 @@ var company = new function () {
         popupDeleteCompanyDone: '#modal-done',
         popupModalAuth: '#modal-auth',
         modalStackShowAllService: '#modal-stack-one',
+        modalShowMessAction: '#modal-show-message-action',
 
         // Button action
         btnSaveSettingBilling: '#btn-save-setting-billing',
@@ -43,6 +44,8 @@ var company = new function () {
         labelInfo: '.alert-info',
         labelShowMessage: '.lbl-error-message',
         lblDeleteService: '.delete-service-label',
+        h4TitleShowMessAction: '#modal-title-message-action',
+        txtMessAction: '#message-action',
 
         // Form input
         txtPassword: '#pw-user',
@@ -240,8 +243,8 @@ var company = new function () {
 
                 $.post(url, param, function (res) {
                     if (res.code == HTTP_SUCCESS) {
-                        // Close Popup
-                        $(company.model.selectModal).modal('toggle');
+                        // Show popup message
+                        company.showPopUpMessAction(res.message, company.model.selectModal);
                     }
                 })
                 .fail(function(res) {
@@ -340,9 +343,6 @@ var company = new function () {
 
                 $.post(url, param, function (res) {
                     if (res.code === HTTP_SUCCESS) {
-                        // Remove row container service
-                        $('#row-service-id-' + param['service-ids']).remove();
-
                         // Close popup
                         $('#popup-confirm-delete-service').modal('toggle');
 
@@ -403,19 +403,8 @@ var company = new function () {
 
                 $.post(url, param, function (res) {
                     if (res.code === HTTP_SUCCESS) {
-                        // Show message success
-                        if (res.data.typeMessage == company.model.typeSuccess) {
-                            $(company.model.labelSuccess).find('label').empty();
-                            $(company.model.labelSuccess).find('label').append(res.message);
-                            $(company.model.labelSuccess).css({'display': 'block'});
-                        }
-
-                        // Show message info
-                        if (res.data.typeMessage == company.model.typeInfo) {
-                            $(company.model.labelInfo).find('label').empty();
-                            $(company.model.labelInfo).find('label').append(res.message);
-                            $(company.model.labelInfo).css({'display': 'block'});
-                        }
+                        // Show popup message
+                        company.showPopUpMessAction(res.message, company.model.popupDeleteAllService);
                     } else {
                         //Append error message
                         for (var error in res.message) {
@@ -435,6 +424,16 @@ var company = new function () {
             }
 
         });
+    }
+
+    /**
+     * Function show popup message after do action
+     */
+    this.showPopUpMessAction = function (mess, popupClose) {
+        $(this.model.txtMessAction).empty();
+        $(this.model.txtMessAction).append(mess);
+        $(popupClose).modal('toggle');
+        $(this.model.modalShowMessAction).modal('show');
     }
 
     /**

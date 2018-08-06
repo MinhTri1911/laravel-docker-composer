@@ -21,6 +21,7 @@ use App\Scopes\SoftDeletes\SoftDeleteCustoms;
  * @property bool $auth_create
  * @property bool $auth_approve
  * @property bool $auth_reference
+ * @property bool auth_operation
  * @property bool $auth_admin
  * @property string $login_id
  * @property string $password
@@ -59,6 +60,7 @@ class TUserLogin extends Authenticatable
         'auth_create' => 'bool',
         'auth_approve' => 'bool',
         'auth_reference' => 'bool',
+        'auth_operation' => 'bool',
         'auth_admin' => 'bool',
         'type' => 'int',
         'del_flag' => 'bool'

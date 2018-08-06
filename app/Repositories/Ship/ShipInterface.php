@@ -40,16 +40,16 @@ interface ShipInterface
      * @return mixed Illuminate\Support\Collection
      */
     public function getContractActive($idShip = null, $idContract = []);
-    
+
         /**
      * Handle Update contract base on ID and Data update
-     * 
+     *
      * @access public
      * @param int|array $id
      * @param array $data
      */
     public function updateContract($id, $data);
-    
+
     /**
      * Get spot of ship by id ship
      *
@@ -118,7 +118,7 @@ interface ShipInterface
      * @param array data
      * @return boolean
      */
-    public function updateDeleteShipWattingApprove($ids, $data);
+    public function updateDeleteShip($ids, $data);
 
     /**
      * Function select ship not have service by company id and service id
@@ -200,6 +200,14 @@ interface ShipInterface
      * @return bool
      */
     public function createShip($data);
+    
+    /**
+     * Get price of service 
+     * 
+     * @param integer $idPriceService
+     * @param array $condition
+     */
+    public function getPriceService($condition = []);
 
     /**
      * Check exist ship name

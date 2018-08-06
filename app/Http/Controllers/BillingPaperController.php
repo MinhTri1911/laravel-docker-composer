@@ -17,6 +17,8 @@ use \Illuminate\Support\Facades\Lang;
 
 class BillingPaperController extends Controller
 {
+    use RolesController;
+
     // ID Screen
     const screenID = 'SBA0001';
 
@@ -43,6 +45,8 @@ class BillingPaperController extends Controller
      */
     public function index()
     {
+        // Check permission view
+        $this->checkPermission(Constant::ALLOW_BILLING_VIEW, Constant::IS_CHECK_SCREEN);
 
         $models = $this->_billingPaperBusiness->initScreen();
 
@@ -92,6 +96,7 @@ class BillingPaperController extends Controller
      */
     public function createBillingPaper(Request $request)
     {
+
         // Check empty companyId
         if (empty($request->createBillingPaper['companyId'])) {
             return response()->json([
@@ -100,6 +105,9 @@ class BillingPaperController extends Controller
                 'message' => Lang::get('billing.message.choose_row')
             ]);
         }
+
+        // Check permission create
+        $this->checkPermission(Constant::ALLOW_BILLING_CREATE, Constant::IS_CHECK_SCREEN);
 
         // Create billing paper
         $resultCreateBilling = $this->_billingPaperBusiness->createBillingPaper($request->createBillingPaper);
@@ -145,6 +153,9 @@ class BillingPaperController extends Controller
                 'message' => Lang::get('billing.message.choose_row')
             ]);
         }
+
+        // Check permission create
+        $this->checkPermission(Constant::ALLOW_BILLING_CREATE, Constant::IS_CHECK_SCREEN);
 
         // Delivery billing paper
         $resultDeliveryBillingPaper = $this->_billingPaperBusiness->deliveryBillingPaper($request->deliveryBillingPaper);

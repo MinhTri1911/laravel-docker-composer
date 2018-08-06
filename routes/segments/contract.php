@@ -7,5 +7,6 @@ Route::group(['middleware' => 'auth', 'prefix' => 'ship', 'as' => 'contract'], f
    Route::get('/{idShip}/contract/{idContract}/edit', 'ContractController@edit')->name('.edit');
    Route::put('/{idShip}/contract/{idContract}/edit', 'ContractController@update')->name('.update');
    
-   Route::get('/{idShip}/restore', 'ContractController@restore')->name('.restore') ;
+   Route::get('/{idShip}/contract/{idContract}/restore', 'ContractController@restore')->name('.restore') ;
+   Route::put('/{idShip}/contract/{idContract}/restore', 'ContractController@recover')->name('.recover') ;
 });

@@ -63,7 +63,7 @@ class ContractUpdateRequest extends FormRequest
             'endDate.date'                  => __('contract.error.E016', ['item' =>__('contract.lbl_end')]),
             'endDate.date_format'           => __('contract.error.E005', ['item' =>__('contract.lbl_end')]),
             'endDate.after_date_custom'     => __('contract.error.E012'),
-            'endDate.after_or_equal'        => __('contract.error.E020', ['item' => __('contract.lbl_end'), 'value' => date('Y/m/d')]),
+            'endDate.after_or_equal'        => __('contract.error.E020', ['item' => __('contract.lbl_end'), 'value' => date('Y/m/d', strtotime('+1 day'))]),
             'remark.max'                    => __('contract.error.E004', ['item' => __('contract.lbl_remarks'), 'value' => 255])
         ];
     }

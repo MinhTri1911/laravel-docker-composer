@@ -28,11 +28,11 @@
 
                     @if ($errors->count() > 0)
                         <div class="alert alert-danger">
-                            @foreach ($errors->all() as $error)
+                            @foreach ($errors->messages() as $attribute => $error)
                                 <div class="block-error">
                                     <i class="fa fa-exclamation" aria-hidden="true"></i>
                                     <label class="control-label">
-                                        {{ $error }}
+                                        {{ $errors->first($attribute) }}
                                     </label>
                                 </div>
                             @endforeach
@@ -386,7 +386,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-8 col-md-offset-2 mg-t-20">
+                        <div class="col-md-8 col-md-offset-2 mg-t-10">
                             <div class="block-button">
                                 @if (Roles::checkPermission(Constant::ALLOW_SHIP_CREATE, Constant::IS_CHECK_BUTTON))
                                 {{ Form::button(trans('ship.btn_create_ship'), [

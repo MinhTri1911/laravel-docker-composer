@@ -15,7 +15,7 @@ interface TShipSpotInterface
     /**
      * Create
      * @access public
-     * @param arr $data
+     * @param array $data
      * @param int $typeInsert
      * @return mixed Illuminate\Support\Collection
      */
@@ -24,9 +24,25 @@ interface TShipSpotInterface
     /**
      * Create
      * @access public
-     * @param arr $data
-     * @param int $typeInsert
+     * @param array $data
      * @return mixed Illuminate\Support\Collection
      */
     public function createTShipSpotByCurrencyId($data);
+
+    /**
+     * Get edit spot data
+     *
+     * @param int $spotId
+     * @return mixed Laravel collection
+     */
+    public function getEditShipSpotData($spotId);
+
+    /**
+     * Update spot
+     *
+     * @param int $shipSpotId
+     * @param array $updateData
+     * @return bool
+     */
+    public function updateShipSpot($shipSpotId, $updateData);
 }

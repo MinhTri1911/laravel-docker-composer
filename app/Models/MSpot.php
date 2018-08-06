@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 04 Jul 2018 03:46:32 +0000.
+ * Date: Mon, 06 Aug 2018 04:29:17 +0000.
  */
 
 namespace App\Models;
@@ -11,11 +11,12 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class MSpot
- *
+ * 
  * @property int $id
  * @property string $name_jp
  * @property string $name_en
  * @property int $currency_id
+ * @property int $type
  * @property float $charge
  * @property bool $del_flag
  * @property string $created_by
@@ -31,6 +32,7 @@ class MSpot extends Eloquent
 
     protected $casts = [
         'currency_id' => 'int',
+        'type' => 'int',
         'charge' => 'float',
         'del_flag' => 'bool'
     ];

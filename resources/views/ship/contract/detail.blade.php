@@ -153,7 +153,7 @@
                         {{__('ship-contract.detail.lbl_ship_url1')}}
                     </div>
                     <div class="item-value">
-                        <a href="#">{{$ship->detail_ship->ship_url_1}}</a>
+                        <a href="{{$ship->detail_ship->ship_url_1}}">{{$ship->detail_ship->ship_url_1}}</a>
                     </div>
                 </div>
                 <div class="item-row">
@@ -161,7 +161,7 @@
                         {{__('ship-contract.detail.lbl_ship_url2')}}
                     </div>
                     <div class="item-value">
-                        <a href="#">{{$ship->detail_ship->ship_url_2}}</a>
+                        <a href="{{$ship->detail_ship->ship_url_2}}">{{$ship->detail_ship->ship_url_2}}</a>
                     </div>
                 </div>
                 <div class="item-row">
@@ -169,13 +169,17 @@
                         {{__('ship-contract.detail.lbl_ship_url3')}}
                     </div>
                     <div class="item-value">
-                        <a href="#">{{$ship->detail_ship->ship_url_3}}</a>
+                        <a href="{{$ship->detail_ship->ship_url_3}}">{{$ship->detail_ship->ship_url_3}}</a>
                     </div>
                 </div>
             </div>
             <div class="block-handle align-center">
-                <button class="btn btn-red btn-w150 delete-ship" data-ship="{{$ship->detail_ship->ship_id}}">{{__('ship-contract.detail.btn_delete')}}</button>
-                <a href="{{route('ship.edit', $ship->detail_ship->ship_id)}}" class="btn btn-orange btn-w150">{{__('ship-contract.detail.btn_edit_ship')}}</a>
+                <button class="btn btn-red btn-w150 delete-ship" data-ship="{{$ship->detail_ship->ship_id}}">
+                    {{__('ship-contract.detail.btn_delete')}}
+                </button>
+                <a href="{{route('ship.edit', $ship->detail_ship->ship_id)}}" class="btn btn-orange btn-w150">
+                    {{__('ship-contract.detail.btn_edit_ship')}}
+                </a>
             </div>
         </div>
         {{-- End of ship block --}}
@@ -188,9 +192,8 @@
                 <table class="table table-blue table-ship">
                     <thead>
                         <tr>
-
                             <th style="width:3%" class="custom-checkbox">
-                                @if( $ship->contracts->count() > 0)
+                                @if( $ship->contracts->count() > 0 )
                                 <input class="hidden" id="chk_ct_full" type="checkbox">
                                 <label for="chk_ct_full"></label>
                                 @endif
@@ -212,8 +215,15 @@
                             @foreach($ship->contracts as $contract)
                             <tr>
                                 <td class="custom-checkbox">
-                                    <input class="hidden" id="chk_contract_{{$contract->contract_id}}" name="contract" type="checkbox">
-                                    <label for="chk_contract_{{$contract->contract_id}}"></label>
+                                    @if(!is_null($contract->contract_updated_at))
+                                        @if ($contract->contract_approved_flag != \App\Common\Constant::STATUS_WAITING_APPROVE)
+                                            <input class="hidden" id="chk_contract_{{$contract->contract_id}}" name="contract" type="checkbox">
+                                            <label for="chk_contract_{{$contract->contract_id}}"></label>
+                                        @endif
+                                    @else
+                                        <input class="hidden" id="chk_contract_{{$contract->contract_id}}" name="contract" type="checkbox">
+                                        <label for="chk_contract_{{$contract->contract_id}}"></label>
+                                    @endif
                                 </td>
                                 <td style="word-wrap: break-word;">{{$contract->contract_id}}</td>
                                 <td style="word-wrap: break-word;">{{(float)$contract->contract_revision_number}}</td>
@@ -222,25 +232,33 @@
                                 <td style="">{{!is_null($contract->contract_date_end)&&!empty($contract->contract_date_end)?\Carbon\Carbon::parse($contract->contract_date_end)->format(\App\Common\Constant::FORMAT_DATE_TIME['d']):$contract->contract_date_end}}</td>
                                 <td>
                                     <span class="status-contract-{{$contract->contract_id}}">
-                                        @if($contract->contract_status == 0)
-                                            {{\App\Common\Constant::CONTRACT_O[0]}}
-                                        @elseif($contract->contract_status == 1)
-                                            {{\App\Common\Constant::CONTRACT_O[1]}}
+                                        @if($contract->contract_del_flag == \App\Common\Constant::DELETE_FLAG_TRUE)
+                                            {{\App\Common\Constant::CONTRACT_O[3]}}
                                         @else
-                                            {{\App\Common\Constant::CONTRACT_O[2]}}
+                                            @if($contract->contract_status == 0)
+                                                {{\App\Common\Constant::CONTRACT_O[0]}}
+                                            @elseif($contract->contract_status == 1)
+                                                {{\App\Common\Constant::CONTRACT_O[1]}}
+                                            @else
+                                                {{\App\Common\Constant::CONTRACT_O[2]}}
+                                            @endif
                                         @endif
                                     </span>
                                 </td>
                                 <td>
                                     <span class="approve-contract-{{$contract->contract_id}}">
-                                        @if($contract->contract_approved_flag == 1)
+                                        @if($contract->contract_approved_flag == \App\Common\Constant::STATUS_APPROVED)
                                             {{\App\Common\Constant::APPROVED_O[1]}}
-                                        @elseif($contract->contract_approved_flag == 2)
+                                        @elseif($contract->contract_approved_flag == \App\Common\Constant::STATUS_WAITING_APPROVE)
                                             {{\App\Common\Constant::APPROVED_O[2]}}
                                         @else
-                                        <text class="view-reason" data-type="contract" data-id="{{$contract->contract_id}}">
+                                            @if(!is_null($contract->contract_reason_reject))
+                                            <text class="view-reason" data-type="contract" data-id="{{$contract->contract_id}}">
+                                                {{\App\Common\Constant::APPROVED_O[3]}}
+                                            </text>
+                                            @else
                                             {{\App\Common\Constant::APPROVED_O[3]}}
-                                        </text>
+                                            @endif
                                         @endif
                                     </span>
                                 </td>
@@ -248,11 +266,15 @@
                                 <td style="">{{!is_null($contract->contract_updated_at)&&!empty($contract->contract_updated_at)?\Carbon\Carbon::parse($contract->contract_updated_at)->format(\App\Common\Constant::FORMAT_DATE_TIME['dt']):$contract->contract_updated_at}}</td>
                                 <td class="group-btn-contract-{{$contract->contract_id}}">
                                     @if(($contract->contract_approved_flag == \App\Common\Constant::STATUS_APPROVED && $contract->contract_status != \App\Common\Constant::STATUS_CONTRACT_ACTIVE)
-                                        || ($contract->contract_approved_flag == \App\Common\Constant::STATUS_REJECT_APPROVE && $contract->contract_status != \App\Common\Constant::STATUS_CONTRACT_ACTIVE && !is_null($contract->contract_updated_at)))
+                                        || ($contract->contract_approved_flag == \App\Common\Constant::STATUS_APPROVED && $contract->contract_del_flag == \App\Common\Constant::DELETE_FLAG_TRUE)
+                                        || ($contract->contract_approved_flag == \App\Common\Constant::STATUS_REJECT_APPROVE && $contract->contract_status != \App\Common\Constant::STATUS_CONTRACT_ACTIVE && !is_null($contract->contract_updated_at))
+                                        || ($contract->contract_approved_flag == \App\Common\Constant::STATUS_REJECT_APPROVE && $contract->contract_del_flag == \App\Common\Constant::DELETE_FLAG_TRUE && !is_null($contract->contract_updated_at)))
                                         <button class="btn btn-blue-dark btn-custom-sm restore-contract restore-contract-{{$contract->contract_id}}" data-service="{{$contract->service_name}}" data-ship="{{$ship->detail_ship->ship_id}}" data-contract="{{$contract->contract_id}}">{{__('ship-contract.detail.btn_contract_restore')}}</button>
                                     @endif
-                                    @if($contract->contract_approved_flag == \App\Common\Constant::STATUS_APPROVED
+                                    @if(($contract->contract_approved_flag == \App\Common\Constant::STATUS_APPROVED
                                         || $contract->contract_approved_flag == \App\Common\Constant::STATUS_REJECT_APPROVE)
+                                        && $contract->contract_status == \App\Common\Constant::STATUS_CONTRACT_ACTIVE 
+                                        && $contract->contract_del_flag == \App\Common\Constant::DELETE_FLAG_FALSE )
                                             <a href="{{route('contract.edit', [$ship->detail_ship->ship_id, $contract->contract_id])}}" class="btn btn-orange btn-custom-sm edit-contract-{{$contract->contract_id}}">{{__('ship-contract.detail.btn_contract_edit')}}</a>
                                     @endif
                                 </td>
@@ -320,9 +342,14 @@
                                             @elseif($spot->spot_approved_flag == 2)
                                                 {{\App\Common\Constant::APPROVED_O[2]}}
                                             @else
-                                            <text class="view-reason" data-type="spot" data-id="{{$spot->spot_id}}">
+                                                @if(!is_null($spot->spot_reason_reject))
+                                                <text class="view-reason" data-type="spot" data-id="{{$spot->spot_id}}">
+                                                    {{\App\Common\Constant::APPROVED_O[3]}}
+                                                </text>
+                                                @else
                                                 {{\App\Common\Constant::APPROVED_O[3]}}
-                                            </text>
+                                                @endif
+                                            
                                             @endif
                                         </span>
                                     </td>
@@ -333,13 +360,14 @@
                                             && (
                                                 $spot->spot_approved_flag == \App\Common\Constant::STATUS_APPROVED
                                                     || $spot->spot_approved_flag == \App\Common\Constant::STATUS_REJECT_APPROVE))
-                                            <a href="{{url('spot/'.$spot->spot_id.'/edit')}}" class="btn btn-orange btn-custom-sm">{{__('ship-contract.detail.btn_edit')}}</a>
+                                            <a href="{{route('ship.spot.edit', [$ship->detail_ship->ship_id, $spot->spot_id])}}" class="btn btn-orange btn-custom-sm">{{__('ship-contract.detail.btn_edit')}}</a>
                                         @endif
                                         @if((!empty($spot->spot_month_usage) && Str::checkValidMonthFromStr($spot->spot_month_usage))
                                             && (
                                                 $spot->spot_approved_flag == \App\Common\Constant::STATUS_APPROVED
                                                     || ($spot->spot_approved_flag == \App\Common\Constant::STATUS_WAITING_APPROVE && is_null($spot->spot_updated_at))
-                                                    || $spot->spot_approved_flag == \App\Common\Constant::STATUS_REJECT_APPROVE))
+                                                    || $spot->spot_approved_flag == \App\Common\Constant::STATUS_REJECT_APPROVE)
+                                            && is_null($spot->spot_contract_id))
                                             <button class="btn btn-red btn-custom-sm delete-spot" data-ship="{{$ship->detail_ship->ship_id}}" data-spot="{{$spot->spot_id}}">{{__('ship-contract.detail.btn_delete')}}</button>
                                         @endif
                                     </td>

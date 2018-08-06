@@ -133,7 +133,7 @@
                                 {{__('approve.lbl_spot_cost')}}
                             </div>
                             <div class="item-value">
-                                : {{$spot->data_update->spot_amount_charge}}
+                                : {{Str::convertMoneyComma($spot->data_update->spot_amount_charge)}}
                             </div>
                         </div>
                         <div class="item-row">

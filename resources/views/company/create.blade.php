@@ -21,30 +21,23 @@
                 <h2>{{ trans('company.lbl_title_company_infomation') }}</h2>
             </div>
             <!-- begin alert errors -->
-            <div class="alert alert-danger">
-                <div class="block-error">
-                    <i class="fa fa-exclamation" aria-hidden="true"></i>
-                    <label class="control-label">
-                        住所1を入力してください。
-                    </label>
+            @if ($errors->all())
+                <div class="alert alert-danger alert-show">
+                    @foreach ($errors->messages() as $attribute => $error)
+                        <div class="block-error">
+                            <i class="fa fa-exclamation" aria-hidden="true"></i>
+                            <label class="control-label">
+                                {{ $errors->first($attribute) }}
+                            </label>
+                        </div>
+                    @endforeach
                 </div>
-                <div class="block-error">
-                    <i class="fa fa-exclamation" aria-hidden="true"></i>
-                    <label class="control-label">
-                        電話番号を入力してください。
-                    </label>
-                </div>
-                <div class="block-error">
-                    <i class="fa fa-exclamation" aria-hidden="true"></i>
-                    <label class="control-label">
-                        秘密の質問を入力してください。
-                    </label>
-                </div>
-            </div>
+            @endif
+
+            <div class="append-message"></div>
             <!-- end alert errors -->
             {{ Form::open(['url' => route('company.store')]) }}
                 <!-- begin form input company infomation -->
-                {{ Form::hidden('url-check-name-company', route('company.check.duplicate.name', '', ''), ['id' => 'url-check-name-company']) }}
                 <div class="row">
                     <div class="col-md-6 block-input">
                         <div class="lbl-title">
@@ -188,6 +181,24 @@
 
                     <div class="col-md-6 block-input">
                         <div class="lbl-title">
+                            <label for="txt-company-employee-number">
+                                {{ trans('company.lbl_title_company_employee_number') }}
+                            </label>
+                        </div>
+                        <div class="form-input {{ $errors->has('txt-company-employee-number') ? ' has-error' : '' }}">
+                            {{ Form::text('txt-company-employee-number', '', [
+                                    'class' => 'form-control',
+                                    'tabindex' => 8,
+                                    'placeholder' => trans('company.lbl_title_company_employee_number'),
+                                ])
+                            }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 block-input">
+                        <div class="lbl-title">
                             <label for="slb-company-currency">
                                 {{ trans('company.lbl_title_company_currency') }}
                                 <span class="require">*</span>
@@ -199,7 +210,7 @@
                                         'placeholder' => trans('company.lbl_title_company_currency'),
                                         'readonly' => 'readonly',
                                         'id' => 'company-currency',
-                                        'tabindex' => 8,
+                                        'tabindex' => 9,
                                     ])
                                 }}
                                 <div class="input-group-addon show-modal-service"
@@ -209,24 +220,6 @@
                                         <i class="fa fa-search"></i>
                                 </div>
                             {{ Form::hidden('company-currency-id', $currency->first() ? $currency->first()->id : null, ['id' => 'company-currency-id']) }}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 block-input">
-                        <div class="lbl-title">
-                            <label for="txt-company-employee-number">
-                                {{ trans('company.lbl_title_company_employee_number') }}
-                            </label>
-                        </div>
-                        <div class="form-input {{ $errors->has('txt-company-employee-number') ? ' has-error' : '' }}">
-                            {{ Form::text('txt-company-employee-number', '', [
-                                    'class' => 'form-control',
-                                    'tabindex' => 9,
-                                    'placeholder' => trans('company.lbl_title_company_employee_number'),
-                                ])
-                            }}
                         </div>
                     </div>
 
@@ -278,11 +271,11 @@
                                 {{ trans('company.lbl_title_company_month_billing') }}
                             </label>
                         </div>
-                        <div class="form-input custom-select {{ $errors->has('slb-company-month-billing') ? ' has-error' : '' }}">
+                        <div class="form-input custom-select {{ $errors->has('slb-company-month-billing.*') ? ' has-error' : '' }}">
                             @php
                                 $dataMonth = [];
                                 for ($month = 1; $month <= 12; $month++) {
-                                    $dataMonth[$month] = trans('company.slb_month') . $month;
+                                    $dataMonth[$month] = trans('company.lbl_month') . $month;
                                 }
                             @endphp
                             {{ Form::select('slb-company-month-billing[]', $dataMonth, null, [
@@ -300,7 +293,7 @@
                     <div class="col-md-6 block-input">
                         <div class="lbl-title">
                             <label for="txt-company-payment-deadline-no">
-                                {{ trans('company.lbl_title_company_payment_deadline_no') }}
+                                {{ trans('company.lbl_title_company_payment_deadline_no') . '(' . trans('company.lbl_month') . ')' }}
                                 <span class="require">*</span>
                             </label>
                         </div>
@@ -339,7 +332,7 @@
                                 <span class="require">*</span>
                             </label>
                         </div>
-                        <div class="form-input {{ $errors->has('nation-id') ? ' has-error' : '' }}">
+                        <div class="form-input {{ $errors->has('txt-company-currency-code') ? ' has-error' : '' }}">
                             {{ Form::text('txt-company-currency-code', '', [
                                     'class' => 'form-control',
                                     'tabindex' => 15,
@@ -357,7 +350,7 @@
                                 <span class="require">*</span>
                             </label>
                         </div>
-                        <div class="form-input custom-select {{ $errors->has('nation-id') ? ' has-error' : '' }}">
+                        <div class="form-input custom-select {{ $errors->has('slb-company-operation') ? ' has-error' : '' }}">
                             @php
                                 $companyOpeData = [];
                                 $firstCompanyOperation = $companyOpe->first() ? $companyOpe->first()->id : null;
@@ -715,6 +708,9 @@
                                     'tabindex' => 34,
                                     'placeholder' => trans('ship.lbl_title_ship_name'),
                                     'require' => true,
+                                    'id' => 'txt-ship-name',
+                                    'data-url' => route('company.check.duplicate.name'),
+                                    'data-name-remark' => @Constant::DEFAULT_SHIP_NAME,
                                 ])
                             }}
                         </div>
@@ -728,11 +724,14 @@
                             </label>
                         </div>
                         <div class="form-input {{ $errors->has('txt-ship-imo-number') ? ' has-error' : '' }}">
-                            {{ Form::text('txt-ship-imo-number', '0', [
+                            {{ Form::text('txt-ship-imo-number', null, [
                                     'class' => 'form-control',
                                     'tabindex' => 35,
                                     'placeholder' => trans('ship.lbl_title_imo_number'),
                                     'require' => true,
+                                    'id' => 'txt-ship-imo-number',
+                                    'data-url' => route('company.check.duplicate.name'),
+                                    'data-imo-remark' => '0',
                                 ])
                             }}
                         </div>
@@ -819,7 +818,7 @@
                 <div class="row">
                     <div class="col-md-12 block-button">
                         {{ Form::button(trans('company.btn_create_company'), ['class' => 'btn btn-green-dark btn-w150', 'tabindex' => 40, 'type' => 'submit']) }}
-                        {{ Form::button(trans('company.btn_back_to_list'), ['class' => 'btn btn-gray-dark btn-w150', 'tabindex' => 39]) }}
+                        <a href="{{ route('company.index') }}" class="btn btn-gray-dark btn-w150" tabindex="39">{{ trans('company.btn_back_to_list') }}</a>
                     </div>
                 </div>
             {{ Form::close() }}

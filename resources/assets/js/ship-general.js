@@ -213,11 +213,14 @@ function replaceUrlPagination() {
                 'orderBy': obj[key]
             };
             break;
-        } else {
+        }
+
+        if ($('#sort-value').attr('data-current-sort') == key && obj[key] == 0) {
             query = {
-                'field': '',
-                'orderBy': 0
-            }
+                'field': key,
+                'sortBy': 0
+            };
+            break;
         }
     }
 

@@ -25,10 +25,10 @@ trait RolesController
      * @access public
      * @param int $allowConstant
      * @param int $checkType
-     * @param null|int $idCompany default null
+     * @param null|int $companyOperationId default null
      * @return mixed
      */
-    public static function checkPermission($allowConstant, $checkType, $idCompany = null)
+    public static function checkPermission($allowConstant, $checkType, $companyOperationId = null)
     {
         // Get screen by user role
         $user = auth()->user();
@@ -40,7 +40,7 @@ trait RolesController
         );
 
         // Call get permission function
-        $allowAccess = self::getPermission($allowConstant, $idCompany);
+        $allowAccess = self::getPermission($allowConstant, $companyOperationId);
 
         /**
          * Check allow access and redirect to 403 Forbidden page
@@ -204,20 +204,18 @@ trait RolesController
      * Check operation own company
      *
      * @access public
-     * @param int $idCompany
+     * @param int $companyOperationId
      * @return int status depend company IN or OUT
      */
-    public static function checkOperationCompany($idCompany)
+    public static function checkOperationCompany($companyOperationId)
     {
         // Get array list company of user logged
-        $userCompany = Base::role()->getUserCompany(self::getUserData());
+        $loggedOperationCompany = auth()->user()->ope_company_id;
 
-        if ($idCompany !== null && !empty($userCompany)) {
-            return in_array($idCompany, $userCompany)
-                ? Constant::STATUS_DEPEND_COMPANY_IN
-                : Constant::STATUS_DEPEND_COMPANY_OUT;
+        if ($loggedOperationCompany == $companyOperationId) {
+            return Constant::STATUS_DEPEND_COMPANY_IN;
         }
 
-        return Constant::STATUS_DEPEND_COMPANY_IN;
+        return Constant::STATUS_DEPEND_COMPANY_OUT;
     }
 }

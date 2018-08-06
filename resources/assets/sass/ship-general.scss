@@ -204,10 +204,6 @@ input[name="nation"] {
     display: block !important;
   }
 
-  .alert-warning {
-    display: none;
-  }
-
   .alert {
     margin-bottom: 2px !important;
   }
@@ -254,6 +250,10 @@ input[name="nation"] {
       }
     }
   }
+
+  .table-default {
+    margin-top: 25px;
+  }
 }
 
 @media only screen and (max-width: 1860px) {
@@ -278,13 +278,7 @@ table.table-result > tbody > tr > td:first-child {
   border-left: none;
 }
 
-/**
- * Add custom css
- */
-.pd-bt-60 {
-  padding-bottom: 60px !important;
-}
-
-.mg-t-20 {
-  margin-top: 20px !important;
+.block-list-ship > .show-all-ship {
+  color: $color-blue-darker;
+  text-decoration: underline;
 }

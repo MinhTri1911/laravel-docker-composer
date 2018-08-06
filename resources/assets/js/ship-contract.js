@@ -367,7 +367,7 @@ var Handler = {
      */
     showPopup: function(data) {
         $('#modalTitle').text(this.modalPopup.title);
-        $('#modalMessage').text(this.modalPopup.message);
+        $('#modalMessage').html(this.modalPopup.message);
         $("#modal-confirm").modal("show");
         $("#modal-confirm").on("shown.bs.modal", function(){
             if (!$("body").hasClass('modal-open')) {
@@ -457,7 +457,7 @@ var Handler = {
         $.ajax({
             type: "POST",
             data: {"contract_id": contract_id, "ship_id": ship_id},
-            url: '/ship/contract/restore-contract',
+            url: '/ship/restore-contract',
             success: function(){
                 vThis.hidePopup();
             },
@@ -469,15 +469,16 @@ var Handler = {
                  window.location.href = data.redirectTo;
              }else{
                  if(typeof data.status != typeof undefined && data.status == true){
-                     vThis.modalDone.title = data.title;
-                     vThis.modalDone.message = data.message;
-                     vThis.showPopupDoneRestoreContract();
-                     vThis.uiAfterRestoreContract(data);
-                     vThis.clearChecking("input[name='contract']");
+                    vThis.modalDone.title = data.title;
+                    vThis.modalDone.message = data.message;
+                    vThis.showPopupDoneRestoreContract();
+                    vThis.uiAfterRestoreContract(data);
+                    vThis.clearChecking("input[name='contract']");
                  }else{
-                     vThis.modalDone.title = data.title;
-                     vThis.modalDone.message = data.message;
-                     vThis.showPopupDoneRestoreContract();
+                    console.log(data);
+                    vThis.modalDone.title = data.title;
+                    vThis.modalDone.message = data.message;
+                    vThis.showPopupDoneRestoreContract();
                  }
              }
          }); 
@@ -520,7 +521,7 @@ var Handler = {
     showPopupDoneDisableContract: function(){
         var vThis = this;
         $('#modalTitleDone').text(vThis.modalDone.title);
-        $('#modalMessageDone').text(vThis.modalDone.message);
+        $('#modalMessageDone').html(vThis.modalDone.message);
         $("#modal-done").modal("show");
         $("#modal-done").on('shown.bs.modal', function() {
             if (!$("body").hasClass('modal-open')) {
@@ -542,7 +543,7 @@ var Handler = {
         $.ajax({
             type: "POST",
             data: {"contract_id": contract_id, "ship_id": ship_id},
-            url: '/ship/contract/disable-contract',
+            url: '/ship/disable-contract',
             success: function(){
                 vThis.hidePopup();
             },
@@ -600,7 +601,7 @@ var Handler = {
     showPopupDoneDeleteContract: function() {
         var vThis = this;
         $('#modalTitleDone').text(vThis.modalDone.title);
-        $('#modalMessageDone').text(vThis.modalDone.message);
+        $('#modalMessageDone').html(vThis.modalDone.message);
         $("#modal-done").modal("show");
         $("#modal-done").on("shown.bs.modal", function() {
             if (!$("body").hasClass('modal-open')) {
@@ -622,7 +623,7 @@ var Handler = {
         $.ajax({
             type: "POST",
             data: {"contract_id": contract_id, "ship_id": ship_id},
-            url: '/ship/contract/delete-contract',
+            url: '/ship/delete-contract',
             success: function(data) {
                 vThis.hidePopup();
             },
@@ -653,6 +654,7 @@ var Handler = {
         if (typeof res.contracts != typeof undefined || typeof res.contractDelete != typeof undefined
                 || typeof res.contractRemove != typeof undefined){
             this.reloadContract();
+//            this.reloadSpot();
         }
     },
     
@@ -702,7 +704,7 @@ var Handler = {
         $.ajax({
             type: "POST",
             data: {"spot_id": spot_id, "ship_id": ship_id},
-            url: '/ship/contract/delete-spot',
+            url: '/ship/delete-spot',
             success: function() {
                 vThis.hidePopup();
             },
@@ -749,7 +751,7 @@ var Handler = {
         $.ajax({
             type: "GET",
             data: {"type": type, "id": id},
-            url: '/ship/contract/view-reason',
+            url: '/ship/view-reason',
             error: function(error) {
                 vThis.errorHandler(error);
             }
@@ -822,11 +824,11 @@ var Handler = {
             $('#ship-del-error').text(vThis.modalAuth.error_emp);
             return false;
         }
-        
+
         $.ajax({
             type: "POST",
             data: {"ship_id": $('#ship-id').val(), 'pw': $('#pw-user').val()},
-            url: '/ship/contract/delete-ship',
+            url: '/ship/delete-ship',
             success: function(){
                 vThis.hidePopup();
                 $('#modal-auth').modal('hide');
@@ -839,7 +841,7 @@ var Handler = {
              console.log(data);
             vThis.modalDone.title = data.title;
             vThis.modalDone.message = data.message || "";
- 
+
             $('#modalTitleDone').text(vThis.modalDone.title);
             $('#modalMessageDone').text(vThis.modalDone.message);
             $("#modal-done").modal("show");
@@ -852,7 +854,10 @@ var Handler = {
             // Redirect after delete ship
             if (data.status) {
                 setTimeout(function(e){
-                    window.location.href = vThis.modalAuth.redirectAfterDone;
+                    if(window.location.href.search(/company-id=[0-9]+/)) {
+                        var dx = window.location.href.match(/company-id=[0-9]+/);
+                    }
+                    window.location.href = vThis.modalAuth.redirectAfterDone+(dx?'?'+dx[0]:'');
                 }, 2000);
             }
         }); 
@@ -874,16 +879,39 @@ var Handler = {
     * Set limit page when change select box
     */
    limitPage: function() {
+        var vThis = this;
         // Handle ajax for limit page
         $(document).on('change', '.limit-page', function() {
-             var targetUrl = decodeURIComponent(window.location.protocol + "//" + window.location.host  + window.location.pathname);
-             var limit = $(this).val();
-            
-            targetUrl = targetUrl+'?limit='+limit;
-              $.pjax({
-                 url: targetUrl,
-                 container: '.content-load'
-             });
+            var limit = $(this).val();
+            vThis.loadPage(limit);
         });
+   },
+   
+   /**
+    * Handle refresh content load pjax after process flow
+    * @param {Element.value} limit
+    * @returns {void}
+    */
+   loadPage: function(limit) {
+        var targetUrl = decodeURIComponent(window.location.protocol + "//" + window.location.host  + window.location.pathname);
+        // Reset config page number and limit number for page
+        var query = (window.location.search).replace(/((&?|&+|\??)page=[0-9]+)+/, '').replace(/^\?/, '');
+        
+        if(typeof limit !== "undefined" && !isNaN(limit) && limit > 0 ) {
+            query = query.replace(/((&?|&+|\??)limit=[0-9]+)+/, '').replace(/^\?/, '');
+            if (query.length) {
+                query += '&limit='+limit;
+            } else {
+                 query += 'limit='+limit;
+            }
+       }
+       
+        // Append query to url
+        targetUrl = targetUrl+'?'+query;
+
+        $.pjax({
+           url: targetUrl,
+           container: '.content-load'
+       });
    }
-}
+};

@@ -54,6 +54,22 @@ header.header{
             line-height: (20/14);
         }
     }
+    ul.navbar-right {
+      padding: 10px 0;
+      li > a {
+        color: #ffffff;
+        background-color: $color-blue-darker;
+        transition: background-color 0.5s linear; /* vendorless fallback */
+        -o-transition: background-color 0.5s linear; /* opera */
+        -ms-transition: background-color 0.5s linear; /* IE 10 */
+        -moz-transition: background-color 0.5s linear; /* Firefox */
+        -webkit-transition: background-color 0.5s linear; /*safari and chrome */
+      }
+      li > a:hover,
+      li > a:active {
+        background-color: $color-blue-darker;
+      }
+    }
 }
 
 /**
@@ -451,4 +467,15 @@ table {
       line-height: 1;
     }
   }
+}
+
+/**
+ * Add custom css
+ */
+.pd-bt-60 {
+  padding-bottom: 60px !important;
+}
+
+.mg-t-10 {
+  margin-top: 10px !important;
 }

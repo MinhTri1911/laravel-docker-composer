@@ -100,7 +100,7 @@ class CompanyServiceBusiness
     {
         $this->contractRepository = app(ContractInterface::class);
 
-        return $this->contractRepository->selectServiceNotWattingApproveOfCompany($companyId, [
+        return $this->contractRepository->selectServiceNotDeleteOfCompany($companyId, [
             'm_contract.service_id',
             'm_service.name_jp',
             'm_service.name_en',
@@ -146,15 +146,15 @@ class CompanyServiceBusiness
         }
 
         $reasonDelete = [
-            'status' => Constant::STATUS_CONTRACT_DELETED,
             'deleted_at' => \Carbon\Carbon::now()->format('Y-m-d'),
             'updated_at' => \Carbon\Carbon::now()->format('Y-m-d H:i:s'),
             'updated_by' => auth()->id(),
+            'del_flag' => Constant::DELETE_FLAG_TRUE,
         ];
 
         /*
          * Get contract id with company id and service id
-         * The contract was approved or contract have been reject then update else not select
+         * The contract was approved, pedding or contract have been reject then update else not select
          */
         $contractIds = $this->contractRepository->getContractActiveOrPendingById($companyId, $serviceIds);
 
@@ -182,7 +182,7 @@ class CompanyServiceBusiness
         $this->contractRepository = app(ContractInterface::class);
 
         // Get all service of company for check service id is valid in all service company using
-        $serviceExists = $this->contractRepository->selectServiceOfCompany($companyId, [
+        $serviceExists = $this->contractRepository->selectServiceNotDeleteOfCompany($companyId, [
             'm_contract.service_id',
         ])->toArray();
 
@@ -203,7 +203,7 @@ class CompanyServiceBusiness
         $this->contractRepository = app(ContractInterface::class);
 
         // Get all service of company for check service id is valid in all service company using
-        $serviceExists = $this->contractRepository->selectServiceOfCompany($companyId, [
+        $serviceExists = $this->contractRepository->selectServiceNotDeleteOfCompany($companyId, [
             'm_contract.service_id',
         ])->toArray();
 
@@ -215,34 +215,7 @@ class CompanyServiceBusiness
         // Detech get service id to array
         $serviceIdsExists = array_column($serviceExists, 'service_id');
 
-        // Check can delete contract
-        $this->_checkCanDeleteServices($companyId, $serviceIdsExists);
-
         // Delete all service
         return $this->deleteService($serviceIdsExists, $companyId, $serviceIdsExists);
-    }
-
-    /**
-     * Function check can delete service
-     * @param int companyId
-     * @param int serviceIds
-     * @throws Exception
-     * @return boolean
-     */
-    private function _checkCanDeleteServices($companyId, $serviceIds)
-    {
-        if (!$this->contractRepository) {
-            $this->contractRepository = app(ContractInterface::class);
-        }
-
-        // Select contract in company have approved_flag = 2 and updated_at not null
-        $contractCanNotDelete = $this->contractRepository
-            ->checkHaveContractWattingApproveById($companyId, $serviceIds);
-
-        if ($contractCanNotDelete) {
-            throw new \Exception(trans('error.w005_have_contract_watting_approve'));
-        }
-
-        return true;
     }
 }

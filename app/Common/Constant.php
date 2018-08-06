@@ -31,7 +31,7 @@ class Constant
         0 =>  "有効",
         1 =>  "中断",
         2 =>  "完了",
-        3 =>  "完了"
+        3 =>  "削除"
     ];
 
     // Array billing paper status
@@ -117,8 +117,9 @@ class Constant
         'create'    => '作成',
         'edit'      => '修正',
         'delete'    => '削除',
-        'reactive'    => 'REACTIVE',
-        'restore'    => 'RESTORE'
+        'reactive'  => 'アクティブ化 ',
+        'restore'   => '白紙に戻して復活',
+        'disable'   => '中断'
     ];
 
     const ID_SCREEN = [
@@ -252,6 +253,21 @@ class Constant
     // Show type list company
     const SHOW_ACTIVE = 0;
     const SHOW_NOT_ACTIVE = 1;
+
+    // Show all company operation value
+    const SHOW_ALL_FLG = 0;
+
+    /**
+     * User login type
+     * 0: Normal user
+     * 1: Administrator
+     */
+    const USER_TYPE_NORMAL = 0;
+    const USER_TYPE_ADMIN = 1;
+
+    // Role status
+    const ROLE_STATUS_TRUE = 1;
+    const ROLE_STATUS_FALSE = 0;
 
     // Ship default
     const DEFAULT_SHIP_NAME = '本社（英文名：Headquarters)';

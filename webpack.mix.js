@@ -99,6 +99,18 @@ mix.babel([
         .babel([
             'resources/assets/js/create-company-general.js',
         ], 'public/js/create-company-general.js')
+        .babel([
+            'resources/assets/js/spot-edit.js',
+        ], 'public/js/spot-edit.js')
+        .babel([
+            'resources/assets/js/tax-general.js'
+        ], 'public/js/tax-general.js')
+        .babel([
+            'resources/assets/js/edit-company-general.js',
+        ], 'public/js/edit-company-general.js')
+        .babel([
+            'resources/assets/js/list-auth.js',
+        ], 'public/js/list-auth.js')
         .sass('resources/assets/sass/vendor.scss', 'public/css')
         .sass('resources/assets/sass/auth.scss', 'public/css')
         .sass('resources/assets/sass/user-general.scss', 'public/css')
@@ -113,4 +125,6 @@ mix.babel([
         .sass('resources/assets/sass/approve.scss', 'public/css')
         .sass('resources/assets/sass/preview-billing-paper.scss', 'public/css')
         .sass('resources/assets/sass/exception.scss', 'public/css')
+        .sass('resources/assets/sass/tax-general.scss', 'public/css')
+        .sass('resources/assets/sass/list-auth.scss', 'public/css')
         .copyDirectory('resources/images/common', 'public/images/common');

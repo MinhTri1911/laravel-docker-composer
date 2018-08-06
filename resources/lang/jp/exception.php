@@ -27,7 +27,7 @@ return [
         'content_error' => '認証情報が無化のため、あくせくが拒否されました。',
     ],
 
-    'e001_not_found_infomation' => 'データが見つかりませんでした。',
+    'e001_not_found_information' => 'データが見つかりませんでした。',
     'e003_required' => ':fieldを入力してください。',
     'e005_format_date' => ':fieldのフォーマットは:format形式にしてください。',
     'e008_numeric' => ':fieldは数字で入力してください。',

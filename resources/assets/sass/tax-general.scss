@@ -1,0 +1,149 @@
+// ----------- BEGIN LIBRARY COMMON--------------
+// Import Mixin
+@import "option/mixins";
+// Import Header
+@import "elements/header";
+// Import Sidebar
+@import "elements/sidebar";
+// import Date Picker Jquery
+@import "option/datepicker";
+// ----------- END LIBRARY COMMON--------------
+
+/* Css for screen > 1024px */
+#tax-list-master {
+  /*Css form*/
+  .form-group {
+    margin-bottom: 20px;
+    }
+  .content-form {
+    padding-left: 20px;
+  }
+
+  .block-title-tbl {
+    .left-side {
+      float: left;
+      width: 105px;
+    }
+    .right-side {
+      float: right;
+      width: auto;
+
+      .form-group {
+        width: auto;
+        margin: 0;
+        .left-side {
+          width: 60px;
+          margin-right: 15px;
+        }
+        .right-side {
+          float: left;
+          width: 140px;
+        }
+      }
+    }
+  }
+
+  /*Css table list master*/
+  #block-tbl-tax {
+    clear: both;
+    border-right: 1px solid #d8e3f3;
+    border-left: 1px solid #d8e3f3;
+    border-bottom: 1px solid #d8e3f3;
+    min-width: 500px;
+    overflow-y: hidden;
+    overflow-x: auto;
+
+    table.table-list-master {
+      min-width: 550px;
+
+      .tbl-row-pick {
+        width: 35px;
+      }
+      .tbl-row-process {
+        width: 100px;
+      }
+
+      thead {
+        width: 100%;
+
+        tr th {
+          text-align: center;
+          vertical-align: middle;
+          
+        }
+      }
+      tbody {
+
+        tr {
+          td {
+            vertical-align: middle;
+            padding: 0 5px;
+            word-wrap: break-word;
+
+            &.tbl-row-pick {
+              .custom-radio {
+                label {
+                  padding-left: 23px;
+                }
+              }
+            }
+            &.tbl-row-no {
+              text-align: center;
+            }
+            &.tbl-row-date {
+              text-align: center;
+            }
+            &.tbl-row-method {
+              text-align: center;
+            }
+            &.tbl-row-ope-phone {
+              text-align: center;
+            }
+            &.tbl-row-ope-email {
+              text-align: center;
+            }
+            &.tbl-row-money {
+              text-align: right;
+            }
+            &.tbl-row-status {
+              text-align: center;
+            }
+            &.tbl-row-approve {
+              text-align: center;
+              a {
+                color: blue;
+              }
+            }
+            &.tbl-row-process {
+              text-align: center;
+              vertical-align: middle;
+              font-size: 25px;
+
+              a {
+                margin: 0 3px;
+                &:hover,&:focus {
+                  text-decoration: none;
+                }
+                .glyphicon {
+                  top: 4px;
+                }
+                .fa {
+                  margin-top: 6px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Css for screen < 1024px */
+@media (max-width: 1024px) {
+  #tax-list-master {
+    .form-group {
+       width: 45%;
+    }
+  }
+}

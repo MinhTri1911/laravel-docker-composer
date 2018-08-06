@@ -41,30 +41,33 @@ class BillingPaperRepository extends EloquentRepository implements BillingPaperI
                                       INNER JOIN t_detail_history_usage AS SDHU ON SDHU.history_usage_id= SHU.id
                                   ) AS history_usage');
 
+        // Select billing not yet create
         $billingCreate =  DB::table('m_company AS C')
-            ->select(DB::raw("C.id AS company_id,
-                                C.name_jp AS company_name,
-                                C.ope_person_name_1,
-                                C.ope_phone_1,
-                                C.ope_email_1,
-                                C.payment_deadline_no,
-                                MAX(history_usage.billed_flag) AS billed_flag,
-                                HB.approved_flag,
-                                HB.reason_reject,
-                                HB.payment_due_date,
-                                HB.id AS history_billing_id,
-                                CR.rate,
-                                BM.name_jp AS method_name,
-                                BM.charge AS charge_delivery,
-                                SUM(history_usage.total_amount_billing) AS total_amount_billing,
-                                SUM(history_usage.total_money) AS total_money,
-                                1 AS status"))
+            ->select(DB::raw("OPE.id AS ope_company_id,
+                            C.id AS company_id,
+                            C.name_jp AS company_name,
+                            C.ope_person_name_1,
+                            C.ope_phone_1,
+                            C.ope_email_1,
+                            C.payment_deadline_no,
+                            MAX(history_usage.billed_flag) AS billed_flag,
+                            HB.approved_flag,
+                            HB.reason_reject,
+                            HB.payment_due_date,
+                            HB.id AS history_billing_id,
+                            CR.rate,
+                            BM.name_jp AS method_name,
+                            BM.charge AS charge_delivery,
+                            SUM(history_usage.total_amount_billing) AS total_amount_billing,
+                            SUM(history_usage.total_money) AS total_money,
+                            1 AS status"))
+            ->join('m_company_operation AS OPE', 'OPE.id', '=', 'C.ope_company_id')
+            ->join('m_ship AS S', 'S.company_id', '=', 'C.id')
             ->join('m_billing_method AS BM', function ($join) {
                 $join->on('BM.id', '=', 'C.billing_method_id')
                     ->on('BM.currency_id', '=', 'C.currency_id')
                     ->where('BM.del_flag', '=', Constant::DELETE_FLAG_FALSE);
             })
-            ->join('m_ship AS S', 'S.company_id', '=', 'C.id')
             ->join('m_currency AS CR', function ($join) {
                 $join->on('CR.id', '=', 'C.currency_id')
                     ->where('CR.del_flag', '=', Constant::DELETE_FLAG_FALSE);
@@ -99,34 +102,39 @@ class BillingPaperRepository extends EloquentRepository implements BillingPaperI
                             WHEN C.month_billing IS NULL OR C.month_billing = '' THEN BM.month_billing 
                             ELSE C.month_billing
                         END LIKE ?)", [ "%" . date('m') . "%"])
+            ->whereRaw("(? = 1 OR (? = 0 AND OPE.id = ?))"
+                    , [$models['auth_reference'], $models['auth_reference'], $models['ope_company_id'] ])
             ->groupBy(['C.id', 'HB.id']);
 
+        // Select billing approved
         $billingApproved =  DB::table('m_company AS C')
-            ->select(DB::raw("C.id AS company_id,
-                                C.name_jp AS company_name,
-                                C.ope_person_name_1,
-                                C.ope_phone_1,
-                                C.ope_email_1,
-                                C.payment_deadline_no,
-                                history_usage.billed_flag,
-                                HB.approved_flag,
-                                HB.reason_reject,
-                                HB.payment_due_date,
-                                HB.id AS history_billing_id,
-                                CR.rate,
-                                BM.name_jp AS method_name,
-                                BM.charge AS charge_delivery,
-                                HB.total_amount_billing AS total_amount_billing,
-                                HB.total_money AS total_money,
-                                CASE 
-                                    WHEN HB.delivered_flag = 0 THEN 2
-                                    WHEN HB.delivered_flag = 1 THEN 3
-                                END AS status"))
+            ->select(DB::raw("OPE.id AS ope_company_id,
+                            C.id AS company_id,
+                            C.name_jp AS company_name,
+                            C.ope_person_name_1,
+                            C.ope_phone_1,
+                            C.ope_email_1,
+                            C.payment_deadline_no,
+                            history_usage.billed_flag,
+                            HB.approved_flag,
+                            HB.reason_reject,
+                            HB.payment_due_date,
+                            HB.id AS history_billing_id,
+                            CR.rate,
+                            BM.name_jp AS method_name,
+                            BM.charge AS charge_delivery,
+                            HB.total_amount_billing AS total_amount_billing,
+                            HB.total_money AS total_money,
+                            CASE 
+                                WHEN HB.delivered_flag = 0 THEN 2
+                                WHEN HB.delivered_flag = 1 THEN 3
+                            END AS status"))
+            ->join('m_company_operation AS OPE', 'OPE.id', '=', 'C.ope_company_id')
             ->join('m_ship AS S', 'S.company_id', '=', 'C.id')
             ->join($historyUsage, function ($join) {
                 $join->on('history_usage.ship_id', '=', 'S.id');
             })
-             ->join('t_history_billing AS HB', function ($join) {
+            ->join('t_history_billing AS HB', function ($join) {
                 $join->on('HB.company_id', '=', 'C.id');
             })
             ->join('m_billing_method AS BM', function ($join) {
@@ -149,11 +157,13 @@ class BillingPaperRepository extends EloquentRepository implements BillingPaperI
                     ->orWhereRaw('(? = 3 AND HB.delivered_flag = ?)', [$models['status'], Constant::DELIVERY_FLAG_TRUE]);
             })
             ->whereRaw("(HB.payment_due_date >= ? AND HB.payment_due_date <= ?)",
-                    [$models['beginDate'], $models['endDate']]);
+                    [$models['beginDate'], $models['endDate']])
+            ->whereRaw("(? = 1 OR (? = 0 AND OPE.id = ?))"
+                    , [$models['auth_reference'], $models['auth_reference'], $models['ope_company_id'] ]);
 
-        $query = $billingCreate->union($billingApproved);
+        $query = $billingCreate->unionAll($billingApproved);
         $querySql = $query->toSql();
-        return DB::table(DB::raw("($querySql order by company_name DESC) as tbl"))
+        return DB::table(DB::raw("($querySql order by company_name ASC) as tbl"))
                 ->mergeBindings($query)
                 ->paginate($models['numberRecord']);
     }
@@ -194,6 +204,7 @@ class BillingPaperRepository extends EloquentRepository implements BillingPaperI
                                     WHEN C.month_billing IS NULL OR C.month_billing = '' THEN BM.month_billing
                                     ELSE C.month_billing
                                 END AS month_billing"))
+            ->join('m_company_operation AS OPE', 'OPE.id', '=', 'C.ope_company_id')
             ->join('m_billing_method AS BM', function ($join) {
                 $join->on('BM.id', '=', 'C.billing_method_id')
                     ->on('BM.currency_id', '=', 'C.currency_id')
@@ -250,6 +261,7 @@ class BillingPaperRepository extends EloquentRepository implements BillingPaperI
                                     WHEN C.month_billing IS NULL OR C.month_billing = '' THEN BM.month_billing
                                     ELSE C.month_billing
                                 END AS month_billing"))
+            ->join('m_company_operation AS OPE', 'OPE.id', '=', 'C.ope_company_id')
             ->join('m_currency AS CR', function ($join) {
                 $join->on('CR.id', '=', 'C.currency_id')
                     ->where('CR.del_flag', '=', Constant::DELETE_FLAG_FALSE);
@@ -362,6 +374,7 @@ class BillingPaperRepository extends EloquentRepository implements BillingPaperI
                                 HB.payment_deadline_no,
                                 HB.payment_due_date,
                                 CR.name_jp AS currency_name"))
+            ->join('m_company_operation AS OPE', 'OPE.id', '=', 'C.ope_company_id')
             ->join('t_history_billing AS HB', 'HB.company_id', '=', 'C.id')
             ->join('m_currency AS CR', function ($join) {
                 $join->on('CR.id', '=', 'HB.currency_id')

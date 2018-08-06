@@ -102,7 +102,7 @@ class CompanyServiceController extends Controller
             return $this->returnJson(Constant::HTTP_CODE_ERROR_500, trans('error.500'));
         }
 
-        return $this->returnJson(Constant::HTTP_CODE_SUCCESS);
+        return $this->returnJson(Constant::HTTP_CODE_SUCCESS, trans('common.messages.m038_waiting_approve'));
     }
 
     /**

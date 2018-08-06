@@ -14,8 +14,8 @@ use App\Common\Constant;
 use App\Repositories\User\UserRepositoryInterface;
 
 /**
-* Handle user business
-*/
+ * Handle user business
+ */
 class UserBusiness
 {
     /**
@@ -42,7 +42,7 @@ class UserBusiness
      * @param int $userId
      * @return array
      */
-	public function getUserData($userId)
+    public function getUserData($userId)
     {
         return $this->_userRepository->getUserData($userId);
     }
@@ -59,7 +59,7 @@ class UserBusiness
     public function getRoleScreens($authCreate, $authApprove, $authReference, $authOperation)
     {
         // Init empty role array
-        $rolesScreen  = [];
+        $rolesScreen = [];
 
         // User have create or operation role
         if ($authCreate == true || $authOperation == true) {
@@ -97,7 +97,172 @@ class UserBusiness
      * @param array $haystack
      * @return bool
      */
-    public function inArrayAll($needles, $haystack) {
+    public function inArrayAll($needles, $haystack)
+    {
         return !array_diff($needles, $haystack);
+    }
+
+    /**
+     * Get list user data
+     *
+     * @access public
+     * @return mixed Laravel collection
+     */
+    public function getListUser()
+    {
+        return $this->_userRepository->getListUser();
+    }
+
+    /**
+     * Get list company operation
+     *
+     * @access public
+     * @return mixed Laravel collection
+     */
+    public function getListCompanyOperation()
+    {
+        $defaultOption = [trans('auth.all_company_operation')];
+        $operationCompany = array_pluck($this->_userRepository->getListCompanyOperation(), 'name', 'id');
+
+        return array_merge($defaultOption, $operationCompany);
+    }
+
+    /**
+     * Search list auth with condition
+     *
+     * @param array $searchData
+     * @return mixed Laravel collection
+     */
+    public function searchListUser($searchData)
+    {
+        return $this->_userRepository->searchListUser($searchData);
+    }
+
+    /**
+     * Call user repository and update auth
+     *
+     * @param array $data
+     * @return array
+     */
+    public function updateAuth($data)
+    {
+        $results = [];
+
+        foreach ($data as $userId => $roles) {
+
+            // Check exist user
+            if ($this->_userRepository->checkExistUser($userId)) {
+
+                // Convert request data and get user information
+                $requestRole = $this->_convertStringToBool($roles);
+                $userRole = $this->_userRepository->getUserRoleById($userId);
+
+                // Compare server and user request data
+                if ($requestRole != $userRole) {
+
+                    \DB::beginTransaction();
+                    try {
+                        // Update with request data
+                        $updateData = $this->_convertUpdateData($requestRole);
+                        $this->_userRepository->updateAuth($userId, $updateData);
+                        \DB::commit();
+
+                        $results['success'][] = $userId;
+
+                    } catch (\Exception $e) {
+                        // Rollback the transaction
+                        \DB::rollBack();
+
+                        $results['error'][]['userId'] = $userId;
+                        $results['error'][]['message'] = $e->getMessage();
+                    }
+                }
+            } else {
+                $results['notExist'][] = $userId;
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Convert string to bool
+     *
+     * @access private
+     * @param array $roles
+     * @return array
+     */
+    private function _convertStringToBool($roles)
+    {
+        $data = [];
+        // TODO check param is not 0 || 1
+        foreach ($roles as $value) {
+            if (is_null($value) || $value == 0) {
+                $data[] = false;
+            }
+            if ($value == 1) {
+                $data[] = true;
+            }
+        }
+
+        // TODO check case missing param
+        return [
+            'auth_create' => @$data[0],
+            'auth_approve' => @$data[1],
+            'auth_reference' => @$data[2],
+            'auth_operation' => @$data[3]
+        ];
+    }
+
+    /**
+     * Convert data before update
+     *
+     * @access private
+     * @param array $data
+     * @return array
+     */
+    private function _convertUpdateData($data)
+    {
+        return [
+            'auth_create' => $data['auth_create'],
+            'auth_approve' => $data['auth_approve'],
+            'auth_reference' => $data['auth_reference'],
+            'auth_operation' => $data['auth_operation'],
+            'updated_at' => date('Y-m-d H:i:s'),
+            'updated_by' => auth()->id()
+        ];
+    }
+
+    /**
+     * Get response messages
+     *
+     * @param array $resultUpdate
+     * @return array|null|string
+     */
+    public function getResponseMessages($resultUpdate)
+    {
+        if (!empty($resultUpdate)) {
+            $messages = [];
+
+            if (isset($resultUpdate['success'])) {
+                $messages['success'] = __('auth.update_success', ['item' => count($resultUpdate['success'])]);
+            }
+
+            if (isset($resultUpdate['error'])) {
+                foreach ($resultUpdate['error'] as $item) {
+                    $messages['error'][] = __('auth.update_error', ['item' => $item]);
+                }
+            }
+
+            if (isset($resultUpdate['notExist'])) {
+                foreach ($resultUpdate['notExist'] as $item) {
+                    $messages['notExist'][] = __('common-message.error.E009', ['value' => __('auth.id') . $item]);
+                }
+            }
+
+            return $messages;
+        }
+
+        return __('common-message.warning.W003');
     }
 }

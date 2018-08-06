@@ -68,15 +68,23 @@ return [
     'btn_close_modal' => '閉じる',
     'btn_search' => '検索',
     'btn_ok' => 'OK',
+    'btn_logout' => 'ログアウト',
 
     'messages' => [
-        'm038_delete_watting_approve' => '操作は承認画面に確認されます。',
+        'm038_waiting_approve' => '操作は承認画面に確認されます。',
         'm039_action_was_executed' => '操作は実行されました。',
         'm040_not_have_record_for_delete' => '削除するレコーダーがありません。',
+        'm042_update_company_success' => '会社が更新されました。',
+        'm043_update_company_fail' => '会社の更新に失敗しました。',
     ],
 
     'modal' => [
         'title_search_nation' => '国家を検索しています。',
 
     ],
+
+    'modal' => [
+        'title_search_currency' => '通貨検索',
+        'title_search_nation' => '国籍を検索',
+    ]
 ];

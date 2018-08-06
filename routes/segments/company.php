@@ -8,7 +8,7 @@
 
 Route::group(['middleware' => 'auth'], function() {
     Route::resource('/company', 'CompanyController', [
-        'only' => ['index', 'create', 'edit', 'store'],
+        'only' => ['index', 'create', 'edit', 'store', 'update'],
         'middleware' => [
             'index' => 'prevent-history',
         ],
@@ -33,6 +33,6 @@ Route::group(['middleware' => 'auth'], function() {
     });
 
     Route::group(['prefix' => 'company/check', 'as' => 'company.check.'], function () {
-        Route::get('/duplicate/name', 'CompanyController@checkName')->name('duplicate.name');
+        Route::post('/duplicate/name', 'CompanyController@checkName')->name('duplicate.name');
     });
 });

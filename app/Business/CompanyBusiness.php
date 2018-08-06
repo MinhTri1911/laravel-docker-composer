@@ -212,7 +212,7 @@ class CompanyBusiness
             'm_billing_method.name_jp as billing_name_jp',
             'm_billing_method.name_en as billing_name_en',
             'm_billing_method.id as billing_id',
-            'm_currency.code as currency_code',
+            'm_currency.code as currency_code_company',
         ]);
 
         return [
@@ -238,7 +238,7 @@ class CompanyBusiness
 
             // Cast to model MCurrency
             'currency' => new \App\Models\MCurrency([
-                'code' => $company->currency_code,
+                'code' => $company->currency_code_company,
             ]),
         ];
     }
@@ -275,9 +275,6 @@ class CompanyBusiness
      */
     public function deleteCompany($companyId)
     {
-        // Check can delete company
-        $this->_checkCanDeleteCompany($companyId);
-
         // Get intantce ship repository from container
         $this->shipRepository = app(ShipInterface::class);
 
@@ -288,7 +285,7 @@ class CompanyBusiness
         $updatedAt = \Carbon\Carbon::now()->format('Y-m-d H:i:s');
 
         // Update ship del_flag = 1
-        $this->shipRepository->updateDeleteShipWattingApprove(array_column($ships, 'id'), [
+        $this->shipRepository->updateDeleteShip(array_column($ships, 'id'), [
             'del_flag' => Constant::DELETE_FLAG_TRUE,
             'updated_at' => $updatedAt,
             'updated_by' => auth()->id(),
@@ -301,13 +298,13 @@ class CompanyBusiness
         $this->contractRepository->deleteContract(array_column($ships, 'id'), 'ship_id');
 
         // Update contract active or pending with approved_flag = 0 or 3 when delete company
-        $this->contractRepository->updateDeleteContractWattingApprove(array_column($ships, 'id'), [
+        $this->contractRepository->updateDeleteContract(array_column($ships, 'id'), [
                 'deleted_at' => \Carbon\Carbon::now()->format('Y-m-d'),
                 'approved_flag' => Constant::STATUS_APPROVED,
                 'reason_reject' => null,
                 'updated_at' => $updatedAt,
                 'updated_by' => auth()->id(),
-                'status' => Constant::STATUS_CONTRACT_DELETED,
+                'del_flag' => Constant::DELETE_FLAG_TRUE,
             ], 'ship_id');
 
         return $this->companyRepository->update($companyId, [
@@ -315,24 +312,6 @@ class CompanyBusiness
             'updated_at' => $updatedAt,
             'updated_by' => auth()->id(),
         ]);
-    }
-
-    /**
-     * Function check can delete company
-     * @param int companyId
-     * @throws Exception
-     * @return boolean
-     */
-    private function _checkCanDeleteCompany($companyId)
-    {
-        // Select all contract in company have approved_flag = 2 and updated_at not null
-        $contractWattingApproved = $this->companyRepository->existsContractWattingApprove($companyId);
-
-        if ($contractWattingApproved) {
-            throw new \Exception(trans('error.w005_have_contract_watting_approve'));
-        }
-
-        return true;
     }
 
     /**
@@ -361,6 +340,9 @@ class CompanyBusiness
 
         $currencyId = $currency->first()->id;
         $billingMethodRepository = app(\App\Repositories\BillingMethod\BillingMethodInterface::class);
+
+        // Check if validation fail then get old value of currency id
+        $currencyId = old('company-currency-id') ?: $currencyId;
         $billingMethod = $billingMethodRepository->getBillingMethodByCurrency($currencyId, ['id', 'name_jp', 'name_en']);
 
         $companyOpeRepository = app(\App\Repositories\CompanyOperation\CompanyOpeInterface::class);
@@ -385,18 +367,280 @@ class CompanyBusiness
     /**
      * Function check name company is duplicate
      *
-     * @param string $name
-     * @param integer $type
+     * @param string $namejp
+     * @param string $nameEn
+     * @return array
+     */
+    public function checkExistsWhenCreate($data)
+    {
+        $existsJp = $this->companyRepository->existsNameCompany($data['nameJp']);
+
+        $existsEn = $this->companyRepository->existsNameCompany($data['nameEn'], 1);
+
+        $messages = [];
+
+        if ($existsJp) {
+            $messages[] = trans('common-message.warning.W004', ['attribute' => trans('company.lbl_title_company_name_jp')]);
+        }
+
+        if ($existsEn) {
+            $messages[] = trans('common-message.warning.W004', ['attribute' => trans('company.lbl_title_company_name_en')]);
+        }
+
+        $shipBussiness = app(\App\Business\ShipBusiness::class);
+        $existsShipName = $shipBussiness->checkExistShipName($data['shipName']);
+        $existsImo = $shipBussiness->checkExistShipImoNumber($data['imoNumber']);
+
+        if ($existsShipName) {
+            $messages[] = trans('common-message.warning.W004', ['attribute' => trans('ship.lbl_title_ship_name')]);
+        }
+
+        if ($existsImo) {
+            $messages[] = trans('common-message.warning.W004', ['attribute' => trans('ship.lbl_title_imo_number')]);
+        }
+
+        return [
+            'existsJp' => $existsJp,
+            'existsEn' => $existsEn,
+            'existsShipName' => $existsShipName,
+            'existsImo' => $existsImo,
+            'message' => $messages,
+        ];
+    }
+
+    /**
+     * Function store company
+     *
+     * @param array $dataCompany
+     * @param array $dataShip
      * @return boolean
      */
-    public function checkExistsByName($name, $type = 0)
+    public function storeCompany($dataCompany, $dataShip)
     {
-        return $this->companyRepository->where(function ($query) use ($name, $type) {
-            if ($type == 0) {
-                return $query->where('name_jp', $name);
-            }
+        // Check and format month billing
+        $monthBilling = null;
+        if (!empty($dataCompany['slb-company-month-billing']) && is_array($dataCompany['slb-company-month-billing'])) {
+            foreach ($dataCompany['slb-company-month-billing'] as $index => $month) {
+                // Add 0 to month if month is less than 10
+                if ($month < 10 && strlen($month) < 2) {
+                    $monthBilling .= '0';
+                }
 
-            return $query->where('name_en', $name);
-        })->exists();
+                $monthBilling .= $month;
+
+                // Add , to string when the month is not end
+                if ($index < count($dataCompany['slb-company-month-billing']) - 1) {
+                    $monthBilling .= ',';
+                }
+            }
+        }
+
+        $companyId = $this->companyRepository->insertGetId([
+            'name_jp' => $dataCompany['txt-company-name-jp'],
+            'name_en' => $dataCompany['txt-company-name-en'],
+            'nation_id' => $dataCompany['company-nation-id'],
+            'postal_code' => $dataCompany['txt-company-postal-code'],
+            'head_office_address' => $dataCompany['txt-company-address'],
+            'represent_person' => $dataCompany['txt-company-represent-person'],
+            'fund' => $dataCompany['txt-company-fund'],
+            'employees_number' => $dataCompany['txt-company-employee-number'],
+            'year_research' => $dataCompany['txt-company-year-research'],
+            'billing_method_id' => $dataCompany['slb-company-billing-method'],
+            'month_billing' => $monthBilling,
+            'payment_deadline_no' => $dataCompany['txt-company-payment-deadline-no'],
+            'billing_day_no' => $dataCompany['txt-company-site'],
+            'currency_code' => $dataCompany['txt-company-currency-code'],
+            'currency_id' => $dataCompany['company-currency-id'],
+            'ope_person_name_1' => $dataCompany['txt-ope-name-1'],
+            'ope_position_1' => $dataCompany['txt-ope-position-1'],
+            'ope_department_1' => $dataCompany['txt-ope-department-1'],
+            'ope_postal_code_1' => $dataCompany['txt-ope-postal-code-1'],
+            'ope_address_1' => $dataCompany['txt-ope-address-1'],
+            'ope_phone_1' => $dataCompany['txt-ope-phone-1'],
+            'ope_fax_1' => $dataCompany['txt-ope-fax-1'],
+            'ope_email_1' => $dataCompany['txt-ope-email-1'],
+            'ope_person_name_2' => $dataCompany['txt-ope-name-2'],
+            'ope_position_2' => $dataCompany['txt-ope-position-2'],
+            'ope_department_2' => $dataCompany['txt-ope-department-2'],
+            'ope_postal_code_2' => $dataCompany['txt-ope-postal-code-2'],
+            'ope_address_2' => $dataCompany['txt-ope-address-2'],
+            'ope_phone_2' => $dataCompany['txt-ope-phone-2'],
+            'ope_fax_2' => $dataCompany['txt-ope-fax-2'],
+            'ope_email_2' => $dataCompany['txt-ope-email-2'],
+            'ope_company_id' => $dataCompany['slb-company-operation'],
+            'url'  => $dataCompany['txt-company-url'],
+            'del_flag' => Constant::DELETE_FLAG_FALSE,
+            'created_by' => auth()->id(),
+            'created_at' => \Carbon\Carbon::now()->format('Y-m-d H:i:s'),
+        ]);
+
+        $shipRepository = app(\App\Repositories\Ship\ShipInterface::class);
+        $ship = $shipRepository->insertGetId([
+            'name' => $dataShip['txt-ship-name'],
+            'company_id' => $companyId,
+            'imo_number' => $dataShip['txt-ship-imo-number'],
+            'nation_id' => $dataShip['ship-nation-id'],
+            'classification_id' => $dataShip['slb-ship-classification'],
+            'type_id' => $dataShip['slb-ship-type'],
+            'del_flag' => Constant::DELETE_FLAG_FALSE,
+            'created_by' => auth()->id(),
+            'created_at' => \Carbon\Carbon::now()->format('Y-m-d H:i:s'),
+        ]);
+    }
+
+    /**
+     * Function get company and information to show edit
+     *
+     * @param integer $companyId
+     * @return array
+     */
+    public function initEditCompany($companyId)
+    {
+        $company = $this->companyRepository->findOrFail($companyId);
+
+        $nationRepository = app(\App\Repositories\Nation\NationInterface::class);
+        $nations = $nationRepository->getAllNation(['id', 'name_jp', 'name_en']);
+
+        $currencyRepository = app(\App\Repositories\MCurrency\MCurrencyInterface::class);
+        $currency = $currencyRepository->getAllCurrency(['id', 'code']);
+
+        $currencyId = $company->currency_id;
+        $billingMethodRepository = app(\App\Repositories\BillingMethod\BillingMethodInterface::class);
+
+        // Check if validation fail then get old value of currency id
+        $currencyId = old('company-currency-id') ?: $currencyId;
+        $billingMethod = $billingMethodRepository->getBillingMethodByCurrency($currencyId, ['id', 'name_jp', 'name_en']);
+
+        $companyOpeRepository = app(\App\Repositories\CompanyOperation\CompanyOpeInterface::class);
+        $companyOpe = $companyOpeRepository->getCompanyOperationByPermisstion(['id', 'name', 'short_name']);
+
+        $checkCompanyHasUsingService = $this->companyRepository->checkCompanyHasUsingService($companyId);
+
+        return [
+            'company' => $company,
+            'nations' => $nations,
+            'currency' => $currency,
+            'billingMethod' => $billingMethod,
+            'companyOpe' => $companyOpe,
+            'existsContract' => $checkCompanyHasUsingService,
+        ];
+    }
+
+    /**
+     * Function check exists company when update
+     *
+     * @param integer $idCompany
+     * @param string $nameJp
+     * @param string $nameEn
+     * @return array
+     */
+    public function checkExistsWhenUpdate($idCompany, $nameJp, $nameEn)
+    {
+        $existsJp = $this->companyRepository->checkExistsNameUpdate($idCompany, $nameJp);
+
+        $existsEn = $this->companyRepository->checkExistsNameUpdate($idCompany, $nameEn, true);
+
+        $messages = [];
+
+        if ($existsJp) {
+            $messages[] = trans('common-message.warning.W004', ['attribute' => trans('company.lbl_title_company_name_jp')]);
+        }
+
+        if ($existsEn) {
+            $messages[] = trans('common-message.warning.W004', ['attribute' => trans('company.lbl_title_company_name_en')]);
+        }
+
+        return [
+            'existsJp' => $existsJp,
+            'existsEn' => $existsEn,
+            'message' => $messages,
+        ];
+    }
+
+    /**
+     * Function update company infomation
+     *
+     * @param integer $id
+     * @param array $data
+     * @return boolean
+     */
+    public function updateCompanyInfo($id, $dataCompany)
+    {
+        // Check and format month billing
+        $monthBilling = null;
+        if (!empty($dataCompany['slb-company-month-billing']) && is_array($dataCompany['slb-company-month-billing'])) {
+            foreach ($dataCompany['slb-company-month-billing'] as $index => $month) {
+                // Add 0 to month if month is less than 10
+                if ($month < 10 && strlen($month) < 2) {
+                    $monthBilling .= '0';
+                }
+
+                $monthBilling .= $month;
+
+                // Add , to string when the month is not end
+                if ($index < count($dataCompany['slb-company-month-billing']) - 1) {
+                    $monthBilling .= ',';
+                }
+            }
+        }
+
+        // Get data for update
+        $data = [
+            'name_jp' => $dataCompany['txt-company-name-jp'],
+            'name_en' => $dataCompany['txt-company-name-en'],
+            'nation_id' => $dataCompany['company-nation-id'],
+            'postal_code' => $dataCompany['txt-company-postal-code'],
+            'head_office_address' => $dataCompany['txt-company-address'],
+            'represent_person' => $dataCompany['txt-company-represent-person'],
+            'fund' => $dataCompany['txt-company-fund'],
+            'employees_number' => $dataCompany['txt-company-employee-number'],
+            'year_research' => $dataCompany['txt-company-year-research'],
+            'billing_method_id' => $dataCompany['slb-company-billing-method'],
+            'month_billing' => $monthBilling,
+            'payment_deadline_no' => $dataCompany['txt-company-payment-deadline-no'],
+            'billing_day_no' => $dataCompany['txt-company-site'],
+            'currency_code' => $dataCompany['txt-company-currency-code'],
+            'ope_person_name_1' => $dataCompany['txt-ope-name-1'],
+            'ope_position_1' => $dataCompany['txt-ope-position-1'],
+            'ope_department_1' => $dataCompany['txt-ope-department-1'],
+            'ope_postal_code_1' => $dataCompany['txt-ope-postal-code-1'],
+            'ope_address_1' => $dataCompany['txt-ope-address-1'],
+            'ope_phone_1' => $dataCompany['txt-ope-phone-1'],
+            'ope_fax_1' => $dataCompany['txt-ope-fax-1'],
+            'ope_email_1' => $dataCompany['txt-ope-email-1'],
+            'ope_person_name_2' => $dataCompany['txt-ope-name-2'],
+            'ope_position_2' => $dataCompany['txt-ope-position-2'],
+            'ope_department_2' => $dataCompany['txt-ope-department-2'],
+            'ope_postal_code_2' => $dataCompany['txt-ope-postal-code-2'],
+            'ope_address_2' => $dataCompany['txt-ope-address-2'],
+            'ope_phone_2' => $dataCompany['txt-ope-phone-2'],
+            'ope_fax_2' => $dataCompany['txt-ope-fax-2'],
+            'ope_email_2' => $dataCompany['txt-ope-email-2'],
+            'ope_company_id' => $dataCompany['slb-company-operation'],
+            'url'  => $dataCompany['txt-company-url'],
+            'updated_by' => auth()->id(),
+            'updated_at' => \Carbon\Carbon::now()->format('Y-m-d H:i:s'),
+        ];
+
+        // Check have update currency id
+        if (!empty($dataCompany['company-currency-id']) && !$this->companyRepository->checkCompanyHasUsingService($id)) {
+            $data['currency_id'] = $dataCompany['company-currency-id'];
+        }
+
+        $this->companyRepository->update($id, $data);
+
+        return true;
+    }
+
+    /**
+     * Function get operation company id
+     *
+     * @param integer $companyId
+     * @throws Exception
+     * @return integer
+     */
+    public function getOpeCompany($companyId)
+    {
+        return $this->companyRepository->findOrFail($companyId, ['ope_company_id'])->ope_company_id;
     }
 }

@@ -1,3 +1,8 @@
+{{-- Check validation fail then setting checked old value --}}
+@php
+    $status = old('company-currency-id');
+@endphp
+
 @foreach ($currency as $index => $currencyData)
     <tr>
         <td class="col-nation-id">{{ $currencyData->id }}</td>
@@ -8,7 +13,7 @@
                         'class' => 'hidden radio-nation',
                         'id' => 'choose-currency-id-' . $currencyData->id,
                         'data-currency-code' => $currencyData->code,
-                        'checked' => $index == 0,
+                        'checked' => (($index == 0 && !$status) || $status == $currencyData->id),
                     ])
                 }}
                 <label for="choose-currency-id-{{ $currencyData->id }}"></label>

@@ -3,6 +3,10 @@ var searchService = new function () {
     this.models = {
         // Check current screen is edit contract
         isUpdate: false,
+        // Check if user select other service
+        isChangeService: false,
+        // Initial current service id
+        oldService: null,
         // DOM Element content search service
         contentSearch: "#content-data-search",
         shipId: "input[name=shipId]",
@@ -15,9 +19,12 @@ var searchService = new function () {
         showModalService: ".show-modal-service",
         chargeRegister: "input[name=chargeRegister]",
         chargeCreate: "input[name=chargeCreate]",
+        shipIdHidden : "input[name=shipIdHidden]",
         serviceIdHidden : "input[name=serviceIdHidden]",
+        serviceIdOld : "input[name=serviceIdOld]",
         // DOM Element of spot section
-        elSpotBlock: ".spot-block"
+        elSpotBlock: ".spot-block",
+        initElSpotBlock: ''
     },
     this.init = function () {
 
@@ -34,25 +41,31 @@ var searchService = new function () {
         $(document).on('click', searchService.models.showModalService, function (e) {
             searchService.events.load();
         });
-        
+
         var serviceHidden = $(searchService.models.serviceIdHidden).val();
-        
+
+        searchService.models.initElSpotBlock = $(searchService.models.elSpotBlock).html();
+
         if (typeof serviceHidden != "undefined" && serviceHidden !== '' && !isNaN(serviceHidden)) {
             searchService.models.isUpdate = true;
+            searchService.models.oldService = serviceHidden;
         }
     };
 
     this.events = {
 
         load: function () {
-            
+
             $(searchService.models.contentSearch).empty();
-            
+
             var url = location.protocol + "//" + location.host + '/search/service/' + 'init';
 
-            var shipId = $(searchService.models.shipId).val();
+            var shipId = ($(searchService.models.shipIdHidden).length > 0)
+                            ?$(searchService.models.shipIdHidden).val()
+                            :$(searchService.models.shipId).val();
             var currencyId = $(searchService.models.currencyId).val();
-            
+            var serviceIdOld = $(searchService.models.serviceIdOld).val()||null;
+
             if (currencyId != null) {
 
                 // Handle ajax send data to server
@@ -62,6 +75,7 @@ var searchService = new function () {
                     data: {
                         "shipId": shipId,
                         "currencyId": currencyId,
+                        "serviceId": serviceIdOld,
                         "_token": App.getToken()
                     },
                     success: function (data) {
@@ -76,10 +90,10 @@ var searchService = new function () {
             } else {
                 $(searchService.models.contentSearch).empty();
             }
-            
+
             return;
         },
-        
+
         /**
          * Initial html for spot section
          * 
@@ -114,7 +128,7 @@ var searchService = new function () {
                     +'</table>'
                 +'</div>';
         },
-        
+
         /**
          * Handle search service modal
          * 
@@ -124,9 +138,11 @@ var searchService = new function () {
 
             var idServiceSearch = $(searchService.models.inputIdServiceSearch).val();
             var nameServiceSearch = $(searchService.models.inputNameServiceSearch).val();
-            var shipId = $(searchService.models.shipId).val();
             var currencyId = $(searchService.models.currencyId).val();
-
+            var serviceIdOld = $(searchService.models.serviceIdOld).val()||null;
+            var shipId = ($(searchService.models.shipIdHidden).length > 0)
+                            ?$(searchService.models.shipIdHidden).val()
+                            :$(searchService.models.shipId).val();
             var url = location.protocol + "//" + location.host + '/search/service/' + 'search';
 
             if (currencyId != null && (idServiceSearch.length > 0 || nameServiceSearch.length > 0)) {
@@ -140,6 +156,7 @@ var searchService = new function () {
                         "currencyId": currencyId,
                         "idServiceSearch": idServiceSearch,
                         "nameServiceSearch": nameServiceSearch,
+                        "serviceId": serviceIdOld,
                         "_token": App.getToken()
                     },
                     success: function (data) {
@@ -155,7 +172,7 @@ var searchService = new function () {
                 searchService.events.load();
             }
         },
-        
+
         /**
          * Load data into DOM element on modal after handle ajax request
          * from modal search service
@@ -164,9 +181,9 @@ var searchService = new function () {
          * @returns void
          */
         updateContentByData: function (data) {
-            
+
             $(searchService.models.contentSearch).empty();
-            
+
             /**
              * When exists result from response:
              * Add class table-fixed into table result get height of table
@@ -176,7 +193,7 @@ var searchService = new function () {
 
                 var content = null;
                 var countForEach = 0;
-
+                var serviceHidden = $(searchService.models.serviceIdHidden).val();
                 data.forEach(function (item) {
 
                     searchService.events.addClassTableFixed();
@@ -189,15 +206,27 @@ var searchService = new function () {
                             + '<td style="width: 10%">'
                             + '<div class="custom-radio">'
                             + '<input data-value="' + item['id'] + '" value="' + item['id'] + '" class="hidden" id="search-service' + item['id'] + '" name="search-service-id" type="radio" ';
-                    
-                    /**
-                     * Check countForEach variable to add checked attribute for 
-                     * first radio checkbox
+
+                     /**
+                     * If is edit screen and exists default ship id:
+                     * The first, auto check id default. After search, if id eval previous id selected, auto select it.
                      */
-                    if (countForEach == 0) {
-                        string = string + 'checked="checked">';
+                    if (typeof serviceHidden !== "undefined" && serviceHidden != '') {
+                        if (serviceHidden == item['id']) {
+                            string = string + 'checked="checked">';
+                        } else {
+                            string = string + '>';
+                        }
+                    /**
+                     * If is create screen and not exists default ship id:
+                     * Auto check on first item
+                     */
                     } else {
-                        string = string + '>';
+                        if (countForEach == 0) {
+                            string = string + 'checked="checked">';
+                        } else {
+                            string = string + '>';
+                        }
                     }
 
                     string = string + '<label for="search-service' + item['id'] + '"></label>'
@@ -209,9 +238,8 @@ var searchService = new function () {
                                        <input name="chargeCreate' + item['id'] + '" type="hidden" value="' + item['charge_create_data'] + '">\n\
                                        <input name="nameJP' + item['id'] + '" type="hidden" value="' + item['name_jp'] + '">';
 
-
                     content = content + string;
-                    
+
                     // Decrease count foreach
                     countForEach++;
                 });
@@ -228,7 +256,7 @@ var searchService = new function () {
                 $(searchService.models.contentSearch).html('');
             }
         },
-        
+
         /**
          * Load data into DOM element after click button OK on search service modal
          * 
@@ -251,8 +279,19 @@ var searchService = new function () {
                 $(searchService.models.serviceIdHidden).val(idChosse);
 
                 if (searchService.models.isUpdate) {
-                    $(searchService.models.elSpotBlock).empty();
-                    $(searchService.models.elSpotBlock).html(searchService.events.initHtmlSpotBlock(chargeRegister, chargeCreate));
+                    if (idChosse != searchService.models.oldService) {
+                        searchService.models.isChangeService = true;
+                        $(searchService.models.elSpotBlock).empty();
+                        $(searchService.models.elSpotBlock).html(searchService.events.initHtmlSpotBlock(chargeRegister, chargeCreate));
+                    } else {
+                        searchService.models.isChangeService = false;
+                        // When user reject approve create contract, autoload 
+                        // spot register and create for user in contract edit screen
+                        $(searchService.models.elSpotBlock).html(searchService.models.initElSpotBlock);
+                        if (typeof searchShip !== "undefined" && searchShip.models.isChangeShip) {
+                            $(searchService.models.elSpotBlock).html(searchService.events.initHtmlSpotBlock(chargeRegister, chargeCreate));
+                        }
+                    }
                 }
             }
         },

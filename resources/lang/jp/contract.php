@@ -14,7 +14,7 @@ return [
     'lbl_remarks' => '備考',
     'lbl_spot_data' => 'データ作成費',
     'lbl_spot_regist' => '初期登録費',
-    
+
     'btn_back' => '戻る',
     'btn_create' => ' 作成',
     'btn_update' => '更新',
@@ -34,7 +34,7 @@ return [
     // Own
     'create' => [
         'header' => 'サービス利用契約の個別追加',
-        
+
     ], 
     'edit' => [
         'header' => 'サービス利用契約の個別編集',
@@ -43,23 +43,24 @@ return [
     'restore' => [
         'header' => 'サービス利用契約復活',
     ],
-    
+
     'error' => [
+        'E002' => 'エラーが発生しました。しばらくしてからもう一度お試しください。',
         'E003' => ':itemを入力してください。',
         'E004' => ':item は:value文字以内で入力してください。',
         'E005' => ':itemのフォーマットはYYYY/MM/dd形式にしてください。',
         'E020' => ':itemは:value以上で入力してください。',
-        'E006' => ':startDateは:startEndより大きくしてください。',
+        'E006' => ':startDateは:startEndより小さくしてください。',
         'E008' => ':valueは数字で入力してください。',
         'E016' => ':itemは形式が正しくありません。',
         'E012' => '契約終了日は契約開始日より大きくしてください。',
         'E007' => ':itemは:monthyearのみで選択してください。',
         'E019' => ':itemは:value以下で入力してください。',
         'service_not_exist' => 'サービスは存在しません。',
-        
-        'spot_gt_zero'      => '「:item」は0より大きくしてください。',
-        'spot_is_number'    => '「:item」は数字で入力してください。',
-        'spot_max_length'   => '「:item」は22文字以内で入力してください。',
+
+        'spot_gt_zero'      => ':itemは0より大きくしてください。',
+        'spot_is_number'    => ':itemは数字で入力してください。',
+        'spot_max_length'   => ':itemは22文字以内で入力してください。',
+        'contract_exists'   => 'この契約はすでにアクティブ化 された、またはアクティブ化待ちです。'
     ],
 ];
-

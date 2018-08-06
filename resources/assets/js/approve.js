@@ -13,6 +13,14 @@ $(function(){
      * Handle event when click button approve
      */
     $(document).on("click",".btn-approve", function(e){
+        // When click button on screen, reset list spot inside contract detail modal
+        if ($(this).hasClass('outModal')) {
+            Handler.checkListSpotInsideContract = [];
+            Handler.isOutModalContract = true;
+        } else {
+            Handler.isOutModalContract = false;
+        }
+        
         if (Handler.checkList.length == 0) {
             Handler.modal.title = Approve.modalCommon.title_approve || "";
             Handler.modal.message = Approve.modalCommon.message_error_require || "";
@@ -41,6 +49,15 @@ $(function(){
      * Handle event when click button reject
      */
     $(document).on("click",".btn-reject", function(e){
+        // When click button on screen, reset list spot inside contract detail modal
+        if ($(this).hasClass('outModal')) {
+            Handler.checkListSpotInsideContract = [];
+            Handler.isOutModalContract = true;
+        } else {
+            Handler.isOutModalContract = false;
+            $('.spot-in-contract').prop('checked', true).trigger('change');
+        }
+        
         if (Handler.checkList.length == 0) {
             Handler.modal.title = Approve.modalCommon.title_reject || "";
             Handler.modal.message = Approve.modalCommon.message_error_require || "";
@@ -75,8 +92,13 @@ $(function(){
         } else {
             var data = {
                 "id": Handler.checkList,
-                "type": Handler.modal.type
+                "type": Handler.modal.type,
+                "clickOutModal": Handler.isOutModalContract
             };
+            
+            if (typeof Handler.isOutModalContract != "undefined" && !Handler.isOutModalContract) {
+                data.withSpot = (Handler.checkListSpotInsideContract.length > 0)? Handler.checkListSpotInsideContract : null;
+            }
             
             // Check if modal approve if approve or reject
             if(Handler.modal.type_req_approve == Handler.TYPE_REQ_APPROVE) {
@@ -145,6 +167,18 @@ var Handler = {
      * @type Array
      */
     checkList: [],
+    
+    /**
+     * List checkbox spot inside modal contract detail
+     * @type Array
+     */
+    checkListSpotInsideContract: [],
+    
+    /**
+     * 
+     * @type Boolean
+     */
+    isOutModalContract: false,
     
     /**
      * Config modal text display on front
@@ -248,6 +282,40 @@ var Handler = {
     },
     
     /**
+     * Add list spot inside modal contract into list check to add
+     * 
+     * @param DOM elCheckbox
+     * @return void
+     */
+    handleAddListCheckboxSpotInsideContract: function(elCheckbox) {
+        var vThis = this;
+        vThis.checkListSpotInsideContract = [];
+        var elChecking = $(elCheckbox).prop('checked', true);
+        if (elChecking.length > 0) {
+            elChecking.each(function(index, el) {
+                vThis.checkListSpotInsideContract.push($(el).data('spot-contract'));
+            });
+        }
+        // When on change status of checkbox inside modal contract detail
+        // If status is checked, add spot to check list spot to insert
+        // If status is uncheck, remove spot out of check list spot to insert
+        $(document).on('change', elCheckbox, function(e){
+            var i = vThis.checkListSpotInsideContract.indexOf($(this).data('spot-contract'));
+            if ($(this).is(':checked')) {
+                if(i == -1) {
+                    vThis.checkListSpotInsideContract.push($(this).data('spot-contract'));
+                }
+            } else {
+                if(i != -1) {
+                    vThis.checkListSpotInsideContract.splice(i, 1);
+                }
+            }
+        });
+        
+        return vThis.checkListSpotInsideContract;
+    },
+    
+    /**
      * Display modal confirm to approve/reject
      * @returns void
      */
@@ -285,6 +353,9 @@ var Handler = {
     showModalService: function(){
         $('#modal-confirm').modal('hide');
         $("#modal-detail").modal("show");
+        
+        // Handle add list checkbox spot inside contract modal when load detail
+        this.handleAddListCheckboxSpotInsideContract('.spot-in-contract');
     },
     
     /**
@@ -354,7 +425,7 @@ var Handler = {
            data: data,
            url: '/approve/show-detail',
            error: function(err) {
-               window.location.reload();
+               vThis.handleError(err);
            }
         }).done(function(res) {
             $('#modal-detail .modal-content').html(res);
@@ -436,7 +507,7 @@ var Handler = {
     */
    handleError: function(err) {
        console.log(err);
-       window.location.reload();
+//       window.location.reload();
    },
    
    /**
@@ -455,7 +526,7 @@ var Handler = {
        } else {
            vThis.modal.title = "Header default";
        }
-       
+
        $.ajax({
            type: "POST",
            url: '/approve/accept-approve',

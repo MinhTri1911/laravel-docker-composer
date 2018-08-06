@@ -45,7 +45,11 @@
                 <tr>
                     <td class="tbl-row-pick">
                         <div class="custom-radio">
-                            {{ Form::radio('rdo_company', $row->company_id, false, ['hb-id' => $row->history_billing_id, 'id' => 'company-id-' . $loop->iteration,'class' => 'hidden btn-radio-company']) }}
+                            {{ Form::radio('rdo_company', $row->company_id, false,
+                                        ['ope-id' => $row->ope_company_id,
+                                        'hb-id' => $row->history_billing_id, 
+                                        'id' => 'company-id-' . $loop->iteration,
+                                        'class' => 'hidden btn-radio-company']) }}
                             <label for="company-id-{{$loop->iteration}}" class='lbl-radio-company'></label>
                         </div>
                     </td>
@@ -112,9 +116,18 @@
     <div class="process-billing">
         <div class="right-side">
             <a href="{{route('company.index')}}" id='btn-back' class='btn btn-blue-light btn-w150' tabindex="102">{{__('billing.btn_back')}}</a>
-            {!! Form::button( __('billing.btn_create'), ["class"=>"btn btn-green-dark btn-w150", 'id' => 'btn-create', 'tabindex' => 103]) !!}
+
+            <!--Check permission create billing paper-->
+            @if (Roles::checkPermission(Constant::ALLOW_BILLING_CREATE, Constant::IS_CHECK_BUTTON))
+                {!! Form::button( __('billing.btn_create'), ["class"=>"btn btn-green-dark btn-w150", 'id' => 'btn-create', 'tabindex' => 103]) !!}
+            @endif
+
             {!! Form::button( __('billing.btn_export_csv'), ["class"=>"btn btn-blue-dark btn-w150", 'id' => 'btn-export-csv', 'tabindex' => 104]) !!}
-            {!! Form::button( __('billing.btn_delivery'), ["class"=>"btn btn-green-dark btn-w150", 'id' => 'btn-delivery', 'tabindex' => 105]) !!}
+
+            <!--Check permission delivery-->
+            @if (Roles::checkPermission(Constant::ALLOW_BILLING_CREATE, Constant::IS_CHECK_BUTTON))
+                {!! Form::button( __('billing.btn_delivery'), ["class"=>"btn btn-green-dark btn-w150", 'id' => 'btn-delivery', 'tabindex' => 105]) !!}
+            @endif
         </div>
     </div>
 </div>

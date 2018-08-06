@@ -667,6 +667,32 @@
     </div>
     <!-- End delete company -->
 
+    <!-- Begin popup show message -->
+    <div class="modal modal-protector fade" id="modal-show-message-action" tabindex="-1" role="dialog">
+        <div class="modal-close">
+            <button class="btn-close-modal" data-dismiss="modal"></button>
+            <label>{{ trans('common.btn_close_modal') }}</label>
+        </div>
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modal-title-message-action">{{ trans('company.lbl_mess_action') }}</h4>
+                </div>
+                <div class="modal-body">
+                    <text id="message-action"></text>
+                </div>
+                <div class="modal-footer">
+                    {{ Form::button(trans('company.btn_oke'), [
+                            'class' => 'btn btn-blue-light btn-w150',
+                            'data-dismiss' => 'modal',
+                        ])
+                    }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End popup show message -->
 
     {{-- Form hidden get company id --}}
     {{ Form::hidden('company-id', $company->id, ['id' => 'company-id']) }}

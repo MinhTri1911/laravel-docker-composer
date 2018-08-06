@@ -69,6 +69,7 @@ class ApproveController extends Controller
     {
         try {
             $data = $this->_approveBusiness->getDataForDetailAprrove($request);
+
             $type = $request->get('type', null);
             switch ($type) {
                 case $this->_approveBusiness::TYPE_APPROVE_SPOT:

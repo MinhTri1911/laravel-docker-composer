@@ -97,4 +97,39 @@ interface CompanyInterface
      * @return App\Models\MCompany
      */
     public function getCompanyDetail($companyId, $columns = ['*']);
+
+    /**
+     * Get info company base on ship or contract
+     *
+     * @param array $condition
+     * @return App\Models\MCompany
+     */
+    public function getCompanyByShipOrContract($condition = []);
+
+    /**
+     * Function check name company is exists
+     *
+     * @param string $name
+     * @param integer $type
+     * @return boolean
+     */
+    public function existsNameCompany($name, $type = 0);
+
+    /**
+     * Function check name company is exists when update
+     *
+     * @param integer $idCompany
+     * @param string $name
+     * @param integer $type
+     * @return boolean
+     */
+    public function checkExistsNameUpdate($idCompany, $name, $type = 0);
+
+    /**
+     * Function check company is using service
+     *
+     * @param integer $companyId
+     * @return boolean
+     */
+    public function checkCompanyHasUsingService($companyId);
 }

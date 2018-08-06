@@ -26,7 +26,7 @@
             @if($current > 1)
                 <li class="previous-20">
                     <a href="{{ $paginator->url($current - 1) }}">
-                        <span>前の{{ $paginator->perPage() }}件</span>
+                        <span>{{ trans('company.btn_prev') }}</span>
                     </a>
                 </li>
                 @if($total > 5 && $current > $interval + 1)
@@ -74,7 +74,7 @@
                 @endif
                     <li class="next-20">
                         <a href="{{ $paginator->url($current + 1) }}">
-                            <span>次の{{ $paginator->perPage() }}件</span>
+                            <span>{{ trans('company.btn_next') }}</span>
                         </a>
                     </li>
             @endif

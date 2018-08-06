@@ -21,7 +21,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="block-list-ship">
-                        <a class="none-focus-outline" href="{{ route('ship.index') }}" tabindex="1">
+                        <a class="none-focus-outline show-all-ship" href="{{ route('ship.index') }}" tabindex="1">
                             {{ trans('ship.link_search_all') }}
                         </a>
                     </div>
@@ -72,6 +72,7 @@
                                 }', [
                                     'id' => 'sort-value',
                                     'data-url' => $url,
+                                    'data-current-sort' => 'filter-ship-name',
                                 ])
                             }}
                         </div>
@@ -97,7 +98,10 @@
                     <div class="block-list-ship-bottom">
                         <div class="block-button block-button-right">
                             @if (Roles::checkPermission(Constant::ALLOW_SHIP_CREATE, Constant::IS_CHECK_BUTTON))
-                                <a href="{{ route('ship.create', ['company-id' => $companyId]) }}" class="btn btn-green-dark btn-w150" tabindex="12">
+                                @php
+                                    $createWithCompanyId = $companyId ? '?company-id=' . $companyId : '';
+                                @endphp
+                                <a href="{{ route('ship.create') }}{{ $createWithCompanyId }}" class="btn btn-green-dark btn-w150" tabindex="12">
                                     {{ trans('ship.btn_create_ship') }}
                                 </a>
                             @endif
@@ -118,4 +122,15 @@
 @section('javascript')
     {{-- Include ship general JS --}}
     <script src="{{ asset('js/ship-general.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            const table = document.querySelector('.block-table');
+            const psWidth = new PerfectScrollbar(table, function () {
+                table.style.width = '100%'
+            });
+
+            // remove class when init
+            $('.block-table').removeClass('ps--active-y');
+        });
+    </script>
 @endsection

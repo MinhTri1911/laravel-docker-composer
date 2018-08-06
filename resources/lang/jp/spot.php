@@ -3,8 +3,8 @@
 return [
     // Text Translate Localization for Label, Normal Text, Pharagraph, etc
     // create, edit spot
-    'title_heade_create_spot' => 'スポット費用追加',
-    'title_heade_edit_spot' => '',
+    'title_header_create_spot' => 'スポット費用追加',
+    'title_header_edit_spot' => 'スポット費用編集',
     'lbl_ship_name' => '船名',
     'lbl_spot_name' => '課金種別',
     'lbl_spot_month_usage' => '発生年月',
@@ -26,10 +26,11 @@ return [
         'E004' => ':item は:value文字以内で入力してください。',
         'E005' => ':itemのフォーマットはYYYY/MM/dd形式にしてください。',
         'E020' => ':itemは:valueより大きくしてください。',
-        'E006' => ':startDateは:startEndより大きくしてください。',
+        'E006' => ':startDateは:startEndより小さくしてください。',
         'E008' => ':valueは数字で入力してください。',
         'E009' => ':valueは存在しません。',
         'service_not_exist' => 'サービスは存在しません。',
+        'E025' => ':itemは作成月以降です。',
     ],
     
 ];

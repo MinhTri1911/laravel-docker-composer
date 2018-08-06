@@ -31,6 +31,8 @@ var ship = new function () {
         txtEndDate: '#service-end-date',
         txtRemark: '#txt-remark',
         areaPushService: '#service-data-hidden',
+        txtShipName: '#txt-ship-name',
+        txtImoNumber: '#txt-imo-number',
 
         // Button
         seachNation: '#search-nation',
@@ -66,6 +68,7 @@ var ship = new function () {
         classErrorRemarkInput: '.txt-remark',
         classErrorSpotRegisterInput: '.charge-register',
         classErrorSpotCreateDataInput: '.charge-create-data',
+        classAppendMessWarning: '.append-mess-warning',
     }
 
     this.data = {
@@ -129,6 +132,54 @@ var ship = new function () {
                 ship.clearMessageError();
             });
         },
+
+        onBlurText: function () {
+            $(document).on('blur', ship.models.txtShipName, function (e) {
+                let name = $(this).val();
+
+                if (name != '' && name != $(this).attr('data-remark')) {
+                    $(this).attr('data-remark', name);
+                    let param = {
+                        'shipName': name,
+                        'imoNumber': $(ship.models.txtImoNumber).val(),
+                    }
+
+                    $.post($(this).attr('data-url'), param, function (res) {
+                        if (res.code === HTTP_SUCCESS) {
+                            $(ship.models.classAppendMessWarning).empty();
+                            $(ship.models.classAppendMessWarning).append(res.html);
+                        }
+                    })
+                }
+
+                if (name == '') {
+                    $(this).attr('data-remark', '');
+                }
+            });
+
+            $(document).on('blur', ship.models.txtImoNumber, function (e) {
+                let imo = $(this).val();
+
+                if (imo != '' && imo != $(this).attr('data-remark')) {
+                    $(this).attr('data-remark', imo);
+                    let param = {
+                        'shipName': $(ship.models.txtShipName).val(),
+                        'imoNumber': imo,
+                    }
+
+                    $.post($(this).attr('data-url'), param, function (res) {
+                        if (res.code === HTTP_SUCCESS) {
+                            $(ship.models.classAppendMessWarning).empty();
+                            $(ship.models.classAppendMessWarning).append(res.html);
+                        }
+                    })
+                }
+
+                if (imo == '') {
+                    $(this).attr('data-remark', '');
+                }
+            });
+        }
     }
 
     /**
@@ -475,6 +526,12 @@ var ship = new function () {
         });
     }
 
+    /**
+     * Function append hidden input when select service and spot
+     *
+     * @param {*} data
+     * @return void
+     */
     this.appendFormHidden = function (data) {
 
         let formService = "<input type='hidden' name='service[" + data.serviceId + "]' value='" + data.serviceId + "'>";
@@ -505,6 +562,7 @@ var ship = new function () {
 }
 
 $(document).ready(function () {
+    $(ship.models.lblWarningDuplicate).css({'display': 'none'});
     ship.initScrollForTable();
     ship.events.changeCharge();
     ship.showSearchNation();
@@ -513,4 +571,5 @@ $(document).ready(function () {
     ship.selectService();
     ship.addService();
     ship.events.closeAddService();
+    ship.events.onBlurText();
 });

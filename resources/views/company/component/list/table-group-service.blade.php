@@ -84,7 +84,7 @@
                 {{ trans('company.header_total_license') }}
             </th>
             <th class="col-action">
-                {{ Form::button('Filter', [
+                {{ Form::button(trans('company.btn_filter'), [
                         'class' => 'btn btn-blue-dark btn-custom-sm btn-lock',
                         'id' => 'btn-filter',
                         'data-url' => route('company.filter'),

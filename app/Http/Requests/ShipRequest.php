@@ -68,10 +68,10 @@ class ShipRequest extends FormRequest
             'txt-total-weight-ton' => 'nullable|digits_between:0,10',
             'txt-weight-ton' => 'nullable|digits_between:0,10',
             'txt-member-number' => 'nullable|integer|digits_between:0,5',
-            'txt-remark' => 'nullable|max:255',
             'txt-url-1' => 'nullable|max:255|url',
             'txt-url-2' => 'nullable|max:255|url',
-            'txt-url-3' => 'nullable|max:255|url'
+            'txt-url-3' => 'nullable|max:255|url',
+            'txt-remark' => 'nullable|max:255',
         ];
     }
 

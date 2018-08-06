@@ -10,8 +10,11 @@ const HTTP_SUCCESS = 200;
 const HTTP_ERROR = 500;
 const CHECK_NAME_JP = 0;
 const CHECK_NAME_EN = 1;
+const CHECK_CREATE_SHIP_NAME = 0;
+const CHECK_CREATE_SHIP_IMO_NUMBER = 1;
 
 var company = new function () {
+    this.statusValidate = true;
 
     this.models = {
         // Items
@@ -30,6 +33,8 @@ var company = new function () {
         txtNationShip: '#ship-nation-id',
         txtCompanyNameJp: '#txt-company-name-jp',
         txtCompanyNameEn: '#txt-company-name-en',
+        txtShipName: '#txt-ship-name',
+        txtShipImoNumber: '#txt-ship-imo-number',
 
         // Button
         btnSearchCurrency: '#btn-search-currency',
@@ -41,11 +46,13 @@ var company = new function () {
         tbodyAppendCurrency: '#currency-data-scroll',
         tbodyAppendNation: '#nation-data-scroll',
 
-        // Label Error
+        // Label error
         lblErrorSearchCurrency: '#lblErrorSearchCurrency',
 
         // Class error
         classAlertError: '.alert-danger',
+        classAlertWarning: '.alert-warning',
+        classAppendMessWarning: '.append-message',
 
         // Popup
         popupSearchCompanyNation: '#popup-company-search-nation',
@@ -59,7 +66,6 @@ var company = new function () {
         urlSearchCurrency: $(this.models.btnSearchCurrency).attr('data-url'),
         urlSearchNation: $('#url-search-nation').val(),
         urlGetBillingByCurrency: $('#url-get-billing-method').val(),
-        urlCheckNameCompany: $('#url-check-name-company').val(),
     }
 
     /**
@@ -200,8 +206,11 @@ var company = new function () {
 
             let nationId = $(company.models.popupSearchCompanyNation + " input[type='radio']:checked").val();
             let nationName = $(company.models.popupSearchCompanyNation + " input[type='radio']:checked").attr('data-nation-name');
-            $(company.models.txtNationNameCompany).val(nationName);
-            $(company.models.txtNationCompany).val(nationId);
+
+            if (nationId != undefined && nationName != undefined) {
+                $(company.models.txtNationNameCompany).val(nationName);
+                $(company.models.txtNationCompany).val(nationId);
+            }
         });
     }
 
@@ -214,24 +223,127 @@ var company = new function () {
 
             let nationId = $(company.models.popupSearchShipNation + " input[type='radio']:checked").val();
             let nationName = $(company.models.popupSearchShipNation + " input[type='radio']:checked").attr('data-nation-name');
-            $(company.models.txtNationNameShip).val(nationName);
-            $(company.models.txtNationShip).val(nationId);
+
+            if (nationId != undefined && nationName != undefined) {
+                $(company.models.txtNationNameShip).val(nationName);
+                $(company.models.txtNationShip).val(nationId);
+            }
         });
     }
 
+    /**
+     * Function check exists name company
+     */
     this.checkExistsNameCompany = function () {
         $(document).on('blur', this.models.txtCompanyNameJp, function (e) {
             let nameJp = $(this).val();
 
+            // Check if value is not null and different with old value
             if (nameJp != '' && nameJp !=  $(this).attr('data-name-remark')) {
-                $.get($(this).attr('data-url'), {name: nameJp, type: CHECK_NAME_JP}, function (res) {
-                    console.log(res);
+                $(this).attr('data-name-remark', nameJp);
+                let param = {
+                    'nameJp': nameJp,
+                    'nameEn': $(company.models.txtCompanyNameEn).val(),
+                    'shipName': $(company.models.txtShipName).val(),
+                    'imoNumber': $(company.models.txtShipImoNumber).val(),
+                }
+                // Call ajax check duplicate
+                $.post($(this).attr('data-url'), param, function (res) {
+                    if (res.code === HTTP_SUCCESS) {
+                        $(company.models.classAppendMessWarning).empty();
+                        $(company.models.classAppendMessWarning).append(res.data.html);
+                    }
                 });
+            }
+
+            // Reset if value is null
+            if (nameJp == '') {
+                $(this).attr('data-name-remark', '');
             }
         });
 
         $(document).on('blur', this.models.txtCompanyNameEn, function (e) {
-            console.log($(this).val());
+            let nameEn = $(this).val();
+
+            // Check if value is not null and different with old value
+            if (nameEn != '' && nameEn !=  $(this).attr('data-name-remark')) {
+                $(this).attr('data-name-remark', nameEn);
+                let param = {
+                    'nameJp': $(company.models.txtCompanyNameJp).val(),
+                    'nameEn': nameEn,
+                    'shipName': $(company.models.txtShipName).val(),
+                    'imoNumber': $(company.models.txtShipImoNumber).val(),
+                }
+
+                // Call ajax check duplicate
+                $.post($(this).attr('data-url'), param, function (res) {
+                    if (res.code === HTTP_SUCCESS) {
+                        $(company.models.classAppendMessWarning).empty();
+                        $(company.models.classAppendMessWarning).append(res.data.html);
+                    }
+                });
+            }
+
+            // Reset if value is null
+            if (nameEn == '') {
+                $(this).attr('data-name-remark', '');
+            }
+        });
+    }
+
+    this.checkExistsNameShip = function () {
+        $(document).on('blur', this.models.txtShipName, function (e) {
+            let name = $(this).val();
+
+            if (name != '' && name !=  $(this).attr('data-name-remark')) {
+                $(this).attr('data-name-remark', name);
+                let param = {
+                    'nameJp': $(company.models.txtCompanyNameJp).val(),
+                    'nameEn': $(company.models.txtCompanyNameEn).val(),
+                    'shipName': name,
+                    'imoNumber': $(company.models.txtShipImoNumber).val(),
+                }
+
+                $.post($(this).attr('data-url'), param, function (res) {
+                    if (res.code === HTTP_SUCCESS) {
+                        $(company.models.classAppendMessWarning).empty();
+                        $(company.models.classAppendMessWarning).append(res.data.html);
+                    }
+                });
+            }
+
+            // Reset if value is null
+            if (name == '') {
+                $(this).attr('data-name-remark', '');
+            }
+        });
+    }
+
+    this.checkExistsImoNumber = function () {
+        $(document).on('blur', this.models.txtShipImoNumber, function (e) {
+            let imo = $(this).val();
+
+            if (imo != '' && imo !=  $(this).attr('data-imo-remark')) {
+                $(this).attr('data-imo-remark', imo);
+                let param = {
+                    'nameJp': $(company.models.txtCompanyNameJp).val(),
+                    'nameEn': $(company.models.txtCompanyNameEn).val(),
+                    'shipName': $(company.models.txtShipName).val(),
+                    'imoNumber': imo,
+                }
+
+                $.post($(this).attr('data-url'), param, function (res) {
+                    if (res.code === HTTP_SUCCESS) {
+                        $(company.models.classAppendMessWarning).empty();
+                        $(company.models.classAppendMessWarning).append(res.data.html);
+                    }
+                });
+            }
+
+            // Reset if value is null
+            if (imo == '') {
+                $(this).attr('data-imo-remark', '');
+            }
         });
     }
 }
@@ -249,4 +361,6 @@ $(document).ready(function () {
     company.selectNationCompany();
     company.selectNationShip();
     company.checkExistsNameCompany();
+    company.checkExistsNameShip();
+    company.checkExistsImoNumber();
 });

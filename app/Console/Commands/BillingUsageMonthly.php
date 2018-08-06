@@ -17,6 +17,7 @@ use App\Common\Constant;
 
 class BillingUsageMonthly extends Command
 {
+
     // The name and signature of the console command.
     protected $signature = 'batch:billingUsageMonthly';
 
@@ -50,164 +51,227 @@ class BillingUsageMonthly extends Command
      */
     public function handle()
     {
-        $isException = 0;
+        try {
+            $isException = 0;
 
-        $this->error('START');
-        $this->_log->info('');
-        $this->_log->info('START');
+            $this->error('START');
+            $this->_log->info('');
+            $this->_log->info('START');
 
-        // Set month usage batch
-        $now = date('Y-m-d');
-        $monthBefore = strtotime(date('Y-m-d', strtotime($now)) . ' -1 month');
-        $monthUsage = date('Y-m', $monthBefore);
-        $this->_monthUsage = $monthUsage . '-01';
+            // Get list company ship
+            $listShipCompany = $this->_getListCompanyShip();
 
-        // Set currency time
-        $monthNow = date('Y-m');
-        $this->_now = $monthNow . '-01 00:00:00';
+            // Begin transaction
+            DB::beginTransaction();
+            $transLevelRoot = DB::transactionLevel();
 
-        // Set variable ID company for Process loop company
-        $companyIdTempl = -1;
+            if ($listShipCompany !== null && count($listShipCompany) > 0) {
 
-        // Set variable ID Ship for Process loop ship
-        $shipIdTempl = -1;
+                // Set month usage batch
+                $now = date('Y-m-d');
+                $this->_monthUsage = date('Y-m-d', strtotime($now . ' first day of -1 month'));
 
-        // List ID expired Contract
-        $listExpiredContract = [];
+                // Set currency time
+                $monthNow = date('Y-m');
+                $this->_now = $monthNow . '-01 00:00:00';
 
-        // Get information of contract, charge service, total license, discount individual
-        $listContract = $this->_getInforContract();
-        if ($listContract === null) {
-            return 0;
-        }
+                // Set variable ID company for Process loop company 
+                $companyIdTempl = -1;
 
-        // Total money billing
-        $totalMoneyBilling = 0;
+                // List ID expired Contract
+                $listExpiredContract = [];
 
-        // Set Discount common
-        $discountCommon = 0;
+                // Set Discount common
+                $discountCommon = 0;
 
-        // Begin transaction
-        DB::beginTransaction();
+                // Loop and processing every company
+                foreach ($listShipCompany as $shipCompany) {
 
-        // Loop list contract
-        $i = 0;
-        while ($i < count($listContract)) {
-            $contract = $listContract[$i];
-            $companyId = $contract->company_id;
-            $currencyId = $contract->currency_id;
-            $shipId = $contract->ship_id;
-            $serviceId = $contract->service_id;
-            $cLNumber = $contract->license_count;
-            $discountIndividual = $contract->discount_individual === null ? 0 : $contract->discount_individual;
+                    $currencyId = $shipCompany->currency_id;
+                    $companyId = $shipCompany->id;
+                    $shipId = $shipCompany->ship_id;
 
-            // Case: First record of every Company
-            if ($companyIdTempl != $companyId) {
+                    // Case: First record of every Company
+                    if ($companyIdTempl != $companyId) {
 
-                // Set parameter
-                $companyIdTempl = $companyId;
-                $shipIdTempl = -1;
-                $totalMoneyBilling = 0;
+                        // Set parameter
+                        $companyIdTempl = $companyId;
+                        $this->_rateCurrency = $shipCompany->rate;
+                        $discountCommon = $this->_processLoopCompany($companyId, $currencyId);
+                    }
 
-                $discountCommon = $this->_processLoopCompany($companyId, $currencyId);
-            }
+                    // Total money billing
+                    $totalMoneyBilling = 0;
 
-            // Case: First record of every Ship
-            if ($shipIdTempl != $shipId) {
-                $shipIdTempl = $shipId;
-                $totalMoneyBilling = 0;
+                    // Create save point transaction
+                    DB::beginTransaction();
 
-                // Process for loop ship: First record of every Ship
-                $historyUsageId = $this->_processLoopShip($shipId, $currencyId, $totalMoneyBilling);
-                if ($historyUsageId === null) {
+                    // Process for loop ship: First record of every Ship
+                    $historyUsageId = $this->_processLoopShip($shipId, $currencyId, $totalMoneyBilling);
+                    if ($historyUsageId === null) {
+                        $isException = 1;
+                        break;
+                    }
 
+                    // Get information of contract, charge service, total license, discount individual
+                    $listContract = $this->_getInforContract($companyId, $shipId);
+                    if ($listContract === null) {
+                        $isException = 1;
+                        break;
+                    }
+
+                    // Rollback data insert history usage if No has contract and charge spot
+                    if (count($listContract) == 0 && $totalMoneyBilling == 0) {
+                        DB::rollBack($transLevelRoot);
+                        continue;
+                    }
+                    // Merge trasaction
+                    DB::commit();
+
+                    // Loop list contract
+                    foreach ($listContract as $contract) {
+
+                        $totalMoneyBilling = $this->_processLoopContract($contract, $discountCommon, $totalMoneyBilling, $historyUsageId);
+                        if ($totalMoneyBilling === null) {
+                            $isException = 1;
+                            break;
+                        }
+
+                        // Get list ID of contract expired
+                        $now = date('Y-m-d', strtotime($this->_now));
+                        if ($contract->end_date < $now) {
+                            $listExpiredContract[] = $contract->contract_id;
+                        }
+                    }
+
+                    // Check exist exception
+                    if ($isException == 1) {
+                        break;
+                    }
+
+                    // Update total money of table t_history_usage
+                    $resultUpdateMoney = $this->_updateTotalMoneyHistoryUsage($historyUsageId, $totalMoneyBilling);
+                    if ($resultUpdateMoney === null) {
+                        $isException = 1;
+                        break;
+                    }
+                }
+
+                // Update status of expired contract
+                $resultUpdateStatus = $this->_updateStatusOfExpiredContract($listExpiredContract);
+                if ($resultUpdateStatus === null) {
                     $isException = 1;
-                    break;
                 }
-            }
-
-            // Get Charge Volume discount of service
-            $volumeDiscount = $this->_getChargeVolumeDiscount($serviceId, $cLNumber);
-            if ($volumeDiscount === null) {
+            } elseif ($listShipCompany === null) {
                 $isException = 1;
-                break;
             }
 
-            // Calculate discount of service
-            $moneyDiscount = 0;
-            $discountId = 0;
-            if ($volumeDiscount >= $discountCommon) {
-                $moneyDiscount = $volumeDiscount;
-                $discountId = Constant::DETAIL_CHARGE_VOLUME_DISCOUNT;
-                if ($discountIndividual > $volumeDiscount) {
-                    $moneyDiscount = $discountIndividual;
-                    $discountId = Constant::DETAIL_CHARGE_DISCOUNT_INDIVIDUAL;
-                }
+            // Check exist exception
+            if ($isException == 1) {
+                // Rollback transaction
+                DB::rollBack();
+
+                $this->error('Error Exception');
             } else {
-                $moneyDiscount = $discountCommon;
-                $discountId = Constant::DETAIL_CHARGE_DISCOUNT_COMMON;
-                if ($discountIndividual > $discountCommon) {
-                    $moneyDiscount = $discountIndividual;
-                    $discountId = Constant::DETAIL_CHARGE_DISCOUNT_INDIVIDUAL;
-                }
+                // Commit transaction
+                DB::commit();
+
+                $this->_log->info('END');
+                $this->error('END');
             }
-
-            // Insert price service into table t_detail_history_usage
-            $resultRegisterPriceService = $this->_registerPriceService($historyUsageId, $contract);
-            $totalMoneyBilling += $contract->price_service;
-            if ($resultRegisterPriceService === null) {
-                $isException = 1;
-                break;
-            }
-
-            // Register money discount into table t_detail_history_usage
-            $totalMoneyBilling -= $moneyDiscount;
-            $result = $this->_registerMoneyDiscount($historyUsageId, $contract, $moneyDiscount, $discountId);
-            if ($result === null) {
-                $isException = 1;
-                break;
-            }
-
-            // Get list ID of contract expired
-            $now = date('Y-m-d', strtotime($this->_now));
-            if ($contract->end_date < $now) {
-                $listExpiredContract[] = $contract->contract_id;
-            }
-
-            // Check is last record OR last record of company OR last record of ship
-            if ($i == count($listContract) - 1 ||
-                ($companyIdTempl != $listContract[$i + 1]->company_id) ||
-                ($shipIdTempl != $listContract[$i + 1]->ship_id)) {
-
-                // Update total money of table t_history_usage
-                $result = $this->_updateTotalMoneyHistoryUsage($historyUsageId, $totalMoneyBilling);
-                if ($result === null) {
-                    $isException = 1;
-                    break;
-                }
-            }
-
-            $i++;
-        }
-
-        // Update status of expired contract
-        $result = $this->_updateStatusOfExpiredContract($listExpiredContract);
-        if ($result === null) {
-            $isException = 1;
-        }
-
-        // Check exist exception
-        if ($isException == 1) {
+            
+        } catch (Exception $ex) {
             // Rollback transaction
             DB::rollBack();
+            $this->error($ex->getMessage());
+        }
+        
+    }
 
-            $this->error('Error Exception');
+    /**
+     * Process loop contract
+     * 
+     * @param object $contract Object contract 
+     * @param float $discountCommon Amount discount common
+     * @param type $totalMoneyBilling Total money billing
+     * @param type $historyUsageId History usage ID
+     * @return null|float
+     */
+    private function _processLoopContract ($contract, $discountCommon, $totalMoneyBilling, $historyUsageId)
+    {
+        // Set parameter contract
+        $serviceId = $contract->service_id;
+        $cLNumber = $contract->license_count === null ? 0 : $contract->license_count;
+        $discountIndividual = $contract->discount_individual === null ? 0 : $contract->discount_individual;
+
+        // Get Charge Volume discount of service
+        $volumeDiscount = $this->_getChargeVolumeDiscount($serviceId, $cLNumber);
+        if ($volumeDiscount === null) {
+            return null;
+        }
+
+        // Calculate discount of service
+        $moneyDiscount = 0;
+        $discountId = 0;
+        if ($volumeDiscount >= $discountCommon) {
+            $moneyDiscount = $volumeDiscount;
+            $discountId = Constant::DETAIL_CHARGE_VOLUME_DISCOUNT;
+            if ($discountIndividual > $volumeDiscount) {
+                $moneyDiscount = $discountIndividual;
+                $discountId = Constant::DETAIL_CHARGE_DISCOUNT_INDIVIDUAL;
+            }
         } else {
-            // Commit transaction
-            DB::commit();
+            $moneyDiscount = $discountCommon;
+            $discountId = Constant::DETAIL_CHARGE_DISCOUNT_COMMON;
+            if ($discountIndividual > $discountCommon) {
+                $moneyDiscount = $discountIndividual;
+                $discountId = Constant::DETAIL_CHARGE_DISCOUNT_INDIVIDUAL;
+            }
+        }
 
-            $this->_log->info('END');
-            $this->error('END');
+        // Insert price service into table t_detail_history_usage
+        $resultRegisterPriceService = $this->_registerPriceService($historyUsageId, $contract);
+        $totalMoneyBilling += $contract->price_service;
+        if ($resultRegisterPriceService === null) {
+             return null;
+        }
+
+        // Register money discount into table t_detail_history_usage
+        $totalMoneyBilling -= $moneyDiscount;
+        $result = $this->_registerMoneyDiscount($historyUsageId, $contract, $moneyDiscount, $discountId);
+        if ($result === null) {
+            return null;
+        }
+
+        return $totalMoneyBilling;
+    }
+
+    /**
+     * Get list company and ship active
+     *
+     * @access private
+     * @return null|object
+     */
+    private function _getListCompanyShip()
+    {
+        try {
+            return DB::table('m_company')
+                ->select('m_company.id', 'm_company.currency_id', 'm_ship.id AS ship_id', 'm_currency.rate')
+                ->join('m_ship', function ($join) {
+                    $join->on('m_ship.company_id', '=', 'm_company.id');
+                })
+                ->join('m_currency', function ($join) {
+                    $join->on('m_company.currency_id', '=', 'm_currency.id')
+                        ->where('m_currency.del_flag', '=', Constant::DELETE_FLAG_FALSE);
+                })
+                ->distinct()
+                ->orderBy('m_company.id', 'ASC')
+                ->get();
+
+        } catch (Exception $ex) {
+            $this->_log->err("Get list company fail: " . $ex->getMessage());
+            $this->error('\n Get list company fail: ' . $ex->getMessage());
+            return null;
         }
     }
 
@@ -220,7 +284,6 @@ class BillingUsageMonthly extends Command
      */
     private function _processLoopCompany($companyId, $currencyId)
     {
-        $this->_rateCurrency = $this->_getRateCurrency($currencyId);
 
         // Get discount common of company
         $objectDiscountCommon = $this->_getDiscountCommon($companyId, $currencyId);
@@ -268,71 +331,104 @@ class BillingUsageMonthly extends Command
      * Get information of contract, charge service, total license, discount individual
      *
      * @access private
+     * @param int $companyId Company Id
+     * @param int $shipId Ship Id
      * @return null|object
      */
-    private function _getInforContract()
+    private function _getInforContract($companyId, $shipId)
     {
+
         try {
-            // Get month usage
+            // Get month usage string
             $date = strtotime($this->_monthUsage);
-            $month = (integer)date('m', $date);
-            $year = (integer)date('Y', $date);
+            $monthUsageString = "'" . date('Y-m', $date) . "'";
 
-            // Deleted flag
-            $deleted = constant::DELETE_FLAG_FALSE;
+            // Get count of license active
+            $license = DB::raw(
+                "(SELECT SC.service_id, SCO.id AS company_id
+                    , COUNT(SC.service_id) AS license_count
+                FROM m_contract AS SC
+                        INNER JOIN m_ship AS SSH ON SSH.id = SC.ship_id
+                        INNER JOIN m_company AS SCO ON SCO.id = SSH.company_id
+                WHERE (SC.del_flag = " . Constant::DELETE_FLAG_FALSE ."
+                        AND (SC.status = ".Constant::STATUS_CONTRACT_ACTIVE." 
+                            AND (SC.approved_flag = ".Constant::STATUS_APPROVED." "
+                             . " OR (SC.approved_flag <> ".Constant::STATUS_APPROVED." AND SC.updated_at IS NOT NULL))))
+                GROUP BY SCO.id, SC.service_id) AS licenseTbl");
 
-            // Status approve
-            $approveDone = constant::STATUS_APPROVED;
-            $approvePending = constant::STATUS_WAITING_APPROVE;
-            $approveReject = constant::STATUS_REJECT_APPROVE;
+            // Get information contract 
+            $contract = DB::raw(
+                "(SELECT C.id AS contract_id, C.ship_id, C.service_id
+                    , C.currency_id, C.start_date, C.end_date, C.end_pending_date
+                 FROM m_contract AS C
+                 WHERE C.ship_id = " . $shipId . " AND
+                     ((C.del_flag = " . Constant::DELETE_FLAG_TRUE ." AND C.start_date < '".$this->_now ."'
+                            AND SUBSTR(C.deleted_at, 1, 7) = " .$monthUsageString
+                     . " AND (C.status = ".Constant::STATUS_CONTRACT_ACTIVE." 
+                            OR (C.status = ".Constant::STATUS_CONTRACT_PENDING." AND SUBSTR(C.start_pending_date, 1, 7) = ".$monthUsageString.")))
 
-            // Status contract
-            $contractActive = constant::STATUS_CONTRACT_ACTIVE;
+                     OR (C.del_flag = ".Constant::DELETE_FLAG_FALSE
+                       . " AND ((C.status = ".Constant::STATUS_CONTRACT_ACTIVE. "
+                               AND ((SUBSTR(C.start_pending_date, 1, 7) = ".$monthUsageString." AND C.end_pending_date IS NULL 
+                                        AND SUBSTR(C.start_date, 1, 7) = ".$monthUsageString.") 
+                                    OR (SUBSTR(C.start_pending_date, 1, 7) = SUBSTR(C.end_pending_date, 1, 7) AND C.start_date < '".$this->_monthUsage."')
+                                    OR (C.start_date < '".$this->_monthUsage."' "
+                                        . "AND (C.end_pending_date IS NULL OR SUBSTR(C.end_pending_date, 1, 7) <> ".$monthUsageString.")))
+                                AND (C.approved_flag = ".Constant::STATUS_APPROVED
+                                    ." OR (C.approved_flag <> ".Constant::STATUS_APPROVED." AND C.updated_at IS NOT NULL)))
 
-            return DB::select("SELECT DISTINCT
-                                CO.id AS company_id
+                         OR (C.status = ".Constant::STATUS_CONTRACT_PENDING." AND C.start_date < '" . $this->_now . "'
+                            AND C.updated_at IS NOT NULL AND SUBSTR(C.start_pending_date, 1, 7) = ".$monthUsageString."))))
+                UNION ALL 
+                SELECT HC.contract_id, HC.ship_id, HC.service_id
+                   , HC.currency_id, HC.start_date, HC.end_date, HC.end_pending_date
+                FROM m_contract AS C
+                INNER JOIN t_history_contract AS HC ON HC.contract_id = C.id
+                WHERE HC.ship_id = " . $shipId 
+                    . " AND (HC.del_flag = " . Constant::DELETE_FLAG_TRUE ." AND HC.start_date < '".$this->_now ."'
+                            AND SUBSTR(HC.deleted_at, 1, 7) = " .$monthUsageString
+                        . " AND (HC.status = ".Constant::STATUS_CONTRACT_ACTIVE." 
+                               OR (HC.status = ".Constant::STATUS_CONTRACT_PENDING." AND SUBSTR(HC.start_pending_date, 1, 7) = ".$monthUsageString.")))
+                ) AS C");
+
+            $contractResult = DB::table('m_company AS CO')
+                ->select(DB::raw("CO.id AS company_id
                                 , CO.currency_id
-                                , C.id AS contract_id
+                                , C.contract_id
                                 , C.ship_id
                                 , C.service_id
                                 , C.start_date
                                 , C.end_date
+                                , C.end_pending_date
                                 , licenseTbl.license_count
                                 , S.name_short
                                 , DI.money_discount AS discount_individual
-                                , PS.price AS price_service
-                            FROM m_contract AS C
-                            INNER JOIN m_ship AS SH ON SH.id = C.ship_id
-                            INNER JOIN m_company AS CO ON CO.id = SH.company_id AND CO.currency_id = C.currency_id
-                            INNER JOIN m_service AS S ON S.id = C.service_id
-                            INNER JOIN t_price_service AS PS ON PS.service_id = C.service_id
-                               AND PS.currency_id = C.currency_id AND PS.del_flag = $deleted
-                            INNER JOIN m_currency AS CR ON CR.id = PS.currency_id AND CR.del_flag = $deleted
-                            INNER JOIN (SELECT SC.service_id, SCO.id AS company_id
-                                            , COUNT(SC.service_id) AS license_count
-                                            FROM m_contract AS SC
-                                            INNER JOIN m_ship AS SSH ON SSH.id = SC.ship_id
-                                            INNER JOIN m_company AS SCO ON SCO.id = SSH.company_id
-                                            WHERE (SC.status = $contractActive 
-                                                       OR (MONTH(SC.pending_at) = $month AND YEAR(SC.pending_at) = $year)
-                                                       OR (SC.pending_at IS NULL AND MONTH(SC.deleted_at) = $month AND YEAR(SC.deleted_at) = $year))
-                                                  AND (SC.approved_flag = $approveDone OR ((SC.approved_flag = $approvePending OR SC.approved_flag = $approveReject) 
-                                                                                  AND SC.updated_at IS NOT NULL))
-                                            GROUP BY SCO.id, SC.service_id
-                                            ) AS licenseTbl ON C.service_id = licenseTbl.service_id
-                                                               AND licenseTbl.company_id = CO.id
-                        LEFT JOIN t_discount_individual AS DI ON DI.contract_id = C.id
-                           AND DI.setting_month = '$this->_monthUsage'
-                           AND DI.currency_id = C.currency_id
-                           AND DI.del_flag = $deleted
-                        WHERE (C.status = $contractActive 
-                                OR (MONTH(C.pending_at) = $month AND YEAR(C.pending_at) = $year)
-                                OR (C.pending_at IS NULL AND MONTH(C.deleted_at) = $month AND YEAR(C.deleted_at) = $year))
-                            AND (C.approved_flag = $approveDone OR ((C.approved_flag = $approvePending OR C.approved_flag = $approveReject) AND C.updated_at IS NOT NULL))
-                            AND C.start_date < '$this->_now'
-                        ORDER BY CO.id ASC
-                                ,C.ship_id ASC
-                                ,C.service_id ASC");
+                                , PS.price AS price_service"))
+                ->join('m_ship AS SH', 'SH.company_id', '=', 'CO.id')
+                ->join($contract, function ($join) {
+                    $join->on('C.ship_id', '=', 'SH.id')
+                        ->on('C.currency_id', '=', 'CO.currency_id');
+                })
+                ->join('m_service AS S', 'S.id', '=', 'C.service_id')
+                ->join('t_price_service AS PS', function ($join) {
+                    $join->on('PS.service_id', '=', 'C.service_id')
+                        ->on('PS.currency_id', '=', 'C.currency_id')
+                        ->where('PS.del_flag' , '=', Constant::DELETE_FLAG_FALSE);
+                })
+                ->leftJoin($license, function ($join) {
+                    $join->on('licenseTbl.service_id', '=', 'C.service_id')
+                        ->on('licenseTbl.company_id' , '=', 'CO.id');
+                })
+                ->leftJoin('t_discount_individual AS DI', function ($join) {
+                    $join->on('DI.contract_id', '=', 'C.contract_id')
+                        ->on('DI.currency_id' , '=', 'C.currency_id')
+                        ->where('DI.setting_month' , '=', $this->_monthUsage)
+                        ->where('DI.del_flag' , '=', Constant::DELETE_FLAG_FALSE);
+                })
+                ->orderBy('C.service_id', 'ASC')
+                ->get();
+
+            return $contractResult;
 
         } catch (Exception $ex) {
             $this->_log->err('Get information of contract, charge service, total license, discount individual fail:' . $ex->getMessage());
@@ -366,10 +462,10 @@ class BillingUsageMonthly extends Command
 
         // Insert list to table t_ship_spot
         $totalMoneySpot = $this->_insertListChargeSpot($historyUsageId, $listChargeSpot);
-        $totalMoneyBilling += $totalMoneySpot;
         if ($totalMoneySpot === null) {
             return null;
         }
+        $totalMoneyBilling += $totalMoneySpot;
 
         return $historyUsageId;
     }
@@ -480,35 +576,6 @@ class BillingUsageMonthly extends Command
         } catch (Exception $ex) {
             $this->_log->err('Insert list to table t_detail_history_usage fail: ' . $ex->getMessage());
             $this->error('Insert list to table t_detail_history_usage fail: ' . $ex->getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * Get rate of currency
-     *
-     * @access private
-     * @param int $currencyId Currency ID
-     * @return null|float
-     */
-    private function _getRateCurrency($currencyId)
-    {
-        try {
-            $currency = DB::table('m_currency')
-                ->select('id', 'rate')
-                ->where([
-                    ['id', '=', $currencyId],
-                    ['del_flag', '=', Constant::DELETE_FLAG_FALSE]])
-                ->get();
-
-            if (count($currency) > 0) {
-                return $currency[0]->rate;
-            }
-
-            return 1;
-        } catch (Exception $ex) {
-            $this->_log->err('Get rate of currency fail: ' . $ex->getMessage());
-            $this->error('Get rate of currency fail: ' . $ex->getMessage());
             return null;
         }
     }

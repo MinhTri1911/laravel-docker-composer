@@ -108,7 +108,7 @@ class SpotRequest extends FormRequest {
             });
         }
         
-        $amountCharge = Common::foramtNumber($this->get('amountCharge'));
+        $amountCharge = Common::formatNumber($this->get('amountCharge'));
         
          // Check format number
         if (preg_match('/^[0-9]+$/', $amountCharge) == 0) {

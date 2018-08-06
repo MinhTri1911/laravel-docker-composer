@@ -85,7 +85,10 @@ class ApproveRepository implements ApproveInterface
                     "m_contract.updated_by as contract_updated_by",
                     "m_contract.remark as contract_remark",
                     "m_contract.deleted_at as contract_deleted_at",
-                    "m_contract.pending_at as contract_pending_at",
+                    "m_contract.del_flag as contract_del_flag",
+                    "m_contract.start_pending_date as contract_start_pending_date",
+                    "m_contract.end_pending_date as contract_end_pending_date",
+                    "m_contract.currency_id as contract_currency_id",
                     "m_ship.name as contract_ship_name",
                     "m_ship.id as contract_ship_id",
                     "m_service.id as contract_service_id",
@@ -140,19 +143,25 @@ class ApproveRepository implements ApproveInterface
             if (is_array($idContract) && count($idContract) > 0) {
                 return $contracts
                     ->whereIn('m_contract.id', $idContract)
+                    ->orderBy('m_contract.id', 'DESC')
                     ->get();
             }
             
             return $contracts
                 ->where('m_contract.id', $idContract)
+                ->orderBy('m_contract.id', 'DESC')
                 ->get();
         }
         
         // Paginate with limit
         if (!is_null($limit))
-            return $contracts->paginate($limit);
+            return $contracts
+                ->orderBy('m_contract.id', 'DESC')
+                ->paginate($limit);
         
-        return $contracts->get();
+        return $contracts
+                ->orderBy('m_contract.id', 'DESC')
+                ->get();
     }
     
     /* 
@@ -278,9 +287,9 @@ class ApproveRepository implements ApproveInterface
                     "t_user_login.name as spot_user_name",
                     "t_user_login.id as spot_user_id",
                     "m_currency.id as spot_currency_id",
-                    "m_currency.name_jp as spot_currency_name",
+                    "m_currency.code as spot_currency_name",
                 ]);
-        
+
         // Check if want to limit page
         $limit = null;
         if (isset($paramCondition['limit'])) {
@@ -304,16 +313,25 @@ class ApproveRepository implements ApproveInterface
             
             $spots->whereRaw("((t_ship_spot.updated_at IS NULL AND (? IS NULL OR t_ship_spot.created_at >= ?) AND (? IS NULL OR t_ship_spot.created_at <= ?)) 
                         OR ((? IS NULL OR t_ship_spot.updated_at >= ?) AND (? IS NULL OR t_ship_spot.updated_at <= ?)))", 
-                        [$date_from, $date_from, $date_to, $date_to, $date_from, $date_from, $date_to, $date_to ]
-                    );
+                        [$date_from, $date_from, $date_to, $date_to, $date_from, $date_from, $date_to, $date_to ]);
             unset($paramCondition['date']);
         }
-       
+
+        // Check contract id
+        if (isset($paramCondition['idContract'])) {
+            if (is_array($paramCondition['idContract']) && count($paramCondition['idContract']) > 0) {
+                $spots->whereIn('t_ship_spot.contract_id', $paramCondition['idContract']);
+            } else {
+                $spots->where('t_ship_spot.contract_id', $paramCondition['idContract']);
+            }
+            unset($paramCondition['idContract']);
+        }
+        
         // Check if filter user
         if (isset($paramCondition['user'])) {
             $user = $paramCondition['user']??null;
             $spots->where("t_user_login.name", "LIKE", '%'.$user.'%');
-           unset($paramCondition['user']);
+            unset($paramCondition['user']);
         }
         
         // Check if conditon to filter
@@ -326,19 +344,25 @@ class ApproveRepository implements ApproveInterface
             if (is_array($idSpot) && count($idSpot) > 0) {
                 return $spots
                     ->whereIn('t_ship_spot.id', $idSpot)
+                    ->orderBy('t_ship_spot.id', 'DESC')
                     ->get();
             }
             return $spots
                     ->where('t_ship_spot.id', $idSpot)
+                    ->orderBy('t_ship_spot.id', 'DESC')
                     ->get();
         }
         
         // Paginate with limit
         if (!is_null($limit)) {
-            return $spots->paginate($limit);
+            return $spots
+                    ->orderBy('t_ship_spot.id', 'DESC')
+                    ->paginate($limit);
         }
         
-        return $spots->get();
+        return $spots
+                ->orderBy('t_ship_spot.id', 'DESC')
+                ->get();
     }
     
     /**
@@ -364,7 +388,19 @@ class ApproveRepository implements ApproveInterface
         
         return null;
     }
-    
+
+    /**
+     * Handle delete spot out from system
+     * @access public
+     * @param array $arrIdSpot
+     * @return boolean Illuminate\Database\Query\Builder::delete()
+     */
+    public function deleteSpotApproval($arrIdSpot = []) {
+        return DB::table('t_ship_spot')
+                    ->whereIn('t_ship_spot.id', $arrIdSpot)
+                    ->delete();
+    }
+
     /**
      * Get list contract with condition config define by index of array 
      * 'company' to get list contract from list company, 'limit' to limit 
@@ -469,19 +505,25 @@ class ApproveRepository implements ApproveInterface
             if (is_array($idBilling) && count($idBilling) > 0) {
                 return $billings
                     ->whereIn('t_history_billing.id', $idBilling)
+                    ->orderBy('t_history_billing.id', 'DESC')
                     ->get();
             }
             return $billings
                     ->where('t_history_billing.id', $idBilling)
+                    ->orderBy('t_history_billing.id', 'DESC')
                     ->get();
         }
         
         // Paginate with limit
         if (!is_null($limit)) {
-            return $billings->paginate($limit);
+            return $billings
+                    ->orderBy('t_history_billing.id', 'DESC')
+                    ->paginate($limit);
         }
         
-        return $billings->get();
+        return $billings
+                ->orderBy('t_history_billing.id', 'DESC')
+                ->get();
     }
     
     /**

@@ -36,21 +36,13 @@ interface ContractInterface {
     public function deleteContract($ids, $column = null);
 
     /**
-     * Function update delete contract watting approve
+     * Function update delete contract
      * @param array ids
      * @param array data
      * @param string|null column
      * @return boolean
      */
-    public function updateDeleteContractWattingApprove($ids, $data, $column = null);
-
-    /**
-     * Function select service of company
-     * @param int companyId
-     * @param array columns
-     * @return Collection
-     */
-    public function selectServiceOfCompany($companyId, $columns = ['*']);
+    public function updateDeleteContract($ids, $data, $column = null);
 
     /**
      * Function get contract id not yet delete by company id and service id
@@ -77,12 +69,12 @@ interface ContractInterface {
     public function getContractActiveOrPendingById($companyId, $serviceIds);
 
     /**
-     * Function select service not watting approve of company
+     * Function select service not delete or not expired
      * @param int companyId
      * @param array columns
      * @return Collection
      */
-    public function selectServiceNotWattingApproveOfCompany($companyId, $columns = ['*']);
+    public function selectServiceNotDeleteOfCompany($companyId, $columns = ['*']);
 
     /**
      * Function check exists contract in company is watting approve with update_at not null
@@ -140,4 +132,13 @@ interface ContractInterface {
      * @return Collection
      */
     public function getContractAfterInsert($condition, $serviceIds, $columns = ['*']);
+    
+    /**
+     * Check exists contract was enabled with this ship
+     * 
+     * @access public
+     * @param array $config
+     * @return boolean
+     */
+    public function getAllContractEnablingOfShip($shipId, $serviceId, $oldContract = null);
 }

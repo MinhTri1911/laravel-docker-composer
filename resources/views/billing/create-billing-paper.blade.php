@@ -23,6 +23,10 @@
             {{ Form::hidden('url_create', route('billing.create.billing.paper'), ['id' => 'url-create']) }}
             {{ Form::hidden('url_delivery', route('billing.delivery.billing.paper'), ['id' => 'url-delivery']) }}
             {{ Form::hidden('url_export_csv', route('billing.export.billing.paper'), ['id' => 'url-export-csv']) }}
+            <!--User login operate company id-->
+            {{ Form::hidden('login_ope_company_id', auth()->user()->ope_company_id, ['id' => 'login-ope-company-id']) }}
+            <!--User login operate company id-->
+            {{ Form::hidden('login_auth_operation', auth()->user()->auth_operation, ['id' => 'login-auth-operation']) }}
 
             <div class="content-form">
                 <div class="form-group">

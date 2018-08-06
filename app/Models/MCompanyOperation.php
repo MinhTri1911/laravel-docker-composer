@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 04 Jul 2018 03:46:31 +0000.
+ * Date: Mon, 06 Aug 2018 04:29:16 +0000.
  */
 
 namespace App\Models;
@@ -11,7 +11,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class MCompanyOperation
- *
+ * 
  * @property int $id
  * @property string $name
  * @property string $short_name

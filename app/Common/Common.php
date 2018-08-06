@@ -16,7 +16,7 @@ namespace App\Common;
  */
 class Common
 {
-    public static function foramtNumber($value)
+    public static function formatNumber($value)
     {
         $value = str_replace(',', '', $value);
         $value = str_replace('.00', '', $value);

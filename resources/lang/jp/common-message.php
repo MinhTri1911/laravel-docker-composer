@@ -14,7 +14,7 @@ return [
         'E003' => ':itemを入力してください。',
         'E004' => ':item は:value文字以内で入力してください。',
         'E005' => ':itemのフォーマットはYYYY/MM/dd形式にしてください。',
-        'E006' => ':startDateは:startEndより大きくしてください。',
+        'E006' => ':startDateは:startEndより小さくしてください。',
         'E007' => ':startDateは:yearMonthのみで選択してください。',
         'E008' => ':valueは数字で入力してください。',
         'E009' => ':valueは存在しません。',

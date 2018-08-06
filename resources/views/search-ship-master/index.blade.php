@@ -51,7 +51,7 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-blue-light btn-w150" data-dismiss="modal">{{__('contract.btn_pop_cancel')}}</button>
-            <button type="button" class="btn btn-blue-dark btn-w190" data-dismiss="modal" id="btn-ok">{{__('contract.btn_pop_ok')}}</button>
+            <button type="button" class="btn btn-blue-dark btn-w190" data-dismiss="modal" id="btn-ok-ship">{{__('contract.btn_pop_ok')}}</button>
         </div>
     </div>
 </div>

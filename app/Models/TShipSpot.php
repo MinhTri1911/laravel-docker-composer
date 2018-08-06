@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 04 Jul 2018 03:46:32 +0000.
+ * Date: Mon, 06 Aug 2018 04:29:17 +0000.
  */
 
 namespace App\Models;
@@ -14,11 +14,14 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * 
  * @property int $id
  * @property int $ship_id
+ * @property int $contract_id
  * @property \Carbon\Carbon $month_usage
  * @property int $spot_id
  * @property int $currency_id
  * @property float $amount_charge
  * @property string $remark
+ * @property int $approved_flag
+ * @property string $reason_reject
  * @property bool $del_flag
  * @property string $created_by
  * @property \Carbon\Carbon $created_at
@@ -33,9 +36,11 @@ class TShipSpot extends Eloquent
 
     protected $casts = [
         'ship_id' => 'int',
+        'contract_id' => 'int',
         'spot_id' => 'int',
         'currency_id' => 'int',
         'amount_charge' => 'float',
+        'approved_flag' => 'int',
         'del_flag' => 'bool'
     ];
 
@@ -45,12 +50,14 @@ class TShipSpot extends Eloquent
 
     protected $fillable = [
         'ship_id',
+        'contract_id',
         'month_usage',
         'spot_id',
         'currency_id',
         'amount_charge',
         'remark',
         'approved_flag',
+        'reason_reject',
         'del_flag',
         'created_by',
         'updated_by'

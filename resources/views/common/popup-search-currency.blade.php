@@ -28,7 +28,7 @@
                             <div class="item-value">
                                 {{ Form::text('search-currency-id', null, [
                                         'class' => 'form-control',
-                                        'placeholder' => trans('ship.lbl_title_ship_nation_id'),
+                                        'placeholder' => trans('company.lbl_title_currency_id'),
                                         'id' => 'search-currency-id'
                                     ])
                                 }}
@@ -41,7 +41,7 @@
                             <div class="item-value">
                                 {{ Form::text('search-currency-code', null, [
                                         'class' => 'form-control',
-                                        'placeholder' => trans('ship.lbl_title_ship_nation'),
+                                        'placeholder' => trans('company.lbl_title_currency_code'),
                                         'id' => 'search-currency-code'
                                     ])
                                 }}

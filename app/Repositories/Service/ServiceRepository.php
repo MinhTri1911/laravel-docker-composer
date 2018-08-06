@@ -52,25 +52,55 @@ class ServiceRepository extends EloquentRepository implements ServiceInterface
 
     /**
      * Function get list service by currencyId and ShipId
+     * 
      * @access public
      * @param int currencyId
      * @param int shipId
      * @return mixed
      */
-    public function getListServiceByShipId($currencyId, $shipId)
+    public function getListServiceByShipId($currencyId, $shipId, $serviceId = null)
     {
-        return DB::table('m_service')->select([
-                'm_service.id',
-                'm_service.name_jp',
-                't_price_service.charge_register',
-                't_price_service.charge_create_data'
-            ])
+        // Get list service pending in approve
+        $contractPending = DB::table('m_contract')
+            ->where('ship_id', $shipId)
+            ->where('reason_reject', '<>', null)
+            ->select('reason_reject')
+            ->get();
+        $id = [];
+        if (count($contractPending) > 0) {
+            $idReason = array_column($contractPending->toArray(), 'reason_reject');
+            $id = array_map(function($a){
+                $s = array();
+                preg_match('/\"service_id\"\:\"([0-9]+)\"/', $a, $s);
+                if (count($s) > 0) {
+                    return (int)preg_replace('/[^0-9]+/', '', $s[0]);
+                }
+               return ; 
+            }, $idReason);
+        }
+
+        $query = DB::table('m_service')->select([
+            'm_service.id',
+            'm_service.name_jp',
+            't_price_service.charge_register',
+            't_price_service.charge_create_data'
+        ])
             ->join('t_price_service', 't_price_service.service_id', 'm_service.id')
             ->where('m_service.del_flag', 0)
             ->where('t_price_service.del_flag', 0)
-            ->where('t_price_service.currency_id', $currencyId)
-            ->whereRaw("m_service.id NOT IN (SELECT m_contract.service_id FROM m_contract WHERE m_contract.ship_id =  ? )", [$shipId])
-            ->get();
+            ->where('t_price_service.currency_id', $currencyId);
+
+        if (!is_null($serviceId) && !empty($serviceId) && is_numeric($serviceId)) {
+            $query = $query->whereRaw("m_service.id NOT IN (SELECT m_contract.service_id FROM m_contract WHERE m_contract.ship_id =  ? "
+                    . " AND m_contract.service_id <> ?) AND (m_service.id NOT IN ('".implode("','", $id)."') )", [$shipId, $serviceId])
+                            ->get();
+        } else {
+            $query = $query->whereRaw("m_service.id NOT IN (SELECT m_contract.service_id FROM m_contract WHERE m_contract.ship_id = ? )  AND m_service.id NOT IN ('".implode("','", $id)."')", [$shipId])
+                            ->get();
+        }
+            
+        return $query;
+        
     }
 
     /**
@@ -82,8 +112,26 @@ class ServiceRepository extends EloquentRepository implements ServiceInterface
      * @param string nameServiceSearch
      * @return mixed
      */
-    public function searchListService($currencyId, $shipId, $idServiceSearch, $nameServiceSearch)
+    public function searchListService($currencyId, $shipId, $idServiceSearch, $nameServiceSearch, $serviceId)
     {
+        // Get list service pending in approve
+        $contractPending = DB::table('m_contract')
+                ->where('ship_id', $shipId)
+                ->where('reason_reject', '<>', null)
+                ->select('reason_reject')
+                ->get();
+            $id = [];
+            if (count($contractPending) > 0) {
+                $idReason = array_column($contractPending->toArray(), 'reason_reject');
+                $id = array_map(function($a){
+                    $s = array();
+                    preg_match('/\"service_id\"\:\"([0-9]+)\"/', $a, $s);
+                    if (count($s) > 0) {
+                        return (int)preg_replace('/[^0-9]+/', '', $s[0]);
+                    }
+                   return ; 
+                }, $idReason);
+            }
 
         if ($nameServiceSearch != null) {
             $nameServiceSearch = "%" . $nameServiceSearch . '%';
@@ -112,7 +160,13 @@ class ServiceRepository extends EloquentRepository implements ServiceInterface
 
         // Search by shipId
         if ($shipId != null || $shipId != '') {
-            $query = $query->whereRaw("m_service.id NOT IN (SELECT m_contract.service_id FROM m_contract WHERE m_contract.ship_id =  ? )", [$shipId]);
+            if (!is_null($serviceId) && !empty($serviceId) && is_numeric($serviceId)) {
+                $query = $query->whereRaw("m_service.id NOT IN (SELECT m_contract.service_id FROM m_contract WHERE m_contract.ship_id =  ? "
+                        . "AND m_contract.service_id <> ?) AND (m_service.id NOT IN ('".implode("','", $id)."'))", [$shipId, $serviceId]);
+            } else {
+                $query = $query->whereRaw("m_service.id NOT IN (SELECT m_contract.service_id FROM m_contract WHERE m_contract.ship_id =  ? ) "
+                        . "AND m_service.id NOT IN ('".implode("','", $id)."')", [$shipId]);
+            }
         }
 
         return $query->get();

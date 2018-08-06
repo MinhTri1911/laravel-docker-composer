@@ -55,13 +55,13 @@ class ShipContractController extends Controller
 
             // If ship not exists, show not found page
             if (is_null($ship->detail_ship) || empty($ship->detail_ship)) {
-                return view('exception.404');
+                return view('exception.notfound');
             }
 
             return view('ship.contract.detail')->with('ship', $ship);
         } catch (Exception $exc) {
             Log::error($exc->getFile() .' on '. $exc->getLine().'\n'.$exc->getMessage());
-            abort(Constant::HTTP_CODE_ERROR_500, "Not found 456");
+            abort(Constant::HTTP_CODE_ERROR_500);
         }
     }
 

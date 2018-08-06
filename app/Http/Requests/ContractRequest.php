@@ -85,8 +85,8 @@ class ContractRequest extends FormRequest {
         $chargeCreate = $this->get('chargeCreate');
         $remark = $this->get('remark');
 
-        $chargeRegister = Common::foramtNumber($chargeRegister);
-        $chargeCreate = Common::foramtNumber($chargeCreate);
+        $chargeRegister = Common::formatNumber($chargeRegister);
+        $chargeCreate = Common::formatNumber($chargeCreate);
      
         // Check format number
         if (!is_null($chargeRegister) && !empty($chargeRegister) && preg_match('/^[0-9]+$/', $chargeRegister) == 0) {

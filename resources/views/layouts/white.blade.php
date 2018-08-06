@@ -19,9 +19,29 @@
                 <div class="site-brand">
                     <img src="{{ asset('images/common/logo.png') }}">
                     <span style="max-width: 1000px;">
-                        DungLV</br>Rikkeisoft Co., Ltd
+                        IMC</br>Co., Ltd
                     </span>
                 </div>
+                @auth
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" href="">
+                            <i class="glyphicon glyphicon-user"></i>
+                            {{ Auth::user()->name }}
+                            <span class="caret"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <i class="glyphicon glyphicon-log-out"></i>
+                            {{ trans('common.btn_logout') }}
+                        </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            {{ csrf_field() }}
+                        </form>
+                    </li>
+                </ul>
+                @endauth
             </div>
         </header>
         @yield('menu_header')

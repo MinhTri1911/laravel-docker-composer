@@ -25,7 +25,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
 
-//        $schedule->command('billing:usageMonthly')->everyTenMinutes();
+        // Execute batch run every monthmonthlyOn
+        $schedule->command('batch:billingUsageMonthly')->monthlyOn(1, '00:00');
     }
 
     /**

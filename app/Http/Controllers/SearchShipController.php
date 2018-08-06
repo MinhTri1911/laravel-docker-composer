@@ -25,11 +25,17 @@ class SearchShipController extends Controller
     public function index(Request $request) 
     {
         try {
-            
             $companyId = $request->get('companyId');
-
-            return $this->_shipBusiness->initSearchShip($companyId);
+            $response = [
+                'ships' => $this->_shipBusiness->initSearchShip($companyId)
+            ];
             
+            $service = $this->_shipBusiness->getPriceService($request);
+            if(!is_null($service) && count($service) > 0) {
+                $response['services'] = $service;
+            }
+            
+            return response()->json($response);
         } catch (Exception $ex) {
             Log::info($ex);
         }
@@ -47,11 +53,17 @@ class SearchShipController extends Controller
             $companyId = $request->get('companyId');
             $idShipSearch = $request->get('idShipSearch'); 
             $nameShipSearch = $request->get('nameShipSearch'); 
+            $response = [
+                'ships' => $this->_shipBusiness->searchShip($companyId, $idShipSearch, $nameShipSearch)
+            ];
             
-            return $this->_shipBusiness->searchShip($companyId, $idShipSearch, $nameShipSearch);
+            $service = $this->_shipBusiness->getPriceService($request);
+            if(!is_null($service) && count($service) > 0) {
+                $response['services'] = $service;
+            }
+            return response()->json($response);
             
         } catch (Exception $ex) {
-            dd($ex);
             Log::info($ex);
         }
     }

@@ -14,6 +14,7 @@ namespace App\Repositories\Company;
 use App\Repositories\EloquentRepository;
 use App\Models\MCompany;
 use App\Common\Constant;
+use DB;
 
 class CompanyRepository extends EloquentRepository implements CompanyInterface
 {
@@ -349,5 +350,118 @@ class CompanyRepository extends EloquentRepository implements CompanyInterface
     {
         return $this->where('del_flag', Constant::DELETE_FLAG_FALSE)
             ->findOrFail($companyId, $columns);
+    }
+
+    /**
+     * Get info company base on ship or contract
+     *
+     * @param array $condition
+     * @return App\Models\MCompany
+     */
+    public function getCompanyByShipOrContract($condition = [])
+    {
+        $query = DB::table('m_company')
+                ->join('m_ship', function($join){
+                    $join->on('m_company.id', '=', 'm_ship.company_id')
+                            ->where('m_ship.del_flag', Constant::DELETE_FLAG_FALSE);
+                })
+                ->leftJoin('m_contract', function($join){
+                    $join->on('m_ship.id', '=', 'm_contract.ship_id');
+                })
+                ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE);
+
+                // Check if user filter by company id
+                if (isset($condition['companyId']) && !is_null($condition['companyId']) && count($condition['companyId']) > 0) {
+                    $query = $query->whereIn('m_company.id', $condition['companyId']);
+                    unset($condition['companyId']);
+                }
+
+                // Check if user filter by ship id
+                if (isset($condition['shipId']) && !is_null($condition['shipId']) && count($condition['shipId']) > 0) {
+                    $query = $query->whereIn('m_ship.id', $condition['shipId']);
+                    unset($condition['shipId']);
+                }
+
+                // Check if user filter by contract id
+                if (isset($condition['contractId']) && !is_null($condition['contractId']) && count($condition['contractId']) > 0) {
+                    $query = $query->whereIn('m_contract.id', $condition['contractId']);
+                    unset($condition['contractId']);
+                }
+
+                // Check if user filter by ship id
+                if (isset($condition['contractStatus']) && !is_null($condition['contractStatus']) && count($condition['contractStatus']) > 0) {
+                    $query = $query->whereIn('m_contract.status', $condition['contractStatus']);
+                    unset($condition['contractStatus']);
+                }
+
+                if (count($condition) > 0) {
+                    $query = $query->where($condition);
+                }
+
+                $query = $query->select([
+                    'm_company.id as company_id',
+                    'm_company.currency_id as currency_id',
+                    'm_contract.id as contract_id',
+                    'm_ship.id as ship_id',
+                ]);
+                return $query->get();
+    }
+
+    /**
+     * Function check name company is exists
+     *
+     * @param string $name
+     * @param integer $type
+     * @return boolean
+     */
+    public function existsNameCompany($name, $type = 0)
+    {
+        return $this->where(function ($query) use ($name, $type) {
+                if (!$type) {
+                    return $query->where('name_jp', $name);
+                }
+
+                return $query->where('name_en', $name);
+            })
+            ->where('del_flag', Constant::DELETE_FLAG_FALSE)
+            ->exists();
+    }
+
+    /**
+     * Function check name company is exists when update
+     *
+     * @param integer $idCompany
+     * @param string $name
+     * @param boolean $type
+     * @return boolean
+     */
+    public function checkExistsNameUpdate($idCompany, $name, $type = false)
+    {
+        return $this->where(function ($query) use ($name, $type) {
+                if (!$type) {
+                    return $query->where('name_jp', $name);
+                }
+
+                return $query->where('name_en', $name);
+            })
+            ->where('del_flag', Constant::DELETE_FLAG_FALSE)
+            ->where('id', '<>', $idCompany)
+            ->exists();
+    }
+
+    /**
+     * Function check company is using service
+     *
+     * @param integer $companyId
+     * @return boolean
+     */
+    public function checkCompanyHasUsingService($companyId)
+    {
+        return $this->select(['m_contract.id'])
+            ->join('m_ship', 'm_ship.company_id', 'm_company.id')
+            ->join('m_contract', 'm_contract.ship_id', 'm_ship.id')
+            ->where('m_company.id', $companyId)
+            ->where('m_company.del_flag', Constant::DELETE_FLAG_FALSE)
+            ->exists();
     }
 }

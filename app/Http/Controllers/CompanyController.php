@@ -14,9 +14,14 @@ use Illuminate\Http\Request;
 use App\Business\CompanyBusiness;
 use App\Common\Constant;
 use App\Http\Requests\ConfirmPasswordRequest;
+use App\Http\Requests\CreateCompanyRequest;
+use App\Http\Requests\UpdateCompanyRequest;
+use Log;
 
 class CompanyController extends Controller
 {
+    use RolesController;
+
     private $_companyBusiness;
 
     /**
@@ -221,23 +226,157 @@ class CompanyController extends Controller
                 'classificationies' => $data['classificationies'],
             ]);
         } catch (\Exception $e) {
+            Log::error($e->getFile() .' on '. $e->getLine().'\n'.$e->getMessage());
             abort(500);
         }
     }
 
-    public function store(Request $request)
+    public function store(CreateCompanyRequest $request)
     {
-        dd($request->all());
+        $dataCompany = $request->only(
+            'txt-company-name-jp',
+            'txt-company-name-en',
+            'company-nation-id',
+            'txt-company-postal-code',
+            'txt-company-address',
+            'txt-company-represent-person',
+            'txt-company-fund',
+            'company-currency-id',
+            'txt-company-employee-number',
+            'txt-company-year-research',
+            'slb-company-billing-method',
+            'slb-company-month-billing',
+            'txt-company-payment-deadline-no',
+            'txt-company-site',
+            'txt-company-currency-code',
+            'slb-company-operation',
+            'txt-company-url',
+            'txt-ope-name-1',
+            'txt-ope-position-1',
+            'txt-ope-department-1',
+            'txt-ope-postal-code-1',
+            'txt-ope-address-1',
+            'txt-ope-phone-1',
+            'txt-ope-fax-1',
+            'txt-ope-email-1',
+            'txt-ope-name-2',
+            'txt-ope-position-2',
+            'txt-ope-department-2',
+            'txt-ope-postal-code-2',
+            'txt-ope-address-2',
+            'txt-ope-phone-2',
+            'txt-ope-fax-2',
+            'txt-ope-email-2'
+        );
+
+        $dataShip = $request->only(
+            'txt-ship-name',
+            'txt-ship-imo-number',
+            'ship-nation-id',
+            'slb-ship-classification',
+            'slb-ship-type'
+        );
+
+        \DB::beginTransaction();
+        try {
+            $this->_companyBusiness->storeCompany($dataCompany, $dataShip);
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+            Log::error($e->getFile() .' on '. $e->getLine().'\n'.$e->getMessage());
+        }
+
+        return redirect()->route('company.index');
     }
 
     /**
      * Show page edit company
-     * @param Type number id
+     * @param integer $id
      * @return view
      */
     public function edit($id)
     {
-        return view('company.edit');
+        try {
+            $data = $this->_companyBusiness->initEditCompany($id);
+            // Check permisson
+            $this->checkPermission(Constant::ALLOW_COMPANY_EDIT, Constant::IS_CHECK_SCREEN, $data['company']->ope_company_id);
+
+            $data = $this->_companyBusiness->initEditCompany($id);
+
+            return view('company.edit', [
+                'company' => $data['company'],
+                'companyOpe' => $data['companyOpe'],
+                'nations' => $data['nations'],
+                'currency' => $data['currency'],
+                'billingMethod' => $data['billingMethod'],
+                'existsContract' => $data['existsContract'],
+            ]);
+        } catch (\Exception $e) {
+            Log::error($e->getFile() .' on '. $e->getLine().'\n'.$e->getMessage());
+            abort(404);
+        }
+    }
+
+    /**
+     * Function update company
+     *
+     * @param CreateCompanyRequest $request
+     * @param integer $id
+     * @return void
+     */
+    public function update(UpdateCompanyRequest $request, $id)
+    {
+        \DB::beginTransaction();
+        try {
+            $opeCompanyId = $this->_companyBusiness->getOpeCompany($id);
+            // Check permission can update company with id
+            $this->checkPermission(Constant::ALLOW_COMPANY_EDIT, Constant::IS_CHECK_BUTTON, $opeCompanyId);
+
+            $dataCompany = $request->only(
+                'txt-company-name-jp',
+                'txt-company-name-en',
+                'company-nation-id',
+                'txt-company-postal-code',
+                'txt-company-address',
+                'txt-company-represent-person',
+                'txt-company-fund',
+                'company-currency-id',
+                'txt-company-employee-number',
+                'txt-company-year-research',
+                'slb-company-billing-method',
+                'slb-company-month-billing',
+                'txt-company-payment-deadline-no',
+                'txt-company-site',
+                'txt-company-currency-code',
+                'slb-company-operation',
+                'txt-company-url',
+                'txt-ope-name-1',
+                'txt-ope-position-1',
+                'txt-ope-department-1',
+                'txt-ope-postal-code-1',
+                'txt-ope-address-1',
+                'txt-ope-phone-1',
+                'txt-ope-fax-1',
+                'txt-ope-email-1',
+                'txt-ope-name-2',
+                'txt-ope-position-2',
+                'txt-ope-department-2',
+                'txt-ope-postal-code-2',
+                'txt-ope-address-2',
+                'txt-ope-phone-2',
+                'txt-ope-fax-2',
+                'txt-ope-email-2'
+            );
+
+            $this->_companyBusiness->updateCompanyInfo($id, $dataCompany);
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+            Log::error($e->getFile() .' on '. $e->getLine(). '\n' . $e->getMessage());
+            abort(500, trans('common.messages.m043_update_company_fail'));
+        }
+
+        return redirect()->route('company.show', $id)->with('success', trans('common.messages.m042_update_company_success'));
     }
 
     /**
@@ -278,6 +417,8 @@ class CompanyController extends Controller
         try {
             $data = $this->_companyBusiness->getDetailCompany($id);
         } catch (\Exception $e) {
+            Log::error($e->getFile() .' on '. $e->getLine().'\n'.$e->getMessage());
+
             return abort('NotFound');
         }
 
@@ -309,6 +450,7 @@ class CompanyController extends Controller
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+            Log::error($e->getFile() .' on '. $e->getLine().'\n'.$e->getMessage());
 
             return $this->returnJson(Constant::HTTP_CODE_ERROR_500, [$e->getMessage()]);
         }
@@ -328,11 +470,26 @@ class CompanyController extends Controller
             return $this->returnJson(Constant::HTTP_CODE_SUCCESS, trans('error.500'));
         }
 
-        $checkExists = $this->_companyBusiness->checkExistsByName($request->get('name'), $request->get('type'));
 
-        return $this->returnJson(Constant::HTTP_CODE_SUCCESS, ['error' => [
+        try {
+            $checkExists = $request->get('typeCheck') == 'update'
+                ? $this->_companyBusiness->checkExistsWhenUpdate($request->get('companyId'), $request->get('nameJp'), $request->get('nameEn'))
+                : $this->_companyBusiness->checkExistsWhenCreate([
+                    'nameJp' => $request->get('nameJp'),
+                    'nameEn' => $request->get('nameEn'),
+                    'shipName' => $request->get('shipName'),
+                    'imoNumber' => $request->get('imoNumber'),
+                ]);
 
-            ]
-        ]);
+            $viewWarning = !empty($checkExists['message'])
+            ? $warningHtml = view('common.warning', ['warningMessages' => $checkExists['message']])->render()
+            : '';
+
+            return $this->returnJson(Constant::HTTP_CODE_SUCCESS, '', ['html' => $viewWarning]);
+        } catch (\Exception $e) {
+            Log::error($e->getFile() .' on '. $e->getLine().'\n'.$e->getMessage());
+        }
+
+        return $this->returnJson(Constant::HTTP_CODE_SUCCESS, trans('error.500'));
     }
 }

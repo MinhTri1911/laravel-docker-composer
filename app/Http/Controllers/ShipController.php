@@ -229,23 +229,17 @@ class ShipController extends Controller
 
             $messages = [];
             if ($statusShipName === true) {
-                $messages[] = trans(
-                    'common-message.warning.W004',
-                    ['attribute' => trans('ship.lbl_title_ship_name')]
-                );
+                $messages[] = trans('common-message.warning.W004', ['attribute' => trans('ship.lbl_title_ship_name')]);
             }
 
             if ($statusImoNumber === true) {
-                $messages[] = trans(
-                    'common-message.warning.W004',
-                    ['attribute' => trans('ship.lbl_title_imo_number')]
-                );
+                $messages[] = trans('common-message.warning.W004', ['attribute' => trans('ship.lbl_title_imo_number')]);
             }
 
             return response()->json([
                 'code' => Constant::HTTP_CODE_SUCCESS,
                 'html' => !empty($messages)
-                    ? $warningHtml = view('ship.component.warning', ['warningMessages' => $messages])->render()
+                    ? $warningHtml = view('common.warning', ['warningMessages' => $messages])->render()
                     : ''
             ]);
         }
@@ -295,7 +289,7 @@ class ShipController extends Controller
                 return response()->json([
                     'code' => Constant::HTTP_CODE_SUCCESS,
                     'html' => !empty($messages)
-                        ? view('ship.component.warning', ['warningMessages' => $messages])->render()
+                        ? view('common.warning', ['warningMessages' => $messages])->render()
                         : ''
                 ]);
             }
@@ -359,7 +353,7 @@ class ShipController extends Controller
                 $this->_shipBusiness->updateShip($shipId, $validatedData);
                 DB::commit();
 
-                // Redirect to list ship screen
+                // Redirect to detail contract screen
                 return redirect()->route('ship.contract.detail', ['id' => $shipId]);
 
             } catch (Exception $e) {

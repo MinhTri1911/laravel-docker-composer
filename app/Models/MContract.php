@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 04 Jul 2018 03:46:31 +0000.
+ * Date: Mon, 06 Aug 2018 04:29:16 +0000.
  */
 
 namespace App\Models;
@@ -11,7 +11,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class MContract
- *
+ * 
  * @property int $id
  * @property float $revision_number
  * @property int $ship_id
@@ -19,9 +19,15 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property int $currency_id
  * @property \Carbon\Carbon $start_date
  * @property \Carbon\Carbon $end_date
+ * @property int $tax_id
  * @property int $status
  * @property int $approved_flag
+ * @property \Carbon\Carbon $start_pending_date
+ * @property \Carbon\Carbon $end_pending_date
  * @property string $reason_reject
+ * @property bool $del_flag
+ * @property string $remark
+ * @property string $deleted_at
  * @property string $created_by
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
@@ -31,6 +37,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  */
 class MContract extends Eloquent
 {
+    use \Illuminate\Database\Eloquent\SoftDeletes;
     protected $table = 'm_contract';
 
     protected $casts = [
@@ -38,13 +45,17 @@ class MContract extends Eloquent
         'ship_id' => 'int',
         'service_id' => 'int',
         'currency_id' => 'int',
+        'tax_id' => 'int',
         'status' => 'int',
-        'approved_flag' => 'int'
+        'approved_flag' => 'int',
+        'del_flag' => 'bool'
     ];
 
     protected $dates = [
         'start_date',
-        'end_date'
+        'end_date',
+        'start_pending_date',
+        'end_pending_date'
     ];
 
     protected $fillable = [
@@ -54,14 +65,15 @@ class MContract extends Eloquent
         'currency_id',
         'start_date',
         'end_date',
+        'tax_id',
         'status',
-        'remark',
         'approved_flag',
+        'start_pending_date',
+        'end_pending_date',
         'reason_reject',
+        'del_flag',
+        'remark',
         'created_by',
-        'updated_by',
-        'updated_at',
-        'pending_at',
-        'deleted_at',
+        'updated_by'
     ];
 }

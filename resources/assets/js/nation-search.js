@@ -83,6 +83,7 @@ var ship = new function () {
                 let query = {
                     'search-nation-id': $(ship.models.nationId).val(),
                     'search-nation-name': $(ship.models.nationName).val(),
+                    'search-type': 'ship',
                 };
 
                 $.get(ship.urls.urlSearchNation, query, function (res) {
@@ -108,13 +109,12 @@ var ship = new function () {
      */
     this.selectNation = function () {
         $(ship.models.btnOkeSelectNation).on('click', function () {
-            if ($("input:radio[name='ship-choose-nation-id']:checked").val() != undefined) {
-                let nationName = $("input:radio[name='ship-choose-nation-id']:checked").attr('data-nation-name');
-                let nationId = $("input:radio[name='ship-choose-nation-id']:checked").val();
+            var nationId = $(ship.models.popupSeachNation + " input[type='radio']:checked").val();
+            var nationName = $(ship.models.popupSeachNation + " input[type='radio']:checked").attr('data-nation-name');
 
+            if (nationId !== undefined) {
                 // Set name for text box nation
                 $(ship.models.txtNation).val(nationName);
-
                 // Set id for text box nation id
                 $(ship.models.txtNationId).val(nationId);
             }

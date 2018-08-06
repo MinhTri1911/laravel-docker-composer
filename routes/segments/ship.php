@@ -24,7 +24,7 @@ Route::group(['middleware' => 'auth'], function() {
         Route::get('/create', 'ShipController@showCreate')->name('create');
         Route::post('/create', 'ShipController@create')->name('create');
 
-        Route::post('/check-create-exist', 'ShipController@checkExistCreateShipData');
+        Route::post('/check-create-exist', 'ShipController@checkExistCreateShipData')->name('check.exists.data');
         Route::post('/check-edit-exist', 'ShipController@checkExistEditShipData');
     });
 });

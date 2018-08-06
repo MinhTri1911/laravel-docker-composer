@@ -30,6 +30,8 @@
                 </div>
             @endif
 
+            <div class="append-mess-warning"></div>
+
             {{ Form::open(['url' => route('ship.contract.store'), 'method' => 'POST']) }}
                 {{ Form::hidden('company-id', $companyId) }}
                 {{ Form::hidden('currency-id', $currencyId) }}
@@ -50,6 +52,9 @@
                                         'placeholder' => trans('ship.lbl_title_ship_name'),
                                         'tabindex' => 1,
                                         'require' => true,
+                                        'id' => 'txt-ship-name',
+                                        'data-url' => route('ship.check.exists.data'),
+                                        'data-remark' => '',
                                     ])
                                 }}
                             </div>
@@ -82,6 +87,9 @@
                                         'class' => 'form-control',
                                         'placeholder' => trans('ship.lbl_title_imo_number'),
                                         'tabindex' => 2,
+                                        'id' => 'txt-imo-number',
+                                        'data-url' => route('ship.check.exists.data'),
+                                        'data-remark' => '',
                                     ])
                                 }}
                             </div>
@@ -181,8 +189,8 @@
                                     $dataShipType = [];
                                     $firstValueShipType = $shipTypes->first() ? $shipTypes->first()->id : null;
 
-                                    foreach ($shipTypes as $type) {
-                                        $dataShipType[$type->id] = $type->type . ' (' . $type->code . ')';
+                                    foreach ($shipTypes as $shipType) {
+                                        $dataShipType[$shipType->id] = $shipType->type . ' (' . $shipType->code . ')';
                                     }
                                 @endphp
                                 {{ Form::select('slb-ship-type', $dataShipType, $firstValueShipType, [
@@ -389,7 +397,6 @@
                             <thead>
                                 <tr>
                                     <th class="col-md-2">{{ trans('ship.lbl_head_service_id') }}</th>
-                                    <!-- <th class="col-md-2">{{ trans('ship.lbl_service_name') }}</th> -->
                                     <th class="col-md-2">{{ trans('ship.lbl_head_service_name') }}</th>
                                     <th class="col-md-2">{{ trans('ship.lbl_head_version') }}</th>
                                     <th class="col-md-2">{{ trans('ship.lbl_head_price') }}</th>
@@ -600,7 +607,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-12">
+                            <div class="col-md-12 table-default">
                                 <table class="table table-blue">
                                     <thead>
                                         <tr>
@@ -661,7 +668,7 @@
     </div>
 
     <div class="modal modal-protector modal-normal fade" id="popup-search-nation" tabindex="-1" role="dialog">
-        @include('common.popup-search-nation')
+        @include('common.popup-search-nation', ['type' => 'ship'])
     </div>
 
 @endsection
